@@ -115,7 +115,14 @@ export default function DashboardPage() {
         ])
 
         setAgentCount(countResponse)
-        setAgents(agentList)
+        const formattedAgents = agentList.map((agent) => ({
+  id: agent.agnt_id,
+  name: agent.agnt_nm,
+  status: "Active", // since API doesn't return status
+  description: `${agent.agnt_nm} agent built using ${agent.agnt_type}`,
+  models: [agent.agnt_type] // Cortex or LangGraph
+}))
+        setAgents(formattedAgents)
 
       } catch (error) {
         console.error("Dashboard API Error:", error)
@@ -458,7 +465,7 @@ export default function DashboardPage() {
 
 
           {/* Agent Cards Grid */}
-          {/* <div style={{
+          <div style={{
             display: 'inline-grid',
             rowGap: '24px',
             columnGap: '24px',
@@ -469,7 +476,7 @@ export default function DashboardPage() {
             {agents.map((agent) => (
               <AgentCard key={agent.id} agent={agent} />
             ))}
-          </div> */}
+          </div>
 
 
           {/* Pagination */}
