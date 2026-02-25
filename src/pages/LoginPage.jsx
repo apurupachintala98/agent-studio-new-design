@@ -450,7 +450,6 @@ export default function LoginPage() {
             </div>
 
             {/* Application Code */}
-            {/* Application Code */}
             <div style={{ width: '100%' }}>
               <label
                 style={{
@@ -496,27 +495,29 @@ export default function LoginPage() {
                   onChange={(e) => setAppCode(e.target.value)}
                   style={{
                     flex: 1,
-                    height: '100%',           // important
+                    height: '100%',
                     border: 'none',
                     outline: 'none',
                     fontSize: '16px',
                     fontFamily: '"Source Sans 3"',
                     background: 'transparent',
-                    color: appCodes ? '#333' : '#94A3B8',
+                    color: appCode ? '#333' : '#94A3B8',
                     appearance: 'none',
                     WebkitAppearance: 'none',
                     MozAppearance: 'none',
                     cursor: 'pointer',
-                    width: '100%'
+                    width: '100%',
+                    paddingRight: '24px',
+                    boxSizing: 'border-box'
                   }}
                 >
-                  <option value="" disabled>
+                  <option value="" style={{ padding: '10px' }}>
                     Select Application Code
                   </option>
 
                   {Array.isArray(appCodes) &&
                     appCodes.map((code) => (
-                      <option key={code} value={code}>
+                      <option key={code} value={code} style={{ padding: '10px' }} >
                         {code}
                       </option>
                     ))}

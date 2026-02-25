@@ -171,7 +171,7 @@ export default function DashboardPage() {
             fontStyle: "normal",
             fontWeight: 600,
             lineHeight: "24px",
-          }}>({appCode}) Agents</h2>
+          }}>{appCode} Agents</h2>
 
 
           {/* Search and Filters - Main Container */}
