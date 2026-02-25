@@ -56,7 +56,7 @@ export default function LoginPage() {
       }
 
       setAppCodes(codes)
-      setAppCode(codes[0])
+      setAppCodes(codes[0])
       localStorage.setItem("user_id", userId)
       navigate('/dashboard')
 
@@ -466,9 +466,9 @@ export default function LoginPage() {
                   flex: 1,
                   fontSize: '16px',
                   fontFamily: '"Source Sans 3"',
-                  color: appCode ? '#333' : '#94A3B8'
+                  color: appCodes ? '#333' : '#94A3B8'
                 }}>
-                  {appCode || 'Select Application Code'}
+                  {appCodes || 'Select Application Code'}
                 </span>
                 <svg
                   width="16" height="16"
@@ -505,12 +505,12 @@ export default function LoginPage() {
                         fontSize: '14px',
                         fontFamily: '"Source Sans 3"',
                         cursor: 'pointer',
-                        background: appCode === code ? '#F0F7FF' : '#FFF',
-                        color: appCode === code ? '#0079C2' : '#333',
+                        background: appCodes === code ? '#F0F7FF' : '#FFF',
+                        color: appCodes === code ? '#0079C2' : '#333',
                         borderBottom: '1px solid #EDF2F7'
                       }}
                       onClick={() => {
-                        setAppCode(code)
+                        setAppCodes(code)
                         setDropdownOpen(false)
                       }}
                     >
