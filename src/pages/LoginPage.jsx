@@ -15,66 +15,68 @@ export default function LoginPage() {
   const [error, setError] = useState("")
 
   const validateLDAP = async () => {
-  try {
-    if (!userId || !password) return
+    try {
+      if (!userId || !password) return
 
-    setIsLoading(true)
-    setError("")
+      setIsLoading(true)
+      setError("")
 
-    const response = await fetch(
-      "https://pbee9gz5pe-vpce-0bd9a454888e84407.execute-api.us-east-1.amazonaws.com/prod/validateldapcredentials",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          password: password,
-          env: "dev",
-        }),
+      const response = await fetch(
+        "https://pbee9gz5pe-vpce-0bd9a454888e84407.execute-api.us-east-1.amazonaws.com/prod/validateldapcredentials",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userId,
+            password: password,
+            env: "dev",
+          }),
+        }
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || "Invalid credentials")
       }
-    )
 
-    const data = await response.json()
+      const codes = data.app_cd || []
 
-    if (!response.ok) {
-      throw new Error(data.message || "Invalid credentials")
+      if (codes.length === 0) {
+        setError("No application codes found")
+        return
+      }
+
+      setAppCodes(codes)
+
+      // store user
+      localStorage.setItem("user_id", userId)
+
+    } catch (err) {
+      console.error(err)
+      setError(err.message || "Login failed")
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    const codes = data.app_cd || []
+  const handleLogin = (e) => {
+    e.preventDefault()
 
-    if (codes.length === 0) {
-      setError("No application codes found")
+    if (!appCode) {
+      setError("Please select Application Code")
       return
     }
-
-    setAppCodes(codes)
-
-    // store user
-    localStorage.setItem("user_id", userId)
-
-  } catch (err) {
-    console.error(err)
-    setError(err.message || "Login failed")
-  } finally {
-    setIsLoading(false)
+    // store selected application
+   navigate("/dashboard", {
+  state: {
+    appCode: appCode,
+    userId: userId
   }
-}
-
-const handleLogin = (e) => {
-  e.preventDefault()
-
-  if (!appCode) {
-    setError("Please select Application Code")
-    return
+})
   }
-
-  // store selected application
-  localStorage.setItem("app_code", appCode)
-
-  navigate("/dashboard")
-}
 
   return (
     <div style={{
@@ -400,12 +402,12 @@ const handleLogin = (e) => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                   onChange={(e) => setPassword(e.target.value)}
-  onBlur={() => {
-    if (userId && password) {
-      validateLDAP()
-    }
-  }}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => {
+                    if (userId && password) {
+                      validateLDAP()
+                    }
+                  }}
                   placeholder="••••••••"
                   style={{
                     flex: 1,
@@ -445,86 +447,88 @@ const handleLogin = (e) => {
             </div>
 
             {/* Application Code */}
-           {/* Application Code */}
-<div style={{ width: '100%' }}>
-  <label
-    style={{
-      color: '#333',
-      fontFamily: '"Source Sans 3"',
-      fontSize: '14px',
-      fontWeight: '700',
-      lineHeight: '20px',
-      display: 'block',
-      marginBottom: '8px'
-    }}
-  >
-    Application Code
-  </label>
+            {/* Application Code */}
+            <div style={{ width: '100%' }}>
+              <label
+                style={{
+                  color: '#333',
+                  fontFamily: '"Source Sans 3"',
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  lineHeight: '20px',
+                  display: 'block',
+                  marginBottom: '8px'
+                }}
+              >
+                Application Code
+              </label>
 
-  <div
-    style={{
-      borderRadius: '6px',
-      border: '1px solid #CBD5E1',
-      background: '#FFF',
-      display: 'flex',
-      alignItems: 'center',
-      padding: '0 12px',
-      height: '44px'
-    }}
-  >
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
-      <circle cx="5" cy="5" r="1.5" />
-      <circle cx="12" cy="5" r="1.5" />
-      <circle cx="19" cy="5" r="1.5" />
-      <circle cx="5" cy="12" r="1.5" />
-      <circle cx="12" cy="12" r="1.5" />
-      <circle cx="19" cy="12" r="1.5" />
-      <circle cx="5" cy="19" r="1.5" />
-      <circle cx="12" cy="19" r="1.5" />
-      <circle cx="19" cy="19" r="1.5" />
-    </svg>
+              <div
+                style={{
+                  borderRadius: '6px',
+                  border: '1px solid #CBD5E1',
+                  background: '#FFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0 12px',
+                  height: '48px',          // slightly increased
+                  position: 'relative'
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
+                  <circle cx="5" cy="5" r="1.5" />
+                  <circle cx="12" cy="5" r="1.5" />
+                  <circle cx="19" cy="5" r="1.5" />
+                  <circle cx="5" cy="12" r="1.5" />
+                  <circle cx="12" cy="12" r="1.5" />
+                  <circle cx="19" cy="12" r="1.5" />
+                  <circle cx="5" cy="19" r="1.5" />
+                  <circle cx="12" cy="19" r="1.5" />
+                  <circle cx="19" cy="19" r="1.5" />
+                </svg>
 
-    <select
-      value={appCodes}
-      onChange={(e) => setAppCodes(e.target.value)}
-      style={{
-        flex: 1,
-        border: 'none',
-        outline: 'none',
-        fontSize: '16px',
-        fontFamily: '"Source Sans 3"',
-        background: 'transparent',
-        color: appCodes ? '#333' : '#94A3B8',
-        appearance: 'none',
-        WebkitAppearance: 'none',
-        MozAppearance: 'none',
-        cursor: 'pointer'
-      }}
-    >
-      <option value="" disabled>
-        Select Application Code
-      </option>
+                <select
+                  value={appCodes}
+                  onChange={(e) => setAppCodes(e.target.value)}
+                  style={{
+                    flex: 1,
+                    height: '100%',           // important
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '16px',
+                    fontFamily: '"Source Sans 3"',
+                    background: 'transparent',
+                    color: appCodes ? '#333' : '#94A3B8',
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="" disabled>
+                    Select Application Code
+                  </option>
 
-      {appCodes.map((code) => (
-        <option key={code} value={code}>
-          {code}
-        </option>
-      ))}
-    </select>
+                  {appCodes.map((code) => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))}
+                </select>
 
-    {/* Custom Arrow */}
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="#94A3B8"
-      strokeWidth="2"
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  </div>
-</div>
+                {/* Custom Arrow */}
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#94A3B8"
+                  strokeWidth="2"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </div>
 
             {/* Remember me + Forgot password */}
             <div style={{

@@ -4,6 +4,7 @@ import Header from '../components/Header'
 import AgentCard from '../components/AgentCard'
 import { fetchAgentsByAppCode } from "../services/agents"
 import { agentApi } from "../services/api"
+import { useLocation } from "react-router-dom"
 
 // const agents = [
 //   {
@@ -94,15 +95,15 @@ export default function DashboardPage() {
 const [agents, setAgents] = useState([])
 const [agentCount, setAgentCount] = useState(null)
 const [loading, setLoading] = useState(true)
+const location = useLocation()
+const { appCode, userId } = location.state || {}
 
 useEffect(() => {
+  if (!appCode) return
+
   const loadDashboardData = async () => {
     try {
       setLoading(true)
-
-      const appCode = localStorage.getItem("app_code")
-
-      if (!appCode) return
 
       const countResponse = await agentApi.fetchAgentCount(appCode)
       setAgentCount(countResponse)
@@ -118,7 +119,7 @@ useEffect(() => {
   }
 
   loadDashboardData()
-}, [])
+}, [appCode])
 
   return (
     <div className="min-h-screen bg-gray-50 font-open-sans">
