@@ -475,7 +475,8 @@ export default function LoginPage() {
                   alignItems: 'center',
                   padding: '0 12px',
                   height: '48px',          // slightly increased
-                  position: 'relative'
+                  position: 'relative',
+                  width: '100%'
                 }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
@@ -505,7 +506,8 @@ export default function LoginPage() {
                     appearance: 'none',
                     WebkitAppearance: 'none',
                     MozAppearance: 'none',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    width: '100%'
                   }}
                 >
                   <option value="" disabled>
