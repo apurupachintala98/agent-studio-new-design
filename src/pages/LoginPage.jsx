@@ -10,7 +10,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [appCodes, setAppCodes] = useState([])
+  const [appCodes, setAppCodes] = useState([])   // array from API
+  const [appCode, setAppCode] = useState("")    // selected value
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -49,7 +50,9 @@ export default function LoginPage() {
         return
       }
 
-      setAppCodes(codes)
+
+      setAppCodes(Array.isArray(codes) ? codes : [])
+      setAppCode("")
 
       // store user
       localStorage.setItem("user_id", userId)
@@ -70,12 +73,12 @@ export default function LoginPage() {
       return
     }
     // store selected application
-   navigate("/dashboard", {
-  state: {
-    appCode: appCode,
-    userId: userId
-  }
-})
+    navigate("/dashboard", {
+      state: {
+        appCode: appCode,
+        userId: userId
+      }
+    })
   }
 
   return (
@@ -488,8 +491,8 @@ export default function LoginPage() {
                 </svg>
 
                 <select
-                  value={appCodes}
-                  onChange={(e) => setAppCodes(e.target.value)}
+                  value={appCode}
+                  onChange={(e) => setAppCode(e.target.value)}
                   style={{
                     flex: 1,
                     height: '100%',           // important
@@ -509,11 +512,12 @@ export default function LoginPage() {
                     Select Application Code
                   </option>
 
-                  {appCodes.map((code) => (
-                    <option key={code} value={code}>
-                      {code}
-                    </option>
-                  ))}
+                  {Array.isArray(appCodes) &&
+                    appCodes.map((code) => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                    ))}
                 </select>
 
                 {/* Custom Arrow */}
