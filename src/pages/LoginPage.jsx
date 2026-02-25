@@ -445,94 +445,86 @@ const handleLogin = (e) => {
             </div>
 
             {/* Application Code */}
-            <div style={{ width: '100%' }}>
-              <label style={{
-                color: '#333',
-                fontFamily: '"Source Sans 3"',
-                fontSize: '14px',
-                fontWeight: '700',
-                lineHeight: '20px',
-                display: 'block',
-                marginBottom: '8px'
-              }}>
-                Application Code
-              </label>
-              <div
-                style={{
-                  borderRadius: '6px',
-                  border: '1px solid #CBD5E1',
-                  background: '#FFF',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '10px 12px',
-                  gap: '8px',
-                  cursor: 'pointer'
-                }}
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8">
-                  <circle cx="5" cy="5" r="1.5" /><circle cx="12" cy="5" r="1.5" /><circle cx="19" cy="5" r="1.5" />
-                  <circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" />
-                  <circle cx="5" cy="19" r="1.5" /><circle cx="12" cy="19" r="1.5" /><circle cx="19" cy="19" r="1.5" />
-                </svg>
-                <span style={{
-                  flex: 1,
-                  fontSize: '16px',
-                  fontFamily: '"Source Sans 3"',
-                  color: appCodes ? '#333' : '#94A3B8'
-                }}>
-                  {appCodes || 'Select Application Code'}
-                </span>
-                <svg
-                  width="16" height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#94A3B8"
-                  strokeWidth="2"
-                  style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
+           {/* Application Code */}
+<div style={{ width: '100%' }}>
+  <label
+    style={{
+      color: '#333',
+      fontFamily: '"Source Sans 3"',
+      fontSize: '14px',
+      fontWeight: '700',
+      lineHeight: '20px',
+      display: 'block',
+      marginBottom: '8px'
+    }}
+  >
+    Application Code
+  </label>
 
-              {/* Dropdown */}
-              {dropdownOpen && (
-                <div style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: '57px',
-                  right: '57px',
-                  marginTop: '4px',
-                  background: '#FFF',
-                  border: '1px solid #CBD5E1',
-                  borderRadius: '6px',
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                  zIndex: 10,
-                  maxWidth: '334px'
-                }}>
-                  {appCodes.map(code => (
-                    <div
-                      key={code}
-                      style={{
-                        padding: '10px 12px',
-                        fontSize: '14px',
-                        fontFamily: '"Source Sans 3"',
-                        cursor: 'pointer',
-                        background: appCodes === code ? '#F0F7FF' : '#FFF',
-                        color: appCodes === code ? '#0079C2' : '#333',
-                        borderBottom: '1px solid #EDF2F7'
-                      }}
-                      onClick={() => {
-                        setAppCodes(code)
-                        setDropdownOpen(false)
-                      }}
-                    >
-                      {code}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+  <div
+    style={{
+      borderRadius: '6px',
+      border: '1px solid #CBD5E1',
+      background: '#FFF',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0 12px',
+      height: '44px'
+    }}
+  >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
+      <circle cx="5" cy="5" r="1.5" />
+      <circle cx="12" cy="5" r="1.5" />
+      <circle cx="19" cy="5" r="1.5" />
+      <circle cx="5" cy="12" r="1.5" />
+      <circle cx="12" cy="12" r="1.5" />
+      <circle cx="19" cy="12" r="1.5" />
+      <circle cx="5" cy="19" r="1.5" />
+      <circle cx="12" cy="19" r="1.5" />
+      <circle cx="19" cy="19" r="1.5" />
+    </svg>
+
+    <select
+      value={appCodes}
+      onChange={(e) => setAppCodes(e.target.value)}
+      style={{
+        flex: 1,
+        border: 'none',
+        outline: 'none',
+        fontSize: '16px',
+        fontFamily: '"Source Sans 3"',
+        background: 'transparent',
+        color: appCodes ? '#333' : '#94A3B8',
+        appearance: 'none',
+        WebkitAppearance: 'none',
+        MozAppearance: 'none',
+        cursor: 'pointer'
+      }}
+    >
+      <option value="" disabled>
+        Select Application Code
+      </option>
+
+      {appCodes.map((code) => (
+        <option key={code} value={code}>
+          {code}
+        </option>
+      ))}
+    </select>
+
+    {/* Custom Arrow */}
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#94A3B8"
+      strokeWidth="2"
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  </div>
+</div>
 
             {/* Remember me + Forgot password */}
             <div style={{
