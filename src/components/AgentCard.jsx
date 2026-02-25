@@ -165,84 +165,43 @@ export default function AgentCard({ agent }) {
           marginTop: 'auto'
         }}
       >
-        {/* <div
-          style={{
-            display: 'flex',
-            padding: '9px 11.383px 10px 12px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: '8px',
-            border: '1px solid rgba(0, 121, 194, 0.20)',
-            background: 'rgba(0, 121, 194, 0.10)'
-          }}
-        >
-          <span
-            style={{
-              color: '#0079C2',
-              fontFamily: 'Open Sans',
-              fontSize: '11px',
-              fontWeight: '600',
-              lineHeight: '16.5px'
-            }}
-          >
-            {agent.models[0]}
-          </span>
-        </div>
 
-        <div
-          style={{
-            display: 'flex',
-            padding: '9px 11.156px 10px 12px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: '8px',
-            border: '1px solid #E2E8F0',
-            background: '#F1F5F9'
-          }}
-        >
-          <span
-            style={{
-              color: '#5B6770',
-              fontFamily: 'Open Sans',
-              fontSize: '11px',
-              fontWeight: '600',
-              lineHeight: '16.5px'
-            }}
-          >
-            {agent.models[1]}
-          </span>
-        </div> */}
+        {agent.models.map((model, index) => {
 
-        {agent.models.map((model, index) => (
-          <div
-            key={index}
-            style={{
-              display: 'flex',
-              padding: '9px 11px 10px 12px',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: '8px',
-              border: model === "Cortex"
-                ? '1px solid rgba(0, 121, 194, 0.20)'
-                : '1px solid #E2E8F0',
-              background: model === "Cortex"
-                ? 'rgba(0, 121, 194, 0.10)'
-                : '#F1F5F9'
-            }}
-          >
-            <span
+          const isAgentType =
+            model === "Cortex" || model === "LangGraph"
+
+          return (
+            <div
+              key={index}
               style={{
-                color: model === "Cortex" ? '#0079C2' : '#5B6770',
-                fontFamily: 'Open Sans',
-                fontSize: '11px',
-                fontWeight: '600',
-                lineHeight: '16.5px'
+                display: 'flex',
+                padding: '9px 11px 10px 12px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: '8px',
+                border: isAgentType
+                  ? '1px solid rgba(0, 121, 194, 0.20)'
+                  : '1px solid #E2E8F0',
+                background: isAgentType
+                  ? 'rgba(0, 121, 194, 0.10)'
+                  : '#F1F5F9'
               }}
             >
-              {model}
-            </span>
-          </div>
-        ))}
+              <span
+                style={{
+                  color: isAgentType ? '#0079C2' : '#5B6770',
+                  fontFamily: 'Open Sans',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  lineHeight: '16.5px'
+                }}
+              >
+                {model}
+              </span>
+            </div>
+          )
+        })}
         {/* Edit Icon Container */}
         <div
           style={{
