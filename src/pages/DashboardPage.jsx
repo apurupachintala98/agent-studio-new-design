@@ -2,81 +2,83 @@ import React, { useState } from 'react'
 import { Search, ChevronDown, ExternalLink } from 'lucide-react'
 import Header from '../components/Header'
 import AgentCard from '../components/AgentCard'
+import { fetchAgentsByAppCode } from "../services/agents"
+import { agentApi } from "../services/api"
 
-const agents = [
-  {
-    id: 1,
-    name: 'HR - Assistance',
-    status: 'Active',
-    icon: '👤',
-    description: 'Handles internal policy queries and employee onboarding workflows for...',
-    models: ['LangGraph', 'GPT-4 Turbo']
-  },
-  {
-    id: 2,
-    name: 'Claims-Validator',
-    status: 'Active',
-    icon: '📋',
-    description: 'Automated checking of claim submissions against standard medic...',
-    models: ['Cortex', 'Llama 3 70B']
-  },
-  {
-    id: 3,
-    name: 'Member-Support',
-    status: 'Draft',
-    icon: '💬',
-    description: 'First-line member support for plan coverage and provider search...',
-    models: ['LangGraph', 'GPT-4 Turbo']
-  },
-  {
-    id: 4,
-    name: 'HR - Assistance',
-    status: 'Draft',
-    icon: '👤',
-    description: 'Handles internal policy queries and employee onboarding workflows for...',
-    models: ['LangGraph', 'GPT-4 Turbo']
-  },
-  {
-    id: 5,
-    name: 'Claims-Validator',
-    status: 'Active',
-    icon: '📋',
-    description: 'Automated checking of claim submissions against standard medic...',
-    models: ['Cortex', 'Llama 3 70B']
-  },
-  {
-    id: 6,
-    name: 'Member-Support',
-    status: 'Draft',
-    icon: '💬',
-    description: 'First-line member support for plan coverage and provider search...',
-    models: ['LangGraph', 'GPT-4 Turbo']
-  },
-  {
-    id: 7,
-    name: 'HR - Assistance',
-    status: 'Draft',
-    icon: '👤',
-    description: 'Handles internal policy queries and employee onboarding workflows for...',
-    models: ['LangGraph', 'GPT-4 Turbo']
-  },
-  {
-    id: 8,
-    name: 'Claims-Validator',
-    status: 'Active',
-    icon: '📋',
-    description: 'Automated checking of claim submissions against standard medic...',
-    models: ['Cortex', 'Llama 3 70B']
-  },
-  {
-    id: 9,
-    name: 'Member-Support',
-    status: 'Draft',
-    icon: '💬',
-    description: 'First-line member support for plan coverage and provider search...',
-    models: ['LangGraph', 'GPT-4 Turbo']
-  }
-]
+// const agents = [
+//   {
+//     id: 1,
+//     name: 'HR - Assistance',
+//     status: 'Active',
+//     icon: '👤',
+//     description: 'Handles internal policy queries and employee onboarding workflows for...',
+//     models: ['LangGraph', 'GPT-4 Turbo']
+//   },
+//   {
+//     id: 2,
+//     name: 'Claims-Validator',
+//     status: 'Active',
+//     icon: '📋',
+//     description: 'Automated checking of claim submissions against standard medic...',
+//     models: ['Cortex', 'Llama 3 70B']
+//   },
+//   {
+//     id: 3,
+//     name: 'Member-Support',
+//     status: 'Draft',
+//     icon: '💬',
+//     description: 'First-line member support for plan coverage and provider search...',
+//     models: ['LangGraph', 'GPT-4 Turbo']
+//   },
+//   {
+//     id: 4,
+//     name: 'HR - Assistance',
+//     status: 'Draft',
+//     icon: '👤',
+//     description: 'Handles internal policy queries and employee onboarding workflows for...',
+//     models: ['LangGraph', 'GPT-4 Turbo']
+//   },
+//   {
+//     id: 5,
+//     name: 'Claims-Validator',
+//     status: 'Active',
+//     icon: '📋',
+//     description: 'Automated checking of claim submissions against standard medic...',
+//     models: ['Cortex', 'Llama 3 70B']
+//   },
+//   {
+//     id: 6,
+//     name: 'Member-Support',
+//     status: 'Draft',
+//     icon: '💬',
+//     description: 'First-line member support for plan coverage and provider search...',
+//     models: ['LangGraph', 'GPT-4 Turbo']
+//   },
+//   {
+//     id: 7,
+//     name: 'HR - Assistance',
+//     status: 'Draft',
+//     icon: '👤',
+//     description: 'Handles internal policy queries and employee onboarding workflows for...',
+//     models: ['LangGraph', 'GPT-4 Turbo']
+//   },
+//   {
+//     id: 8,
+//     name: 'Claims-Validator',
+//     status: 'Active',
+//     icon: '📋',
+//     description: 'Automated checking of claim submissions against standard medic...',
+//     models: ['Cortex', 'Llama 3 70B']
+//   },
+//   {
+//     id: 9,
+//     name: 'Member-Support',
+//     status: 'Draft',
+//     icon: '💬',
+//     description: 'First-line member support for plan coverage and provider search...',
+//     models: ['LangGraph', 'GPT-4 Turbo']
+//   }
+// ]
 
 const getStatusColor = (status) => {
   return status === 'Active' ? 'text-badge-active' : 'text-badge-draft'
@@ -89,6 +91,34 @@ const getStatusBgColor = (status) => {
 export default function DashboardPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 9
+const [agents, setAgents] = useState([])
+const [agentCount, setAgentCount] = useState(null)
+const [loading, setLoading] = useState(true)
+
+useEffect(() => {
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true)
+
+      const appCode = localStorage.getItem("app_code")
+
+      if (!appCode) return
+
+      const countResponse = await agentApi.fetchAgentCount(appCode)
+      setAgentCount(countResponse)
+
+      const agentList = await fetchAgentsByAppCode(appCode)
+      setAgents(agentList)
+
+    } catch (error) {
+      console.error("Dashboard API Error:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  loadDashboardData()
+}, [])
 
   return (
     <div className="min-h-screen bg-gray-50 font-open-sans">
@@ -380,7 +410,7 @@ export default function DashboardPage() {
 
 
            {/* Agent Cards Grid */}
-          <div style={{
+          {/* <div style={{
             display: 'inline-grid',
             rowGap: '24px',
             columnGap: '24px',
@@ -391,7 +421,7 @@ export default function DashboardPage() {
             {agents.map((agent) => (
               <AgentCard key={agent.id} agent={agent} />
             ))}
-          </div>
+          </div> */}
 
 
           {/* Pagination */}

@@ -1,4 +1,4 @@
-import { API_CONFIG } from "@/config/api-config"
+import { API_CONFIG } from "../config/api-config"
  
 export interface CreateAgentResponse {
     agent_uuid: string
@@ -102,6 +102,19 @@ export interface RuntimeConfigPayload {
  
 export interface GenerateAgentResponse {
   agent_url: string
+}
+
+export interface AgentCountResponse {
+  active_agents: {
+    total_count: number
+    cortex_count: number
+    langgraph_count: number
+  }
+  total_agents: {
+    total_count: number
+    cortex_count: number
+    langgraph_count: number
+  }
 }
  
 export const agentApi = {
@@ -229,5 +242,23 @@ export const agentApi = {
  
     return data
   },
+
+  async fetchAgentCount(appCode: string): Promise<AgentCountResponse> {
+  const response = await fetch(
+    `${API_CONFIG.BASE_URL}/api/common/agents/count?aplctn_cd=${appCode}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch agent count")
+  }
+
+  return response.json()
+},
  
 }

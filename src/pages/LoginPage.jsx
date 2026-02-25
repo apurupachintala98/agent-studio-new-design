@@ -14,59 +14,67 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    setError("")
+  const validateLDAP = async () => {
+  try {
+    if (!userId || !password) return
+
     setIsLoading(true)
+    setError("")
 
-    try {
-      if (!userId || !password) {
-        setError("Please enter User ID and Password")
-        setIsLoading(false)
-        return
+    const response = await fetch(
+      "https://pbee9gz5pe-vpce-0bd9a454888e84407.execute-api.us-east-1.amazonaws.com/prod/validateldapcredentials",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          password: password,
+          env: "dev",
+        }),
       }
+    )
 
-      const response = await fetch(
-        "https://pbee9gz5pe-vpce-0bd9a454888e84407.execute-api.us-east-1.amazonaws.com/prod/validateldapcredentials",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: userId,
-            password: password,
-            env: "dev",
-          }),
-        }
-      )
+    const data = await response.json()
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed")
-      }
-
-      const codes = data.app_cd || []
-
-      if (codes.length === 0) {
-        setError("No application codes found for this user")
-        setIsLoading(false)
-        return
-      }
-
-      setAppCodes(codes)
-      setAppCodes(codes[0])
-      localStorage.setItem("user_id", userId)
-      navigate('/dashboard')
-
-    } catch (err) {
-      console.error("Login Error:", err)
-      setError(err.message || "Login failed")
-    } finally {
-      setIsLoading(false)
+    if (!response.ok) {
+      throw new Error(data.message || "Invalid credentials")
     }
+
+    const codes = data.app_cd || []
+
+    if (codes.length === 0) {
+      setError("No application codes found")
+      return
+    }
+
+    setAppCodes(codes)
+
+    // store user
+    localStorage.setItem("user_id", userId)
+
+  } catch (err) {
+    console.error(err)
+    setError(err.message || "Login failed")
+  } finally {
+    setIsLoading(false)
   }
+}
+
+const handleLogin = (e) => {
+  e.preventDefault()
+
+  if (!appCode) {
+    setError("Please select Application Code")
+    return
+  }
+
+  // store selected application
+  localStorage.setItem("app_code", appCode)
+
+  navigate("/dashboard")
+}
 
   return (
     <div style={{
@@ -392,7 +400,12 @@ export default function LoginPage() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                   onChange={(e) => setPassword(e.target.value)}
+  onBlur={() => {
+    if (userId && password) {
+      validateLDAP()
+    }
+  }}
                   placeholder="••••••••"
                   style={{
                     flex: 1,
