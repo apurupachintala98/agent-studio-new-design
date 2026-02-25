@@ -26,8 +26,6 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedType, setSelectedType] = useState("")
   const [selectedAgentName, setSelectedAgentName] = useState("")
-  const totalItems = filteredAgents.length
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
 
 
   useEffect(() => {
@@ -76,6 +74,9 @@ export default function DashboardPage() {
 
     return matchesSearch && matchesType && matchesName
   })
+
+  const totalItems = filteredAgents.length
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
 
   const paginatedAgents = filteredAgents.slice(
     (currentPage - 1) * itemsPerPage,
