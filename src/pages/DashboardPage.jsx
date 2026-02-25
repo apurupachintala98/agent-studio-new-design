@@ -6,81 +6,6 @@ import { fetchAgentsByAppCode } from "../services/agents"
 import { agentApi } from "../services/api"
 import { useLocation } from "react-router-dom"
 
-// const agents = [
-//   {
-//     id: 1,
-//     name: 'HR - Assistance',
-//     status: 'Active',
-//     icon: '👤',
-//     description: 'Handles internal policy queries and employee onboarding workflows for...',
-//     models: ['LangGraph', 'GPT-4 Turbo']
-//   },
-//   {
-//     id: 2,
-//     name: 'Claims-Validator',
-//     status: 'Active',
-//     icon: '📋',
-//     description: 'Automated checking of claim submissions against standard medic...',
-//     models: ['Cortex', 'Llama 3 70B']
-//   },
-//   {
-//     id: 3,
-//     name: 'Member-Support',
-//     status: 'Draft',
-//     icon: '💬',
-//     description: 'First-line member support for plan coverage and provider search...',
-//     models: ['LangGraph', 'GPT-4 Turbo']
-//   },
-//   {
-//     id: 4,
-//     name: 'HR - Assistance',
-//     status: 'Draft',
-//     icon: '👤',
-//     description: 'Handles internal policy queries and employee onboarding workflows for...',
-//     models: ['LangGraph', 'GPT-4 Turbo']
-//   },
-//   {
-//     id: 5,
-//     name: 'Claims-Validator',
-//     status: 'Active',
-//     icon: '📋',
-//     description: 'Automated checking of claim submissions against standard medic...',
-//     models: ['Cortex', 'Llama 3 70B']
-//   },
-//   {
-//     id: 6,
-//     name: 'Member-Support',
-//     status: 'Draft',
-//     icon: '💬',
-//     description: 'First-line member support for plan coverage and provider search...',
-//     models: ['LangGraph', 'GPT-4 Turbo']
-//   },
-//   {
-//     id: 7,
-//     name: 'HR - Assistance',
-//     status: 'Draft',
-//     icon: '👤',
-//     description: 'Handles internal policy queries and employee onboarding workflows for...',
-//     models: ['LangGraph', 'GPT-4 Turbo']
-//   },
-//   {
-//     id: 8,
-//     name: 'Claims-Validator',
-//     status: 'Active',
-//     icon: '📋',
-//     description: 'Automated checking of claim submissions against standard medic...',
-//     models: ['Cortex', 'Llama 3 70B']
-//   },
-//   {
-//     id: 9,
-//     name: 'Member-Support',
-//     status: 'Draft',
-//     icon: '💬',
-//     description: 'First-line member support for plan coverage and provider search...',
-//     models: ['LangGraph', 'GPT-4 Turbo']
-//   }
-// ]
-
 const getStatusColor = (status) => {
   return status === 'Active' ? 'text-badge-active' : 'text-badge-draft'
 }
@@ -91,13 +16,18 @@ const getStatusBgColor = (status) => {
 
 export default function DashboardPage() {
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 9
+  const itemsPerPage = 10
   const [agents, setAgents] = useState([])
   const [agentCount, setAgentCount] = useState(null)
   const [loading, setLoading] = useState(true)
   const location = useLocation()
   const { appCode, userId } = location.state || {}
   const hasFetched = useRef(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedType, setSelectedType] = useState("")
+  const [selectedAgentName, setSelectedAgentName] = useState("")
+  const totalItems = filteredAgents.length
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
 
 
   useEffect(() => {
@@ -116,12 +46,12 @@ export default function DashboardPage() {
 
         setAgentCount(countResponse)
         const formattedAgents = agentList.map((agent) => ({
-  id: agent.agnt_id,
-  name: agent.agnt_nm,
-  status: "Active", // since API doesn't return status
-  description: `${agent.agnt_nm} agent built using ${agent.agnt_type}`,
-  models: [agent.agnt_type, 'Llama 3 70B'] // Cortex or LangGraph
-}))
+          id: agent.agnt_id,
+          name: agent.agnt_nm,
+          status: "Active", // since API doesn't return status
+          description: `${agent.agnt_nm} agent built using ${agent.agnt_type}`,
+          models: [agent.agnt_type, 'Llama 3 70B'] // Cortex or LangGraph
+        }))
         setAgents(formattedAgents)
 
       } catch (error) {
@@ -133,6 +63,24 @@ export default function DashboardPage() {
 
     loadDashboardData()
   }, [appCode])
+
+  const filteredAgents = agents.filter(agent => {
+    const matchesSearch =
+      agent.name.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesType =
+      selectedType === "" || agent.models[0] === selectedType
+
+    const matchesName =
+      selectedAgentName === "" || agent.name === selectedAgentName
+
+    return matchesSearch && matchesType && matchesName
+  })
+
+  const paginatedAgents = filteredAgents.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   return (
     <div className="min-h-screen bg-gray-50 font-open-sans">
@@ -222,7 +170,7 @@ export default function DashboardPage() {
             fontStyle: "normal",
             fontWeight: 600,
             lineHeight: "24px",
-          }}>(App Name) Agents</h2>
+          }}>({appCode}) Agents</h2>
 
 
           {/* Search and Filters - Main Container */}
@@ -276,6 +224,8 @@ export default function DashboardPage() {
               >
                 <input
                   type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
                     border: "none",
                     outline: "none",
@@ -332,6 +282,8 @@ export default function DashboardPage() {
                 }}
               >
                 <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
                   style={{
                     width: "284px",
                     height: "100%",
@@ -348,8 +300,11 @@ export default function DashboardPage() {
                   }}
                 >
                   <option value="">Select</option>
-                  <option value="cortex">Cortex</option>
-                  <option value="langgraph">LangGraph</option>
+                  {[...new Set(agents.map(a => a.models[0]))].map(type => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
                 </select>
 
                 <svg
@@ -417,6 +372,8 @@ export default function DashboardPage() {
                 }}
               >
                 <select
+                  value={selectedAgentName}
+                  onChange={(e) => setSelectedAgentName(e.target.value)}
                   style={{
                     width: "284px",
                     height: "100%",
@@ -433,9 +390,11 @@ export default function DashboardPage() {
                   }}
                 >
                   <option value="">Select</option>
-                  <option value="hr">HR - Assistance</option>
-                  <option value="claims">Claims-Validator</option>
-                  <option value="member">Member-Support</option>
+                  {agents.map(agent => (
+                    <option key={agent.id} value={agent.name}>
+                      {agent.name}
+                    </option>
+                  ))}
                 </select>
 
                 <svg
@@ -473,7 +432,7 @@ export default function DashboardPage() {
             gridTemplateColumns: 'repeat(3, fit-content(100%))',
             padding: '30px 88px 0 60px',
           }}>
-            {agents.map((agent) => (
+            {paginatedAgents.map((agent) => (
               <AgentCard key={agent.id} agent={agent} />
             ))}
           </div>
@@ -530,11 +489,17 @@ export default function DashboardPage() {
                   lineHeight: "16px",
                 }}
               >
-                <span style={{ fontWeight: 600 }}>1</span>
+                <span style={{ fontWeight: 600 }}>
+                  {(currentPage - 1) * itemsPerPage + 1}
+                </span>
                 <span style={{ fontWeight: 400 }}> of </span>
-                <span style={{ fontWeight: 600 }}>100</span>
+                <span style={{ fontWeight: 600 }}>
+                  {Math.min(currentPage * itemsPerPage, totalItems)}
+                </span>
                 <span style={{ fontWeight: 400 }}> of </span>
-                <span style={{ fontWeight: 600 }}>8,618</span>
+                <span style={{ fontWeight: 600 }}>
+                  {totalItems}
+                </span>
               </div>
 
               {/* Right Side Controls */}
@@ -547,7 +512,17 @@ export default function DashboardPage() {
                 }}
               >
                 {/* First Page Arrow */}
-                <button style={{ background: "none", border: "none", padding: 0 }}>
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(1)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    opacity: currentPage === 1 ? 0.4 : 1,
+                    cursor: currentPage === 1 ? "not-allowed" : "pointer"
+                  }}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="7"
@@ -564,7 +539,15 @@ export default function DashboardPage() {
                 </button>
 
                 {/* Previous Arrow */}
-                <button style={{ background: "none", border: "none", padding: 0 }}>
+                <button disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    opacity: currentPage === 1 ? 0.4 : 1,
+                    cursor: currentPage === 1 ? "not-allowed" : "pointer"
+                  }}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="6"
@@ -597,13 +580,21 @@ export default function DashboardPage() {
                   }}
                 >
                   <span style={{ fontWeight: 400 }}>Page </span>
-                  <span style={{ fontWeight: 600 }}>1</span>
+                  <span style={{ fontWeight: 600 }}>{currentPage}</span>
                   <span style={{ fontWeight: 400 }}> of </span>
-                  <span style={{ fontWeight: 600 }}>87</span>
+                  <span style={{ fontWeight: 600 }}>{totalPages}</span>
                 </div>
 
                 {/* Next Arrow */}
-                <button style={{ background: "none", border: "none", padding: 0 }}>
+                <button disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    opacity: currentPage === totalPages ? 0.4 : 1,
+                    cursor: currentPage === totalPages ? "not-allowed" : "pointer"
+                  }}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="6"
@@ -620,7 +611,15 @@ export default function DashboardPage() {
                 </button>
 
                 {/* Last Page Arrow */}
-                <button style={{ background: "none", border: "none", padding: 0 }}>
+                <button disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(totalPages)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    opacity: currentPage === totalPages ? 0.4 : 1,
+                    cursor: currentPage === totalPages ? "not-allowed" : "pointer"
+                  }}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="7"
