@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Search, ChevronDown, ExternalLink } from 'lucide-react'
 import Header from '../components/Header'
 import AgentCard from '../components/AgentCard'
