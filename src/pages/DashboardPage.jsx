@@ -120,7 +120,7 @@ export default function DashboardPage() {
   name: agent.agnt_nm,
   status: "Active", // since API doesn't return status
   description: `${agent.agnt_nm} agent built using ${agent.agnt_type}`,
-  models: [agent.agnt_type] // Cortex or LangGraph
+  models: [agent.agnt_type, 'Llama 3 70B'] // Cortex or LangGraph
 }))
         setAgents(formattedAgents)
 
