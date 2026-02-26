@@ -216,7 +216,9 @@ export default function Tools({ onSaveAndContinue }) {
 
 
   useEffect(() => {
-    if (!agentDetails?.agnt_access_scope) return
+    if (!agentDetails?.agnt_access_scope) {
+    return;
+  }
 
     try {
       const parsed = JSON.parse(agentDetails.agnt_access_scope)
