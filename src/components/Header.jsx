@@ -81,8 +81,9 @@ export default function Header() {
           }}
         >
           {/* My Agents */}
-          <a
-            href="/dashboard"
+         <Link
+  to="/dashboard"
+  state={location.state}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -110,7 +111,7 @@ export default function Header() {
                 }}
               />
             )}
-          </a>
+          </Link>
 
           {/* Reference */}
           <a
