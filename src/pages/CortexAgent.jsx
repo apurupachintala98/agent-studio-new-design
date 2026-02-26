@@ -105,7 +105,7 @@ export default function AgentStudio() {
     <PageLayout>
       {loading && <div>Loading agent information...</div>}
       {error && <div style={{ color: 'red' }}>{error}</div>}
-      {agentInfo && (
+      {/* {agentInfo && (
         <pre style={{ background: '#f5f5f5', padding: '1em', borderRadius: '4px' }}>
           {JSON.stringify(agentInfo, null, 2)}
         </pre>
@@ -117,7 +117,7 @@ export default function AgentStudio() {
         <pre style={{ background: '#eef', padding: '1em', borderRadius: '4px' }}>
           {JSON.stringify(pipelineLogs, null, 2)}
         </pre>
-      )}
+      )} */}
       <BackToDashboard />
       <Stepper activeStep={activeStep} />
 
