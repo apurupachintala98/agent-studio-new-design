@@ -118,7 +118,6 @@ function DeploymentLogs() {
     "[14:36:55] INFO UPLOADING BUILD OUTPUTS TO RELEASE CHANNEL ...",
     "[14:37:04] INFO BUILD SEQUENCE COMPLETED SUCCESSFULLY.",
   ];
-//   const [pipelineLogs, setPipelineLogs] = useState("Checking pipeline logs...");
 
   return (
     <div
@@ -153,7 +152,7 @@ function DeploymentLogs() {
           fontSize: 12.5, lineHeight: 1.7, color: "#455A64",
           margin: 0, whiteSpace: "pre-wrap",
         }}>
-          {/* {pipelineLogs.join("\n")} */}
+          {logs.join("\n")}
         </pre>
       </div>
     </div>
@@ -177,7 +176,21 @@ function SourceArtifacts() {
         </a>
       </div>
       <div className="flex-1 flex flex-col items-center justify-center px-5 pb-6">
-        <img src="./Container.png" alt="Source Artifacts" style={{ width: 80, height: 80, borderRadius: 12 }} />
+        {/* Folder icon - inline SVG fallback */}
+        <div
+          className="flex items-center justify-center rounded-2xl"
+          style={{
+            width: 80,
+            height: 80,
+            backgroundColor: "#0D1B2A",
+          }}
+        >
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <path d="M6 12C6 10.9 6.9 10 8 10H16L19 13H32C33.1 13 34 13.9 34 15V30C34 31.1 33.1 32 32 32H8C6.9 32 6 31.1 6 30V12Z" fill="#29B6F6" />
+            <rect x="16" y="18" width="3" height="10" rx="1" fill="#0D1B2A" opacity="0.5" />
+            <rect x="21" y="16" width="3" height="12" rx="1" fill="#0D1B2A" opacity="0.4" />
+          </svg>
+        </div>
         <span className="font-semibold mt-3" style={{ fontSize: 15, color: "#1A1A1A" }}>Source Artifacts</span>
         <span className="text-sm mt-1" style={{ color: "#78909C" }}>agent_cortex_v1.zip</span>
         <span className="text-xs mt-0.5" style={{ color: "#90A4AE" }}>(24MB)</span>
@@ -187,9 +200,8 @@ function SourceArtifacts() {
 }
 
 // --- Main Deployment Page ---
-export default function Deployment({ onFinish, logs, startedTime }) {
+export default function Deployment({ onFinish }) {
   const [isFinishing, setIsFinishing] = useState(false);
-  
 
   const handleDiscard = () => {
     console.log("Discard clicked");
