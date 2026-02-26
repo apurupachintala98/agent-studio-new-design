@@ -118,7 +118,7 @@ function DeploymentLogs() {
     "[14:36:55] INFO UPLOADING BUILD OUTPUTS TO RELEASE CHANNEL ...",
     "[14:37:04] INFO BUILD SEQUENCE COMPLETED SUCCESSFULLY.",
   ];
-  const [pipelineLogs, setPipelineLogs] = useState("Checking pipeline logs...");
+//   const [pipelineLogs, setPipelineLogs] = useState("Checking pipeline logs...");
 
   return (
     <div
@@ -153,7 +153,7 @@ function DeploymentLogs() {
           fontSize: 12.5, lineHeight: 1.7, color: "#455A64",
           margin: 0, whiteSpace: "pre-wrap",
         }}>
-          {pipelineLogs.join("\n")}
+          {/* {pipelineLogs.join("\n")} */}
         </pre>
       </div>
     </div>
