@@ -226,9 +226,6 @@
 
 import { useState } from "react";
 import {
-  PageLayout,
-  BackToDashboard,
-  Stepper,
   SectionHeader,
   FooterButtons,
 } from "./SharedComponents";
@@ -415,7 +412,7 @@ function SourceArtifacts() {
 }
 
 // --- Main Deployment Page ---
-export default function Deployment() {
+export default function Deployment({ onFinish }) {
   const [isFinishing, setIsFinishing] = useState(false);
 
   const handleDiscard = () => {
@@ -425,10 +422,8 @@ export default function Deployment() {
   const handleFinishDeployment = async () => {
     setIsFinishing(true);
     try {
-      // Finalize deployment
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      // navigate("/dashboard");
-      window.location.href = "/dashboard";
+      if (onFinish) onFinish();
     } catch (error) {
       console.error("Finish failed:", error);
     } finally {
@@ -437,10 +432,7 @@ export default function Deployment() {
   };
 
   return (
-    <PageLayout>
-      <BackToDashboard />
-      <Stepper activeStep={3} />
-
+    <>
       <div className="mt-6">
         <SectionHeader>Deployment Progress</SectionHeader>
         <DeploymentStepper />
@@ -463,6 +455,6 @@ export default function Deployment() {
           { label: "Finish Deployment", variant: "primary", onClick: handleFinishDeployment },
         ]}
       />
-    </PageLayout>
+    </>
   );
 }

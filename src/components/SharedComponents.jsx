@@ -165,6 +165,7 @@
 
 // --- Shared Icon Components ---
 import { Link, useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 export const ArrowLeft = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}>
@@ -182,93 +183,7 @@ const CheckCircleStep = () => (
 // --- Navbar ---
 export function Navbar() {
   return (
-    <header
-      className="relative flex items-center justify-between px-6 bg-white"
-      style={{
-        height: 56,
-        borderBottom: "1px solid #E0E0E0",
-        overflow: "hidden",
-      }}
-    >
-      {/* Decorative lines top-right */}
-      <svg
-        className="absolute top-0 right-0"
-        width="320"
-        height="56"
-        viewBox="0 0 320 56"
-        fill="none"
-        style={{ pointerEvents: "none" }}
-      >
-        <line x1="160" y1="-20" x2="320" y2="56" stroke="#D6E4ED" strokeWidth="1" />
-        <line x1="180" y1="-20" x2="340" y2="56" stroke="#D6E4ED" strokeWidth="1" />
-        <line x1="200" y1="-20" x2="360" y2="56" stroke="#D6E4ED" strokeWidth="1" />
-        <line x1="220" y1="-20" x2="380" y2="56" stroke="#D6E4ED" strokeWidth="1" />
-        <line x1="140" y1="56" x2="280" y2="-10" stroke="#D6E4ED" strokeWidth="1" />
-        <line x1="160" y1="56" x2="300" y2="-10" stroke="#D6E4ED" strokeWidth="1" />
-      </svg>
-
-      <div className="flex items-center gap-3 z-10">
-        <div className="flex flex-col leading-none" style={{ fontFamily: "'Segoe UI', sans-serif" }}>
-          <span
-            style={{
-              fontSize: 22,
-              fontWeight: 300,
-              color: "#003366",
-              letterSpacing: "-0.5px",
-              lineHeight: 1,
-            }}
-          >
-            <span style={{ fontStyle: "italic", fontWeight: 400 }}>E</span>levance
-          </span>
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              color: "#003366",
-              letterSpacing: "1.5px",
-              marginTop: 1,
-              paddingLeft: 2,
-            }}
-          >
-            Health
-          </span>
-        </div>
-        <span
-          style={{
-            fontSize: 16,
-            fontWeight: 300,
-            color: "#263238",
-            letterSpacing: "3px",
-            marginLeft: 12,
-            textTransform: "uppercase",
-          }}
-        >
-          AGENT STUDIO
-        </span>
-      </div>
-
-      <nav className="flex items-center gap-8 z-10">
-        <a
-          href="#"
-          className="text-sm"
-          style={{
-            color: "#263238",
-            fontWeight: 600,
-            textDecoration: "none",
-            borderBottom: "2px solid #263238",
-            paddingBottom: 2,
-          }}
-        >
-          My Agents
-        </a>
-        <a href="#" className="text-sm" style={{ color: "#546E7A", textDecoration: "none" }}>
-          Reference
-        </a>
-        <a href="#" className="text-sm" style={{ color: "#546E7A", textDecoration: "none" }}>
-          Contact Us
-        </a>
-      </nav>
-    </header>
+   <Header/>
   );
 }
 

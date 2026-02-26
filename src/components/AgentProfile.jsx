@@ -305,9 +305,6 @@
 
 import { useState } from "react";
 import {
-  PageLayout,
-  BackToDashboard,
-  Stepper,
   SectionHeader,
   FooterButtons,
 } from "./SharedComponents";
@@ -568,9 +565,8 @@ function ResourcesCard() {
 }
 
 // --- Main Page ---
-export default function AgentProfile() {
+export default function AgentProfile({ onSaveAndContinue }) {
   const [isSaving, setIsSaving] = useState(false);
-  // const navigate = useNavigate(); // uncomment when using react-router
 
   const handleDiscard = () => {
     console.log("Discard clicked");
@@ -585,8 +581,7 @@ export default function AgentProfile() {
     try {
       // Save form data here
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      // navigate("/tools-and-orchestration");
-      window.location.href = "/tools-and-orchestration";
+      onSaveAndContinue();
     } catch (error) {
       console.error("Save failed:", error);
     } finally {
@@ -595,10 +590,7 @@ export default function AgentProfile() {
   };
 
   return (
-    <PageLayout>
-      <BackToDashboard />
-      <Stepper activeStep={1} />
-
+    <>
       <div className="mt-5">
         <SectionHeader>Agent Profile</SectionHeader>
         <AgentProfileCard />
@@ -622,6 +614,6 @@ export default function AgentProfile() {
           { label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue },
         ]}
       />
-    </PageLayout>
+    </>
   );
 }

@@ -1,27 +1,42 @@
 import { useState } from "react";
+import {
+  PageLayout,
+  BackToDashboard,
+  Stepper,
+} from "./SharedComponents";
 import AgentProfile from "../components/AgentProfile";
 import Tools from "../components/Tools";
 import Deployment from "../components/Deployment";
-import { useLocation } from "react-router-dom"
 
-export default function CortexAgent() {
-    const location = useLocation()
-  const [step, setStep] = useState(1);
-  const { agentDetails } = location.state || {}
+export default function AgentStudio() {
+  const [activeStep, setActiveStep] = useState(1);
 
-  const handleNext = () => {
-    setStep((prev) => prev + 1);
+  const goToNextStep = () => {
+    setActiveStep((prev) => Math.min(prev + 1, 3));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleBack = () => {
-    setStep((prev) => prev - 1);
+  const goToPrevStep = () => {
+    setActiveStep((prev) => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <>
-      {step === 1 && <AgentProfile onNext={handleNext} />}
-      {step === 2 && <Tools onNext={handleNext} onBack={handleBack} />}
-      {step === 3 && <Deployment onBack={handleBack} />}
-    </>
+    <PageLayout>
+      <BackToDashboard />
+      <Stepper activeStep={activeStep} />
+
+      {activeStep === 1 && (
+        <AgentProfile onSaveAndContinue={goToNextStep} />
+      )}
+
+      {activeStep === 2 && (
+        <Tools onSaveAndContinue={goToNextStep} />
+      )}
+
+      {activeStep === 3 && (
+        <Deployment onFinish={() => console.log("Deployment finished")} />
+      )}
+    </PageLayout>
   );
 }
