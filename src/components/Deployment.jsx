@@ -228,7 +228,7 @@ import { useState } from "react";
 import {
   SectionHeader,
   FooterButtons,
-} from "./SharedComponents";
+} from "../components/SharedComponents";
 
 // --- Deployment-specific Icons ---
 const CheckCircleGreen = () => (

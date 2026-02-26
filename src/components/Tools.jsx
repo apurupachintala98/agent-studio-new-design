@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   SectionHeader,
   FooterButtons,
-} from "./SharedComponents";
+} from "../components/SharedComponents";
 
 // --- Tool Card Icons ---
 const MonitorIcon = ({ selected }) => (
