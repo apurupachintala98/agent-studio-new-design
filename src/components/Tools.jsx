@@ -3,6 +3,7 @@ import {
   SectionHeader,
   FooterButtons,
 } from "../components/SharedComponents";
+import { fetchToolsByScopes } from "../services/agents"
 
 // --- Tool Card Icons ---
 const MonitorIcon = ({ selected }) => (
@@ -208,9 +209,43 @@ function OrchestrationSection({ value, onChange }) {
 
 // --- Main Page ---
 export default function Tools({ onSaveAndContinue }) {
-  const [tools, setTools] = useState(initialTools);
-  const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
+   const [tools, setTools] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+    const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+
+  useEffect(() => {
+    if (!agentDetails?.agnt_access_scope) return
+
+    try {
+      const parsed = JSON.parse(agentDetails.agnt_access_scope)
+
+      const scopesArray = parsed?.scopes ?? []
+
+      if (scopesArray.length === 0) return
+
+      loadTools(scopesArray)
+
+    } catch (error) {
+      console.error("Invalid agnt_access_scope format", error)
+    }
+  }, [agentDetails])
+
+  const loadTools = async (scopesArray: string[]) => {
+    try {
+      setLoading(true)
+
+      const toolsData = await fetchToolsByScopes(scopesArray)
+
+      setTools(toolsData)
+
+    } catch (error) {
+      console.error("Failed to fetch tools:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const toggleTool = (id) => {
     setTools((prev) =>
