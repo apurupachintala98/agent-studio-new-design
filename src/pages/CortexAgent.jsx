@@ -35,7 +35,7 @@ export default function AgentStudio() {
       )}
 
       {activeStep === 3 && (
-        <Deployment onFinish={() => console.log("Deployment finished")} />
+        <Deployment />
       )}
     </PageLayout>
   );
