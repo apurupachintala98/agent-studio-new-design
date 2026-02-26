@@ -214,23 +214,37 @@ export default function Tools({ agentDetails, onSaveAndContinue }) {
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!agentDetails?.agnt_access_scope) {
-    return;
+useEffect(() => {
+  if (!agentDetails) {
+    console.log("AgentDetails not available yet")
+    return
   }
-    try {
-      const parsed = JSON.parse(agentDetails.agnt_access_scope)
 
-      const scopesArray = parsed?.scopes ?? []
+  if (!agentDetails.agnt_access_scope) {
+    console.log("No access scope found")
+    return
+  }
 
-      if (scopesArray.length === 0) return
+  try {
+    const parsedScope = JSON.parse(agentDetails.agnt_access_scope)
 
-      loadTools(scopesArray)
+    const scopesArray = parsedScope?.scopes || []
 
-    } catch (error) {
-      console.error("Invalid agnt_access_scope format", error)
+    console.log("Scopes Array:", scopesArray)
+
+    if (!scopesArray.length) {
+      console.log("Scopes array empty")
+      return
     }
-  }, [agentDetails])
+
+    loadTools(scopesArray)
+
+  } catch (error) {
+    console.error("Error parsing scope:", error)
+  }
+
+}, [agentDetails])
+
 
 const loadTools = async (scopesArray) => {
   try {
@@ -238,28 +252,31 @@ const loadTools = async (scopesArray) => {
 
     const response = await fetchToolsByScopes(scopesArray)
 
-    console.log("TOOLS RESPONSE:", response)
+    console.log("FULL TOOLS API RESPONSE:", response)
 
-    const groupedTools = response?.data?.grouped_tools || []
+    // 🔥 IMPORTANT: correct path
+    const groupedTools = response?.data?.grouped_tools
 
-    if (!groupedTools.length) {
+    if (!groupedTools || groupedTools.length === 0) {
+      console.log("No grouped tools found")
       setTools([])
       return
     }
 
-    const formattedTools = groupedTools.flatMap((group) =>
+    const formatted = groupedTools.flatMap((group) =>
       group.tools.map((tool) => ({
-        id: tool.tool_id,                     
-        name: tool.tool_nm,                   
-        description: tool.tool_desc,          
+        id: tool.tool_id,
+        name: tool.tool_nm,
+        description: tool.tool_desc,
         selected: false,
         type: "monitor",
-
         original: tool,
       }))
     )
 
-    setTools(formattedTools)
+    console.log("Formatted Tools:", formatted)
+
+    setTools(formatted)
 
   } catch (error) {
     console.error("Failed to fetch tools:", error)
