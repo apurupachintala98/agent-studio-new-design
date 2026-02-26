@@ -3,7 +3,7 @@ import {
   SectionHeader,
   FooterButtons,
 } from "../components/SharedComponents";
-import { api } from "../services/api"
+import { agentApi } from "../services/api"
 
 
 // --- Icon Components ---
@@ -41,7 +41,7 @@ function AgentProfileCard() {
   useEffect(() => {
     const fetchLLMs = async () => {
       try {
-        const data = await api.getLLMs();
+        const data = await agentApi.getLLMs();
         setModels(data);
 
         // Set default selection (first model)
