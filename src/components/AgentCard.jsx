@@ -9,8 +9,8 @@ export default function AgentCard({ agent }) {
   const handleEditClick = async () => {
     try {
       const sessionId = uuidv4();
-      const userId = localStorage.getItem("userId");
-      const appCode = localStorage.getItem("appCode");
+      const userId = localStorage.getItem("user_id");
+      const appCode = localStorage.getItem("aplctn_cd");
       const response = await fetchSpecificAgent(agent.id)
 
       const agentDetails = response?.data?.record

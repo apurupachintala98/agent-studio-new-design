@@ -55,10 +55,6 @@ export default function Login() {
       setAppCodes(Array.isArray(codes) ? codes : [])
       setAppCode("")
 
-      // store user
-      localStorage.setItem("user_id", userId)
-      localStorage.setItem("appCode", appCode)
-
     } catch (err) {
       console.error(err)
       setError(err.message || "Login failed")
@@ -74,13 +70,12 @@ export default function Login() {
       setError("Please select Application Code")
       return
     }
+
+    localStorage.setItem("user_id", userId)
+    localStorage.setItem("aplctn_cd", appCode)
+
     // store selected application
-    navigate("/dashboard", {
-      state: {
-        appCode: appCode,
-        userId: userId
-      }
-    })
+    navigate("/dashboard")
   }
 
   return (
