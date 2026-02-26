@@ -15,6 +15,7 @@ export default function AgentStudio() {
   const [agentDetails, setAgentDetails] = useState(null);
   const { agentId } = useParams();
   const [stepOneData, setStepOneData] = useState(null);
+  const [toolData, setToolData] = useState(null)
 
   useEffect(() => {
     const loadAgent = async () => {
@@ -45,7 +46,10 @@ export default function AgentStudio() {
     setActiveStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
+const handleToolsSave = (data) => {
+  setToolData(data)     // now this works
+  goToNextStep()
+}
   return (
     <PageLayout>
       <BackToDashboard />
@@ -58,13 +62,10 @@ export default function AgentStudio() {
         />
       )}
 
-    {activeStep === 2 && (
+   {activeStep === 2 && (
   <Tools
     agentDetails={agentDetails}
-    onSaveAndContinue={(data) => {
-      setToolData(data)
-      goToNextStep()
-    }}
+    onSaveAndContinue={handleToolsSave}
   />
 )}
 

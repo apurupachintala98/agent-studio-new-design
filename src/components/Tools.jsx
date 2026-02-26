@@ -254,7 +254,6 @@ const loadTools = async (scopesArray) => {
 
     console.log("FULL TOOLS API RESPONSE:", response)
 
-    // 🔥 IMPORTANT: correct path
     const groupedTools = response?.data?.grouped_tools
 
     if (!groupedTools || groupedTools.length === 0) {
