@@ -81,9 +81,7 @@ export default function Header() {
           }}
         >
           {/* My Agents */}
-         <Link
-  to="/dashboard"
-  state={location.state}
+         <Link to="/dashboard"
             style={{
               display: 'flex',
               flexDirection: 'column',

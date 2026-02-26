@@ -21,7 +21,7 @@ export default function Dashboard() {
   const [agentCount, setAgentCount] = useState(null)
   const [loading, setLoading] = useState(true)
   const location = useLocation()
-  const { userId } = location.state || {}
+    const { userId } = location.state || {}
   const appCode = location.state?.appCode || localStorage.getItem("appCode")
   const hasFetched = useRef(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -29,42 +29,42 @@ export default function Dashboard() {
   const [selectedAgentName, setSelectedAgentName] = useState("")
 
 
- useEffect(() => {
-  if (!appCode) return
+useEffect(() => {
+  if (!appCode) return;
 
   const loadDashboardData = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
 
-      const [_, agentInfoResponse] = await Promise.all([
-        fetchAgentsByAppCode(appCode),
-        agentApi.fetchAgentInformation(appCode),
-      ])
+      const agentInfoResponse =
+        await agentApi.fetchAgentInformation(appCode);
 
-      setAgentCount(agentInfoResponse)
+      setAgentCount(agentInfoResponse);
 
-      const formattedAgents = agentInfoResponse.agents.map((agent) => ({
-        id: agent.agnt_id,
-        name: agent.agnt_nm,
-        status:
-          agent.status?.toLowerCase() === "active"
-            ? "Active"
-            : "Draft",
-        description: agent.agnt_desc,
-        agentType: agent.agnt_type,
-        modelName: agent.llm_nm || null,
-      }))
+      setAgents(
+        agentInfoResponse.agents.map((agent) => ({
+          id: agent.agnt_id,
+          name: agent.agnt_nm,
+          status:
+            agent.status?.toLowerCase() === "active"
+              ? "Active"
+              : "Draft",
+          description: agent.agnt_desc,
+          agentType: agent.agnt_type,
+          modelName: agent.llm_nm || null,
+        }))
+      );
 
-      setAgents(formattedAgents)
     } catch (error) {
-      console.error("Dashboard API Error:", error)
+      console.error("Dashboard API Error:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  loadDashboardData()
-}, [appCode])
+  loadDashboardData();
+
+}, [appCode]);
   const filteredAgents = agents.filter(agent => {
     const matchesSearch =
       agent.name.toLowerCase().includes(searchTerm.toLowerCase())
