@@ -1,235 +1,261 @@
 import { useState } from "react";
-import Header from "../components/Header";
+import {
+  PageLayout,
+  BackToDashboard,
+  Stepper,
+  SectionHeader,
+} from "./SharedComponents";
 
-const TOOLS = [
-    { id: 1, name: "Claims_analyst_text_to_sql", desc: "Lorem Ipsum is simply dummy text", icon: "tablet", selected: true },
-    { id: 2, name: "Aedl_metadata_analyst_text_to_sql", desc: "Lorem Ipsum is simply dummy text", icon: "tablet", selected: true },
-    { id: 3, name: "Merge_pr", desc: "Lorem Ipsum is simply dummy text", icon: "tablet", selected: true },
-    { id: 4, name: "Aedl_metadata_analyst_text_to_sql", desc: "Lorem Ipsum is simply dummy text", icon: "tablet", selected: true },
-    { id: 5, name: "Promote_tokenization_metadata", desc: "Lorem Ipsum is simply dummy text", icon: "tablet", selected: true },
-    { id: 6, name: "Validate_change_task", desc: "Lorem Ipsum is simply dummy text", icon: "tablet", selected: true },
-    { id: 7, name: "Validate_change_request", desc: "Lorem Ipsum is simply dummy text", icon: "mail", selected: false },
-    { id: 8, name: "Validate_change_task", desc: "Lorem Ipsum is simply dummy text", icon: "mail", selected: false },
-    { id: 9, name: "Check_merge_status", desc: "Lorem Ipsum is simply dummy text", icon: "mail", selected: false },
-    { id: 10, name: "Validate_ritm", desc: "Lorem Ipsum is simply dummy text", icon: "mail", selected: false },
+// --- Tool Card Icons ---
+const MonitorIcon = ({ selected }) => (
+  <div
+    className="flex items-center justify-center rounded-lg"
+    style={{
+      width: 36,
+      height: 36,
+      backgroundColor: selected ? "#EBF5FB" : "#F0F0F0",
+    }}
+  >
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="3" width="16" height="11" rx="1.5" stroke={selected ? "#0072C6" : "#90A4AE"} strokeWidth="1.5" fill="none" />
+      <path d="M7 17H13" stroke={selected ? "#0072C6" : "#90A4AE"} strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M10 14V17" stroke={selected ? "#0072C6" : "#90A4AE"} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  </div>
+);
+
+const EnvelopeIcon = () => (
+  <div
+    className="flex items-center justify-center rounded-lg"
+    style={{
+      width: 36,
+      height: 36,
+      backgroundColor: "#F0F0F0",
+    }}
+  >
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="4" width="16" height="12" rx="1.5" stroke="#90A4AE" strokeWidth="1.5" fill="none" />
+      <path d="M2 6L10 11L18 6" stroke="#90A4AE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  </div>
+);
+
+const CheckFilled = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="11" fill="#0072C6" />
+    <path d="M7 12.5L10 15.5L17 8.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CircleOutline = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="11" stroke="#B0BEC5" strokeWidth="1.5" fill="none" />
+  </svg>
+);
+
+// --- Tool Card ---
+function ToolCard({ name, description, selected, type = "monitor", onToggle }) {
+  return (
+    <div
+      className="rounded-xl p-4 cursor-pointer transition-all"
+      style={{
+        backgroundColor: "#FFFFFF",
+        border: selected ? "2px solid #0072C6" : "1px solid #E0E0E0",
+        boxShadow: selected ? "0 0 0 1px #0072C6" : "0 1px 3px rgba(0,0,0,0.04)",
+        minHeight: 120,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+      onClick={onToggle}
+    >
+      {/* Top row: icon left, check right */}
+      <div className="flex items-start justify-between">
+        {type === "monitor" ? (
+          <MonitorIcon selected={selected} />
+        ) : (
+          <EnvelopeIcon />
+        )}
+        {selected ? <CheckFilled /> : <CircleOutline />}
+      </div>
+
+      {/* Bottom: name + description */}
+      <div className="mt-4">
+        <p
+          className="font-semibold"
+          style={{
+            fontSize: 13,
+            color: selected ? "#1A1A1A" : "#546E7A",
+            lineHeight: 1.3,
+            wordBreak: "break-word",
+          }}
+        >
+          {name}
+        </p>
+        <p
+          className="mt-0.5"
+          style={{
+            fontSize: 12,
+            color: "#90A4AE",
+            lineHeight: 1.3,
+          }}
+        >
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// --- Tools Data ---
+const initialTools = [
+  { id: 1, name: "Claims_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+  { id: 2, name: "Aedl_metadata_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+  { id: 3, name: "Merge_pr", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+  { id: 4, name: "Aedl_metadata_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+  { id: 5, name: "Promote_tokenization_metadata", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+  { id: 6, name: "Validate_change_task", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+  { id: 7, name: "Validate_change_request", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
+  { id: 8, name: "Validate_change_task", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
+  { id: 9, name: "Check_merge_status", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
+  { id: 10, name: "Validate_ritm", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
 ];
 
-const BLUE = "#0079c2";
+// --- Tools Grid Section ---
+function ToolsSection() {
+  const [tools, setTools] = useState(initialTools);
 
-function TabletIcon({ color = "#9db8cc" }) {
-    return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
-            <line x1="12" y1="18" x2="12.01" y2="18" />
-        </svg>
+  const toggleTool = (id) => {
+    setTools((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, selected: !t.selected } : t))
     );
-}
+  };
 
-function MailIcon({ color = "#9db8cc" }) {
-    return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <polyline points="22,6 12,13 2,6" />
-        </svg>
-    );
-}
-
-function CheckCircle() {
-    return (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: BLUE }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-            </svg>
+  return (
+    <div>
+      {/* Header row with Search */}
+      <div className="flex items-center justify-between mb-4">
+        <SectionHeader>Tools</SectionHeader>
+        <div className="flex items-center gap-2">
+          <span className="text-sm" style={{ color: "#78909C" }}>Search</span>
+          <div className="flex items-center">
+            <span
+              className="text-sm"
+              style={{ color: "#546E7A", fontWeight: 500, paddingRight: 4 }}
+            >
+              Default
+            </span>
+            <div
+              style={{
+                width: 160,
+                height: 1,
+                backgroundColor: "#E0E0E0",
+                marginLeft: 4,
+              }}
+            />
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Cards Grid */}
+      <div
+        className="grid gap-4"
+        style={{
+          gridTemplateColumns: "repeat(4, 1fr)",
+        }}
+      >
+        {tools.map((tool) => (
+          <ToolCard
+            key={tool.id}
+            name={tool.name}
+            description={tool.description}
+            selected={tool.selected}
+            type={tool.type}
+            onToggle={() => toggleTool(tool.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
-function EmptyCircle() {
-    return (
-        <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0" />
-    );
-}
-
-function WizardStep({ step, index, total }) {
-    return (
-        <div className="flex items-center">
-            <div className="flex flex-col items-center">
-                <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2"
-                    style={
-                        step.done
-                            ? { backgroundColor: BLUE, borderColor: BLUE, color: "white" }
-                            : step.active
-                                ? { backgroundColor: BLUE, borderColor: BLUE, color: "white" }
-                                : { backgroundColor: "white", borderColor: "#d1d5db", color: "#9ca3af" }
-                    }
-                >
-                    {step.done ? (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                    ) : step.number}
-                </div>
-                <span
-                    className="text-xs font-medium mt-1.5 text-center whitespace-pre-line leading-tight max-w-[90px]"
-                    style={{ color: step.done || step.active ? BLUE : "#9ca3af" }}
-                >
-                    {step.label}
-                </span>
-            </div>
-            {index < total - 1 && (
-                <div
-                    className="h-0.5 w-16 mx-1 mb-5"
-                    style={{ backgroundColor: step.done ? BLUE : "#e5e7eb" }}
-                />
-            )}
-        </div>
-    );
-}
-
-function ToolCard({ tool, onToggle }) {
-    const isSelected = tool.selected;
-    return (
-        <div
-            onClick={() => onToggle(tool.id)}
-            className="relative rounded-xl p-4 cursor-pointer transition-all duration-150 select-none"
+// --- Orchestration Section ---
+function OrchestrationSection() {
+  return (
+    <div
+      className="rounded-lg bg-white"
+      style={{
+        border: "1px solid #E0E0E0",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+      }}
+    >
+      <div className="px-5 py-5">
+        <div className="flex items-start">
+          <label
+            className="text-sm flex-shrink-0 pr-3 pt-3"
+            style={{ color: "#546E7A", fontWeight: 400 }}
+          >
+            Orchestration Instruction
+          </label>
+          <textarea
+            className="flex-1 rounded-sm p-3 text-sm resize-none"
+            rows={5}
             style={{
-                backgroundColor: "white",
-                border: isSelected ? `2px solid ${BLUE}` : "2px solid #e5e7eb",
-                boxShadow: isSelected ? `0 0 0 0px ${BLUE}22` : "none",
+              backgroundColor: "#F5F7F8",
+              border: "1px solid #ECEFF1",
+              outline: "none",
+              color: "#263238",
             }}
-        >
-            {/* Top row: icon + checkbox */}
-            <div className="flex items-start justify-between mb-3">
-                <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: isSelected ? "#e8f4fb" : "#f3f4f6" }}
-                >
-                    {tool.icon === "tablet"
-                        ? <TabletIcon color={isSelected ? BLUE : "#9ca3af"} />
-                        : <MailIcon color={isSelected ? BLUE : "#9ca3af"} />}
-                </div>
-                {isSelected ? <CheckCircle /> : <EmptyCircle />}
-            </div>
-            {/* Text */}
-            <div className="font-semibold text-sm text-gray-800 leading-snug break-words">{tool.name}</div>
-            <div className="text-xs text-gray-400 mt-0.5">{tool.desc}</div>
+          />
         </div>
-    );
+      </div>
+    </div>
+  );
 }
 
-export default function Tools({ onNext, onBack }) {
-    const [tools, setTools] = useState(TOOLS);
-    const [search, setSearch] = useState("");
-    const [orchestration, setOrchestration] = useState("");
-    const [activeTab, setActiveTab] = useState("My Agents");
+// --- Footer Buttons ---
+function FooterButtons() {
+  return (
+    <div className="flex items-center justify-end gap-3 py-6 px-2">
+      <button
+        className="px-6 py-2.5 rounded-full text-sm font-medium"
+        style={{ color: "#0072C6", border: "1.5px solid #0072C6", backgroundColor: "transparent" }}
+      >
+        Discard
+      </button>
+      <button
+        className="px-6 py-2.5 rounded-full text-sm font-medium"
+        style={{ color: "#0072C6", border: "1.5px solid #0072C6", backgroundColor: "transparent" }}
+      >
+        Save as Draft
+      </button>
+      <button
+        className="px-6 py-2.5 rounded-full text-sm font-medium text-white"
+        style={{ backgroundColor: "#0072C6", border: "1.5px solid #0072C6" }}
+      >
+        Save & Continue
+      </button>
+    </div>
+  );
+}
 
-    const WIZARD_STEPS = [
-        { label: "Agent Profile &\nResources", done: true },
-        { label: "Tools &\nOrchestration", active: true, number: 2 },
-        { label: "Deployment", number: 3 },
-    ];
+// --- Main Page ---
+export default function ToolsAndOrchestration() {
+  return (
+    <PageLayout>
+      <BackToDashboard />
+      <Stepper activeStep={2} />
 
-    const toggleTool = (id) => {
-        setTools(prev => prev.map(t => t.id === id ? { ...t, selected: !t.selected } : t));
-    };
+      <div className="mt-5">
+        <ToolsSection />
+      </div>
 
-    const filtered = tools.filter(t =>
-        t.name.toLowerCase().includes(search.toLowerCase())
-    );
+      <div className="mt-7">
+        <SectionHeader>Orchestration</SectionHeader>
+        <OrchestrationSection />
+      </div>
 
-    return (
-        <div className="min-h-screen bg-gray-100 flex flex-col" style={{ fontFamily: "'Segoe UI', 'DM Sans', sans-serif" }}>
-
-            <Header />
-
-            {/* ── Sub-nav: Back + Wizard ── */}
-            <div className="bg-gray-100 px-8 py-4">
-                <div className="flex items-start justify-between">
-                    <button
-                        className="text-sm font-medium hover:opacity-80 transition-colors flex items-center gap-1 mt-1"
-                        style={{ color: BLUE }}
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                        Back to Dashboard
-                    </button>
-                    <div className="flex items-start justify-center flex-1">
-                        {WIZARD_STEPS.map((step, i) => (
-                            <WizardStep key={i} step={step} index={i} total={WIZARD_STEPS.length} />
-                        ))}
-                    </div>
-                    <div className="w-28" />
-                </div>
-            </div>
-
-            {/* ── Main Content ── */}
-            <main className="flex-1 px-8 pb-6 space-y-6">
-
-                {/* Tools section */}
-                <div className="bg-gray-100 rounded-xl">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-base font-bold text-gray-800">Tools</h2>
-                        {/* Search */}
-                        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-1.5 shadow-sm">
-                            <span className="text-xs text-gray-400">Search</span>
-                            <div className="w-px h-4 bg-gray-200" />
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                placeholder="Default"
-                                className="outline-none text-xs text-gray-500 w-28 bg-transparent placeholder-gray-400"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-4">
-                        {filtered.map(tool => (
-                            <ToolCard key={tool.id} tool={tool} onToggle={toggleTool} />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Orchestration section */}
-                <div>
-                    <h2 className="text-base font-bold text-gray-800 mb-3">Orchestration</h2>
-                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 min-h-[140px] flex space-x-2">
-                        <div className="text-xs text-gray-400 block mt-2" style={{ whiteSpace: 'nowrap' }}>Orchestration Instruction</div>
-                        <textarea
-                            value={orchestration}
-                            onChange={e => setOrchestration(e.target.value)}
-                            className="w-full outline-none text-sm text-gray-700 resize-none bg-[#f7f7f7] placeholder-gray-300 min-h-[80px]"
-                            placeholder=""
-                        />
-                    </div>
-                </div>
-            </main>
-
-            {/* ── Footer ── */}
-            <footer className="bg-gray-100 border-t border-gray-200 px-8 py-4 flex items-center justify-end gap-3">
-                <button onClick={onBack} className="px-5 py-2 rounded-full border border-primary-color text-sm font-medium text-primary-color bg-white hover:bg-gray-50 transition-colors">
-                    Discard
-                </button>
-                <button className="px-5 py-2 rounded-full border border-primary-color text-sm font-medium text-primary-color bg-white hover:bg-gray-50 transition-colors">
-                    Save as Draft
-                </button>
-                <button
-                onClick={onNext}
-                    className="px-6 py-2 rounded-full text-white text-sm font-semibold transition-colors shadow"
-                    style={{ backgroundColor: BLUE }}
-                    onMouseOver={e => e.currentTarget.style.backgroundColor = "#005f9e"}
-                    onMouseOut={e => e.currentTarget.style.backgroundColor = BLUE}
-                >
-                    Save &amp; Continue
-                </button>
-            </footer>
-
-            {/* ── Copyright ── */}
-            <div className="text-center text-xs text-gray-400 py-3 bg-gray-100">
-                © 2024 Elevance Health Agent Studio. All rights reserved.
-            </div>
-        </div>
-    );
+      <FooterButtons />
+    </PageLayout>
+  );
 }
