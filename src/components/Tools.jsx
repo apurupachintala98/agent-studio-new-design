@@ -107,18 +107,18 @@ function ToolCard({ name, description, selected, type = "monitor", onToggle }) {
 }
 
 // --- Tools Data ---
-const initialTools = [
-  { id: 1, name: "Claims_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-  { id: 2, name: "Aedl_metadata_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-  { id: 3, name: "Merge_pr", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-  { id: 4, name: "Aedl_metadata_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-  { id: 5, name: "Promote_tokenization_metadata", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-  { id: 6, name: "Validate_change_task", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-  { id: 7, name: "Validate_change_request", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
-  { id: 8, name: "Validate_change_task", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
-  { id: 9, name: "Check_merge_status", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
-  { id: 10, name: "Validate_ritm", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
-];
+// const initialTools = [
+//   { id: 1, name: "Claims_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+//   { id: 2, name: "Aedl_metadata_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+//   { id: 3, name: "Merge_pr", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+//   { id: 4, name: "Aedl_metadata_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+//   { id: 5, name: "Promote_tokenization_metadata", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+//   { id: 6, name: "Validate_change_task", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
+//   { id: 7, name: "Validate_change_request", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
+//   { id: 8, name: "Validate_change_task", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
+//   { id: 9, name: "Check_merge_status", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
+//   { id: 10, name: "Validate_ritm", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
+// ];
 
 // --- Tools Grid Section ---
 function ToolsSection({ tools, toggleTool }) {
@@ -232,22 +232,30 @@ export default function Tools({ agentDetails, onSaveAndContinue }) {
     }
   }, [agentDetails])
 
- const loadTools = async (scopesArray) => {
+const loadTools = async (scopesArray) => {
   try {
     setLoading(true)
 
     const response = await fetchToolsByScopes(scopesArray)
 
-    const groupedTools = response?.grouped_tools || []
+    console.log("TOOLS RESPONSE:", response)
 
-    // Flatten tools across scopes
-    const formattedTools = groupedTools.flatMap((group, groupIndex) =>
-      group.tools.map((tool, toolIndex) => ({
-        id: `${groupIndex}-${toolIndex}`,   // unique id
-        name: tool.tool_nm,
-        description: tool.tool_desc,
-        selected: false,        // user selection
-        type: "monitor",        // default as required
+    const groupedTools = response?.data?.grouped_tools || []
+
+    if (!groupedTools.length) {
+      setTools([])
+      return
+    }
+
+    const formattedTools = groupedTools.flatMap((group) =>
+      group.tools.map((tool) => ({
+        id: tool.tool_id,                     
+        name: tool.tool_nm,                   
+        description: tool.tool_desc,          
+        selected: false,
+        type: "monitor",
+
+        original: tool,
       }))
     )
 
