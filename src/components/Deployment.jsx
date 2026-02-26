@@ -1,9 +1,108 @@
+import {
+  PageLayout,
+  BackToDashboard,
+  Stepper,
+  SectionHeader,
+} from "./SharedComponents";
 
-import { useState, useEffect } from "react";
-import Header from "../components/Header";
-import { useNavigate } from "react-router-dom";
-const BLUE = "#0079c2";
-const LOGS = [
+// --- Deployment-specific Icons ---
+const CheckCircleGreen = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <circle cx="14" cy="14" r="13" fill="#0072C6" stroke="#0072C6" strokeWidth="2" />
+    <path d="M8 14.5L12 18.5L20 10.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// --- Deployment Progress Stepper ---
+function DeploymentStepper() {
+  return (
+    <div
+      className="rounded-lg bg-white px-8 py-6"
+      style={{
+        border: "1px solid #E0E0E0",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+      }}
+    >
+      <div className="flex items-start">
+        {/* Step 1 column */}
+        <div className="flex flex-col items-center" style={{ width: 220, flexShrink: 0 }}>
+          <div className="flex items-center w-full">
+            <div style={{ flex: 1 }} />
+            <CheckCircleGreen />
+            <div style={{ flex: 1, height: 2, backgroundColor: "#B3D9F2" }} />
+          </div>
+          <span className="font-semibold text-center mt-2" style={{ fontSize: 14, color: "#003366" }}>
+            Batch Configuration Submitted
+          </span>
+          <span className="text-xs mt-1" style={{ color: "#90A4AE" }}>Completed at 2:34 PM</span>
+          <span
+            className="mt-2 px-4 py-1 rounded-full text-xs font-semibold text-white"
+            style={{ backgroundColor: "#2E8540", fontSize: 11, letterSpacing: "0.5px" }}
+          >
+            DONE
+          </span>
+        </div>
+
+        {/* Line between 1 and 2 */}
+        <div style={{ flex: 1, height: 2, backgroundColor: "#B3D9F2", marginTop: 13 }} />
+
+        {/* Step 2 column */}
+        <div className="flex flex-col items-center" style={{ width: 260, flexShrink: 0 }}>
+          <div className="flex items-center w-full">
+            <div style={{ flex: 1, height: 2, backgroundColor: "#B3D9F2" }} />
+            <div
+              className="flex items-center justify-center rounded-full font-semibold"
+              style={{
+                width: 28, height: 28,
+                backgroundColor: "#0072C6", color: "#FFFFFF",
+                fontSize: 13, flexShrink: 0,
+              }}
+            >
+              2
+            </div>
+            <div style={{ flex: 1, height: 2, backgroundColor: "#B3D9F2" }} />
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="font-semibold" style={{ fontSize: 14, color: "#0072C6" }}>Deploying to Snowflake & EKS</span>
+            <span className="font-semibold" style={{ fontSize: 14, color: "#003366" }}>100%</span>
+          </div>
+          <div className="w-full mt-2 rounded-full overflow-hidden" style={{ height: 8, backgroundColor: "#E0E0E0", maxWidth: 220 }}>
+            <div className="h-full rounded-full" style={{ width: "100%", backgroundColor: "#0072C6" }} />
+          </div>
+          <span className="text-xs mt-2" style={{ color: "#90A4AE" }}>Pushing code to Git repository...</span>
+        </div>
+
+        {/* Line between 2 and 3 */}
+        <div style={{ flex: 1, height: 2, backgroundColor: "#B3D9F2", marginTop: 13 }} />
+
+        {/* Step 3 column */}
+        <div className="flex flex-col items-center" style={{ width: 180, flexShrink: 0 }}>
+          <div className="flex items-center w-full">
+            <div style={{ flex: 1, height: 2, backgroundColor: "#B3D9F2" }} />
+            <div
+              className="flex items-center justify-center rounded-full font-semibold"
+              style={{
+                width: 28, height: 28,
+                backgroundColor: "transparent",
+                border: "2px solid #B0BEC5", color: "#B0BEC5",
+                fontSize: 13, flexShrink: 0,
+              }}
+            >
+              3
+            </div>
+            <div style={{ flex: 1 }} />
+          </div>
+          <span className="font-medium text-center mt-2" style={{ fontSize: 14, color: "#78909C" }}>Agent Testing</span>
+          <span className="text-xs mt-1" style={{ color: "#B0BEC5" }}>Waiting for Deployment...</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Deployment Logs ---
+function DeploymentLogs() {
+  const logs = [
     "[14:34:32] INFO VERIFYING BUILD ENVIRONMENT CONFIGURATION ...",
     "[14:34:41] INFO LOADING DEPENDENCY GRAPH MODULES ...",
     "[14:34:55] INFO RESOLVING PACKAGE VERSIONS FROM MANIFEST ...",
@@ -19,251 +118,110 @@ const LOGS = [
     "[14:36:49] INFO SIGNING BUILD ARTIFACTS WITH SECURE KEY ...",
     "[14:36:55] INFO UPLOADING BUILD OUTPUTS TO RELEASE CHANNEL ...",
     "[14:37:04] INFO BUILD SEQUENCE COMPLETED SUCCESSFULLY.",
-];
+  ];
 
-// Top-level wizard steps
-const WIZARD_STEPS = [
-    { label: "Agent Profile &\nResources", done: true },
-    { label: "Tools &\nOrchestration", done: true },
-    { label: "Deployment", active: true, number: 3 },
-];
-
-// Inner deployment sub-steps
-const DEPLOY_STEPS = [
-    { label: "Batch Configuration Submitted", sub: "Completed at 2:34 PM", badge: "DONE", done: true },
-    { label: "Deploying to Snowflake & EKS", sub: "Pushing code to Git repository...", progress: 100, active: true, number: 2 },
-    { label: "Agent Testing", sub: "Waiting for Deployment...", number: 3 },
-];
-
-function CheckIcon({ size = 16 }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-        </svg>
-    );
+  return (
+    <div
+      className="rounded-lg overflow-hidden"
+      style={{
+        border: "1px solid #E0E0E0",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+        backgroundColor: "#FFFFFF",
+      }}
+    >
+      <div
+        className="flex items-center justify-between px-4 py-3"
+        style={{ backgroundColor: "#F5F7FA", borderBottom: "1px solid #E0E0E0" }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <div className="rounded-full" style={{ width: 12, height: 12, backgroundColor: "#FF5F57" }} />
+            <div className="rounded-full" style={{ width: 12, height: 12, backgroundColor: "#FFBD2E" }} />
+            <div className="rounded-full" style={{ width: 12, height: 12, backgroundColor: "#28C840" }} />
+          </div>
+          <span style={{ fontSize: 11, fontWeight: 600, color: "#546E7A", letterSpacing: "1.5px", textTransform: "uppercase" }}>
+            DEPLOYMENT LOGS
+          </span>
+        </div>
+        <a href="#" style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
+          VIEW FULL LOGS
+        </a>
+      </div>
+      <div className="px-5 py-4 overflow-auto" style={{ maxHeight: 340 }}>
+        <pre style={{
+          fontFamily: "'Courier New', Courier, monospace",
+          fontSize: 12.5, lineHeight: 1.7, color: "#455A64",
+          margin: 0, whiteSpace: "pre-wrap",
+        }}>
+          {logs.join("\n")}
+        </pre>
+      </div>
+    </div>
+  );
 }
 
-
-
-function WizardStep({ step, index, total }) {
-    return (
-        <div className="flex items-center">
-            <div className="flex flex-col items-center">
-                <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2"
-                    style={
-                        step.done
-                            ? { backgroundColor: BLUE, borderColor: BLUE, color: "white" }
-                            : step.active
-                                ? { backgroundColor: BLUE, borderColor: BLUE, color: "white" }
-                                : { backgroundColor: "white", borderColor: "#d1d5db", color: "#9ca3af" }
-                    }
-                >
-                    {step.done ? (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                    ) : step.number}
-                </div>
-                <span
-                    className="text-xs font-medium mt-1.5 text-center whitespace-pre-line leading-tight max-w-[90px]"
-                    style={{ color: step.done || step.active ? BLUE : "#9ca3af" }}
-                >
-                    {step.label}
-                </span>
-            </div>
-            {index < total - 1 && (
-                <div
-                    className="h-0.5 w-16 mx-1 mb-5"
-                    style={{ backgroundColor: step.done ? BLUE : "#e5e7eb" }}
-                />
-            )}
-        </div>
-    );
+// --- Source Artifacts Card ---
+function SourceArtifacts() {
+  return (
+    <div
+      className="rounded-lg bg-white flex flex-col"
+      style={{
+        border: "1px solid #E0E0E0",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+        height: "100%", minHeight: 380,
+      }}
+    >
+      <div className="w-full flex justify-end px-5 pt-4">
+        <a href="#" style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
+          URL LINK
+        </a>
+      </div>
+      <div className="flex-1 flex flex-col items-center justify-center px-5 pb-6">
+        <img src="./Container.png" alt="Source Artifacts" style={{ width: 80, height: 80, borderRadius: 12 }} />
+        <span className="font-semibold mt-3" style={{ fontSize: 15, color: "#1A1A1A" }}>Source Artifacts</span>
+        <span className="text-sm mt-1" style={{ color: "#78909C" }}>agent_cortex_v1.zip</span>
+        <span className="text-xs mt-0.5" style={{ color: "#90A4AE" }}>(24MB)</span>
+      </div>
+    </div>
+  );
 }
 
-function DeployStep({ step, index, total }) {
-    return (
-        <div className="flex items-start flex-1">
-            <div className="flex flex-col items-center flex-1">
-                {/* Circle */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 flex-shrink-0
-          ${step.done ? "bg-primary-color border-blue-600 text-white" :
-                        step.active ? "bg-white border-blue-600 text-primary-color" :
-                            "bg-white border-gray-300 text-gray-400"}`}>
-                    {step.done ? <CheckIcon size={14} /> : step.number}
-                </div>
-
-                {/* Label */}
-                <div className="mt-3 text-center">
-                    <div className={`text-sm font-bold ${step.active ? "text-primary-color" : step.done ? "text-gray-700" : "text-gray-400"}`}>
-                        {step.label}
-                        {step.active && step.progress !== undefined && (
-                            <span className="ml-2 text-primary-color font-bold">{step.progress}%</span>
-                        )}
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">{step.sub}</div>
-
-                    {/* Progress bar */}
-                    {step.active && step.progress !== undefined && (
-                        <div className="w-48 mt-2 mx-auto">
-                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-primary-color rounded-full transition-all duration-1000"
-                                    style={{ width: `${step.progress}%` }}
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Badge */}
-                    {step.badge && (
-                        <span className="inline-block mt-2 px-2.5 py-0.5 text-xs font-bold text-teal-700 bg-teal-100 rounded">
-                            {step.badge}
-                        </span>
-                    )}
-                </div>
-            </div>
-
-            {/* Connector line */}
-            {index < total - 1 && (
-                <div className={`h-0.5 flex-1 mt-4 mx-2 ${step.done ? "bg-primary-color" : "bg-gray-200"}`} />
-            )}
-        </div>
-    );
+// --- Footer Buttons ---
+function FooterButtons() {
+  return (
+    <div className="flex items-center justify-end gap-3 py-6 px-2">
+      <button className="px-6 py-2.5 rounded-full text-sm font-medium"
+        style={{ color: "#0072C6", border: "1.5px solid #0072C6", backgroundColor: "transparent" }}>Discard</button>
+      <button className="px-6 py-2.5 rounded-full text-sm font-medium" disabled
+        style={{ color: "#B0BEC5", border: "1.5px solid #CFD8DC", backgroundColor: "transparent", cursor: "not-allowed" }}>Chat with Agent</button>
+      <button className="px-6 py-2.5 rounded-full text-sm font-medium text-white"
+        style={{ backgroundColor: "#0072C6", border: "1.5px solid #0072C6" }}>Finish Deployment</button>
+    </div>
+  );
 }
 
-export default function Deployment({ onBack }) {
+// --- Main Deployment Page ---
+export default function Deployment() {
+  return (
+    <PageLayout>
+      <BackToDashboard />
+      <Stepper activeStep={3} />
 
-    const [finishDeployment, setFinishDeployment] = useState(false);
+      <div className="mt-6">
+        <SectionHeader>Deployment Progress</SectionHeader>
+        <DeploymentStepper />
+      </div>
 
-    const navigate = useNavigate();
-
-    const handleFinishDeployment = () => {
-        setFinishDeployment(true);
-    }
-
-    return (
-        <div className="min-h-screen bg-gray-50 flex flex-col" style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }}>
-
-            {/* ── Header ── */}
-            <Header />
-
-            {/* ── Sub-nav: Back + Wizard ── */}
-            <div className="bg-gray-50 border-b border-gray-200 px-8 py-4">
-                <div className="flex items-start justify-between">
-                    <button className="text-sm text-primary-color font-medium hover:text-blue-800 transition-colors flex items-center gap-1 mt-1">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                        Back to Dashboard
-                    </button>
-
-                    {/* Wizard steps */}
-                    <div className="flex items-start justify-center flex-1">
-                        {WIZARD_STEPS.map((step, i) => (
-                            <WizardStep key={i} step={step} index={i} total={WIZARD_STEPS.length} />
-                        ))}
-                    </div>
-
-                    <div className="w-28" /> {/* spacer */}
-                </div>
-            </div>
-
-            {/* ── Main Content ── */}
-            <main className="flex-1 px-8 py-6 space-y-6">
-
-                {/* Deployment Progress heading */}
-                <h2 className="text-lg font-bold text-gray-800">Deployment Progress</h2>
-
-                {/* Deploy steps card */}
-                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm px-8 py-6">
-                    <div className="flex items-start">
-                        {DEPLOY_STEPS.map((step, i) => (
-                            <DeployStep key={i} step={step} index={i} total={DEPLOY_STEPS.length} />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Logs + Artifact panel */}
-                <div className="grid grid-cols-5 gap-5">
-
-                    {/* Deployment Logs — takes 3 cols */}
-                    <div className="col-span-3 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                        {/* Terminal title bar */}
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-1.5">
-                                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                                    <div className="w-3 h-3 rounded-full bg-green-400" />
-                                </div>
-                                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Deployment Logs</span>
-                            </div>
-                            <button className="text-xs font-semibold text-blue-500 hover:text-blue-700 transition-colors">
-                                VIEW FULL LOGS
-                            </button>
-                        </div>
-                        {/* Log content */}
-                        <div className="px-5 py-4 h-72 overflow-y-auto font-mono text-xs text-gray-500 leading-6 space-y-0.5 bg-white">
-                            {LOGS.map((line, i) => (
-                                <div key={i} className={i === LOGS.length - 1 ? "text-green-600 font-semibold" : ""}>{line}</div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Source Artifacts — takes 2 cols */}
-                    <div className="col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                        <div className="flex items-center justify-end px-4 py-3 border-b border-gray-100">
-                            <button className="text-xs font-semibold text-blue-500 hover:text-blue-700 transition-colors">
-                                URL LINK
-                            </button>
-                        </div>
-                        <div className="flex flex-col items-center justify-center h-72 gap-4 px-6">
-                            {/* Folder icon */}
-                            <div className="w-24 h-24 flex items-center justify-center" style={{
-                                borderRadius: "20.333px",
-                                background: "rgba(0, 153, 204, 0.10)"
-                            }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="51" viewBox="0 0 64 51" fill="none">
-                                    <g clip-path="url(#clip0_281_5244)">
-                                        <path d="M57.1872 6.39058H31.7707L25.3793 -0.000732422H6.35401C4.66949 -0.000732422 3.20789 0.618582 1.96927 1.85721C0.730642 3.09583 0.111328 4.60697 0.111328 6.39058V44.4411C0.111328 46.2249 0.730642 47.736 1.96927 48.9745C3.20789 50.2131 4.66949 50.8326 6.35401 50.8326H57.1872C58.8719 50.8326 60.3333 50.2131 61.5719 48.9745C62.8106 47.736 63.4298 46.2249 63.4298 44.4411V12.7819C63.4298 10.9983 62.8106 9.48714 61.5719 8.24851C60.3333 7.00989 58.8719 6.39058 57.1872 6.39058ZM50.796 25.4158H44.4045V31.8073H50.796V38.0499H44.4045V44.4411H38.1619V38.0499H44.4045V31.8073H38.1619V25.4158H44.4045V19.0246H38.1619V12.7819H44.4045V19.0246H50.796V25.4158Z" fill="#44B8F3" />
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clip0_281_5244">
-                                            <rect width="63.5417" height="50.8333" fill="white" />
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-base font-bold text-gray-800">Source Artifacts</div>
-                                <div className="text-sm text-gray-500 mt-1">agent_cortex_v1.zip</div>
-                                <div className="text-sm text-gray-400">(24MB)</div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </main>
-
-            {/* ── Footer actions ── */}
-            <footer className="bg-gray-50 border-t border-gray-200 px-8 py-4 flex items-center justify-end gap-3">
-                <button onClick={onBack} className="px-5 py-2 rounded-full border border-primary-color text-sm font-medium text-primary-color hover:bg-gray-100 transition-colors">
-                    Discard
-                </button>
-                <button onClick={() => navigate("/chat")} className={`px-5 py-2 rounded-full text-sm font-medium ${finishDeployment ? " bg-primary-color text-white" : "text-gray-500 bg-gray-300"}`} disabled={!finishDeployment}>
-                    Chat with Agent
-                </button>
-                <button onClick={handleFinishDeployment} className="px-6 py-2 rounded-full bg-primary-color hover:bg-blue-700 text-white text-sm font-semibold transition-colors shadow">
-                    Finish Deployment
-                </button>
-            </footer>
-
-            {/* ── Copyright ── */}
-            <div className="text-center text-xs text-gray-400 py-3 bg-gray-50">
-                © 2024 Elevance Health Agent Studio. All rights reserved.
-            </div>
+      <div className="mt-6 flex gap-5" style={{ alignItems: "stretch" }}>
+        <div style={{ flex: "1.6" }}>
+          <DeploymentLogs />
         </div>
-    );
+        <div style={{ flex: "1" }}>
+          <SourceArtifacts />
+        </div>
+      </div>
+
+      <FooterButtons />
+    </PageLayout>
+  );
 }

@@ -66,7 +66,7 @@ export async function hmacFetch<T>(
  
   if (!response.ok) {
     const text = await response.text()
-    console.error(`[v0] API Error (${response.status}):`, text)
+    console.error(`API Error (${response.status}):`, text)
     throw new Error(text)
   }
  
@@ -98,7 +98,7 @@ export async function fetchAgents() {
     const agents = response.data?.records || []
     return agents
   } catch (error) {
-    console.error('[v0] Failed to fetch agents:', error)
+    console.error('Failed to fetch agents:', error)
     throw error
   }
 }
