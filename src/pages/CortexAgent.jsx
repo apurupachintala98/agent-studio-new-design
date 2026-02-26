@@ -3,7 +3,7 @@ import {
   PageLayout,
   BackToDashboard,
   Stepper,
-} from "./SharedComponents";
+} from "../components/SharedComponents";
 import AgentProfile from "../components/AgentProfile";
 import Tools from "../components/Tools";
 import Deployment from "../components/Deployment";
