@@ -9,6 +9,7 @@ export default function AgentCard({ agent }) {
   const handleEditClick = async () => {
     try {
       const sessionId = uuidv4();
+       localStorage.setItem("session_Id", sessionId);
       const userId = localStorage.getItem("user_id");
       const appCode = localStorage.getItem("aplctn_cd");
       const response = await fetchSpecificAgent(agent.id)
@@ -22,7 +23,7 @@ export default function AgentCard({ agent }) {
         aplctn_cd: appCode,
       });
 
-      const session_Id = localStorage.getItem("session_Id");
+     
       if (!agentDetails) {
         console.error("Agent details not found")
         return
