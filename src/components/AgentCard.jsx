@@ -1,7 +1,35 @@
 import { useNavigate } from "react-router-dom";
+import { fetchSpecificAgent } from "../services/agents"
 
 export default function AgentCard({ agent }) {
   const navigate = useNavigate();
+
+  const handleEditClick = async () => {
+  try {
+    const response = await fetchSpecificAgent(agent.id)
+
+    const agentDetails = response?.data?.record
+
+    if (!agentDetails) {
+      console.error("Agent details not found")
+      return
+    }
+
+    // Route based on agent type
+    if (agent.agentType === "Cortex") {
+      navigate("/cortex-agent", {
+        state: { agentDetails }
+      })
+    } else if (agent.agentType === "LangGraph") {
+      navigate("/langraph-agent", {
+        state: { agentDetails }
+      })
+    }
+
+  } catch (error) {
+    console.error("Failed to fetch specific agent:", error)
+  }
+}
 
   return (
     <div
@@ -259,7 +287,7 @@ export default function AgentCard({ agent }) {
 )}
         {/* Edit Icon Container */}
         <div
-          onClick={() => navigate("/cortex-agent")}
+           onClick={handleEditClick}
           style={{
             display: "flex",
             width: "31px",

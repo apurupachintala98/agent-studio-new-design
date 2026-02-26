@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Reference from './pages/Reference'
 import CortexAgent from './pages/CortexAgent'
+import LangraphAgent from './pages/LangraphAgent'
 import './index.css'
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reference" element={<Reference />} />
         <Route path="/cortex-agent" element={<CortexAgent />} />
+        <Route path="/langraph-agent" element={<LangraphAgent />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
