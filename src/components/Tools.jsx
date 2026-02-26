@@ -295,16 +295,48 @@ const loadTools = async (scopesArray) => {
 const handleSaveAndContinue = () => {
   const selectedTools = tools.filter(t => t.selected)
 
+  if (!selectedTools.length) {
+    alert("Please select at least one tool")
+    return
+  }
+
+  const formattedTools = selectedTools.map(tool => ({
+    type: tool.original?.tool_id || "monitor",  // adjust if backend expects different type
+    name: tool.name,
+    description: tool.description,
+    db_name: tool.original?.tool_rsrc_config?.db_name || "Default",
+    input_schema:
+      tool.original?.tool_rsrc_config?.input_schema || "Default",
+  }))
+
+  const formattedResources = {}
+
+  selectedTools.forEach(tool => {
+    formattedResources[tool.name] = {
+      semantic_model_file:
+        tool.original?.tool_rsrc_config?.semantic_model_file,
+      db_name:
+        tool.original?.tool_rsrc_config?.db_name || "Default",
+      input_schema:
+        tool.original?.tool_rsrc_config?.input_schema || "Default",
+      execution_environment:
+        tool.original?.tool_rsrc_config?.execution_environment || {},
+    }
+  })
+
   const toolData = {
-    tools: selectedTools,
-    orchestrationInstructions: orchestrationInstruction,
-    budgetSeconds: 60,
-    budgetTokens: 1000,
+    tool_choice: {
+      type: "auto",
+      name: [],
+    },
+    tools: formattedTools,
+    tool_resources: formattedResources,
+    orchestration_instructions: orchestrationInstruction,
   }
 
   onSaveAndContinue(toolData)
 
-  setIsSaved(true)   // ✅ show create agent button
+  setIsSaved(true)
 }
 
 const handleCreateAgent = async () => {

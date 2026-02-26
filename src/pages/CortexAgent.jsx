@@ -69,7 +69,6 @@ const handleCreateAgent = async () => {
     const sesnId = localStorage.getItem("session_Id")
     const userId = localStorage.getItem("user_id")
 
-    // 1️⃣ CONFIGURE
     await agentApi.configureAgent(agentId, {
       sesn_id: sesnId,
       agent_name: stepOneData.agentName,
@@ -95,7 +94,6 @@ const handleCreateAgent = async () => {
       features: { thread_memory: true },
     })
 
-    // 2️⃣ RUNTIME
     await agentApi.configureRuntime(agentId, {
       agent_name: stepOneData.agentName,
       db: stepOneData.db,
@@ -104,12 +102,14 @@ const handleCreateAgent = async () => {
       user_identity: userId,
     })
 
-    // 3️⃣ TOOLS
-    await agentApi.configureTools(agentId, toolData)
+    const toolsPayload = {
+  sesn_id: sesnId,
+  ...toolData
+}
+    await agentApi.configureTools(agentId, toolsPayload)
 
-    alert("Agent Created Successfully ✅")
+    alert("Agent Created Successfully ")
 
-    // 🚀 NOW move to deployment
     setActiveStep(3)
 
   } catch (error) {
