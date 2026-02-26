@@ -1,4 +1,4 @@
-import { API_CONFIG } from "../config/api-config"
+import { AGENT_API_CONFIG, API_CONFIG } from "../config/api-config"
  
 export interface CreateAgentResponse {
     agent_uuid: string
@@ -125,6 +125,24 @@ export interface AgentInformationResponse {
     llm_prvdr?: string
     orch_llm_prvdr?: string
   }>
+}
+
+export interface Pipeline {
+  name: string;
+  status: string;
+  cluster: string;
+  namespace: string;
+  started: string;
+  completed: string;
+  event_id: string;
+}
+
+export interface PipelineApiResponse {
+  status: string;
+  cluster: string;
+  namespace: string;
+  pipelines: Pipeline[];
+  count: number;
 }
 export const agentApi = {
     // Create a new agent
@@ -269,5 +287,41 @@ export const agentApi = {
 
   return response.json()
 },
- 
+
 }
+
+export async function fetchPipelineInformation(clusterName: string, namespace: string): Promise<Pipeline> {
+  const response = await fetch(
+    `${AGENT_API_CONFIG.AGENT_BASE_URL}/pipelines/${clusterName}/${namespace}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch pipeline information");
+  } else {
+    console.log("Pipeline information fetched successfully" + response);
+  }
+
+  return response.json();
+}
+
+export async function fetchPipelineLogsInformation(clusterName: string, namespace: string, pipelineName: string) {
+  const response = await fetch(
+    `${AGENT_API_CONFIG.AGENT_BASE_URL}/s3-logs/${clusterName}/${namespace}/${pipelineName}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+  return response.json();
+  
+}
+
+ 

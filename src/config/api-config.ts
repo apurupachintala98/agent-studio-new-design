@@ -23,3 +23,29 @@ if (hostname === "localhost" || hostname === "127.0.0.1") {
 }
  
 export const API_CONFIG = { BASE_URL }
+
+
+ 
+let AGENT_BASE_URL = ""
+ 
+if (hostname === "localhost" || hostname === "127.0.0.1") {
+  AGENT_BASE_URL = "https://aedl-devops.edl.dev.awsdns.internal.das/tekton"
+ 
+} else if (hostname.includes(".sit.")) {
+  AGENT_BASE_URL = "https://aedl-devops.edl.sit.awsdns.internal.das/tekton"
+ 
+} else if (hostname.includes(".uat.")) {
+  AGENT_BASE_URL = "https://aedl-devops.edl.uat.awsdns.internal.das/tekton"
+ 
+} else if (hostname.includes(".prod.")) {
+  AGENT_BASE_URL = "https://aedl-devops.edl.prod.awsdns.internal.das/tekton"
+ 
+} else if (hostname.includes(".dev.")) {
+  AGENT_BASE_URL = "https://aedl-devops.edl.dev.awsdns.internal.das/tekton"
+ 
+} else {
+  console.warn("Unknown environment, hostname:", hostname)
+  AGENT_BASE_URL = "https://aedl-devops.edl.dev.awsdns.internal.das/tekton"
+}
+ 
+export const AGENT_API_CONFIG = { AGENT_BASE_URL }
