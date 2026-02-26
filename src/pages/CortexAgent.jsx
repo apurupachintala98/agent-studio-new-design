@@ -66,7 +66,7 @@ const handleCreateAgent = async () => {
   setIsCreating(true)
 
   try {
-    const sesnId = crypto.randomUUID()
+    const sesnId = localStorage.getItem("session_id")
     const userId = localStorage.getItem("user_id")
 
     // 1️⃣ CONFIGURE
