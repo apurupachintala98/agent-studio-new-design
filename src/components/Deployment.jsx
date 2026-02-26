@@ -160,43 +160,76 @@ function DeploymentLogs() {
 }
 
 // --- Source Artifacts Card ---
-function SourceArtifacts() {
-  return (
-    <div
-      className="rounded-lg bg-white flex flex-col"
-      style={{
-        border: "1px solid #E0E0E0",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-        height: "100%", minHeight: 380,
-      }}
-    >
-      <div className="w-full flex justify-end px-5 pt-4">
-        <a href="#" style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
-          URL LINK
-        </a>
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center px-5 pb-6">
-        {/* Folder icon - inline SVG fallback */}
-        <div
-          className="flex items-center justify-center rounded-2xl"
-          style={{
-            width: 80,
-            height: 80,
-            backgroundColor: "#0D1B2A",
-          }}
-        >
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-            <path d="M6 12C6 10.9 6.9 10 8 10H16L19 13H32C33.1 13 34 13.9 34 15V30C34 31.1 33.1 32 32 32H8C6.9 32 6 31.1 6 30V12Z" fill="#29B6F6" />
-            <rect x="16" y="18" width="3" height="10" rx="1" fill="#0D1B2A" opacity="0.5" />
-            <rect x="21" y="16" width="3" height="12" rx="1" fill="#0D1B2A" opacity="0.4" />
-          </svg>
-        </div>
-        <span className="font-semibold mt-3" style={{ fontSize: 15, color: "#1A1A1A" }}>Source Artifacts</span>
-        <span className="text-sm mt-1" style={{ color: "#78909C" }}>agent_cortex_v1.zip</span>
-        <span className="text-xs mt-0.5" style={{ color: "#90A4AE" }}>(24MB)</span>
-      </div>
+function SourceArtifacts({ agentId, agentApi, setErrorNotification })
+const [isDownloading, setIsDownloading] = useState(false);
+
+const handleDownloadCode = async () => {
+  if (!agentId) {
+    setErrorNotification("No agent ID found. Please save your profile first.");
+    return;
+  }
+
+  setIsDownloading(true);
+
+  try {
+    const blob = await agentApi.downloadAgent(agentId);
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `agent-${agentId}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  } catch (error) {
+    console.error("Failed to download agent:", error);
+    setErrorNotification("Failed to download agent code. Please try again.");
+  } finally {
+    setIsDownloading(false);
+  }
+};
+
+return (
+  <div
+    className="rounded-lg bg-white flex flex-col"
+    style={{
+      border: "1px solid #E0E0E0",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+      height: "100%", minHeight: 380,
+    }}
+  >
+    <div className="w-full flex justify-end px-5 pt-4">
+      <a href="https://bitbucket.org/your-workspace/ncr_aedleks_agentbuilder_app"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
+        URL LINK
+      </a>
+
     </div>
-  );
+    <div onClick={handleDownloadCode} className="flex-1 flex flex-col items-center justify-center px-5 pb-6">
+      {/* Folder icon - inline SVG fallback */}
+      <div
+        className="flex items-center justify-center rounded-2xl"
+        style={{
+          width: 80,
+          height: 80,
+          backgroundColor: "#0D1B2A",
+        }}
+      >
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path d="M6 12C6 10.9 6.9 10 8 10H16L19 13H32C33.1 13 34 13.9 34 15V30C34 31.1 33.1 32 32 32H8C6.9 32 6 31.1 6 30V12Z" fill="#29B6F6" />
+          <rect x="16" y="18" width="3" height="10" rx="1" fill="#0D1B2A" opacity="0.5" />
+          <rect x="21" y="16" width="3" height="12" rx="1" fill="#0D1B2A" opacity="0.4" />
+        </svg>
+      </div>
+      <span className="font-semibold mt-3" style={{ fontSize: 15, color: "#1A1A1A" }}>Source Artifacts</span>
+      <span className="text-sm mt-1" style={{ color: "#78909C" }}>agent_cortex_v1.zip</span>
+      <span className="text-xs mt-0.5" style={{ color: "#90A4AE" }}>(24MB)</span>
+    </div>
+  </div>
+);
 }
 
 // --- Main Deployment Page ---
@@ -231,7 +264,11 @@ export default function Deployment({ onFinish }) {
           <DeploymentLogs />
         </div>
         <div style={{ flex: "1" }}>
-          <SourceArtifacts />
+          <SourceArtifacts
+            agentId={createdAgent?.id}
+            agentApi={agentApi}
+            setErrorNotification={setErrorNotification}
+          />
         </div>
       </div>
 
