@@ -37,19 +37,23 @@ export default function Dashboard() {
       try {
         setLoading(true)
 
-        const [countResponse, agentList] = await Promise.all([
-          agentApi.fetchAgentCount(appCode),
-          fetchAgentsByAppCode(appCode)
+        // Call both APIs but only use agent information response
+        const [_, agentInfoResponse] = await Promise.all([
+          fetchAgentsByAppCode(appCode),
+          agentApi.fetchAgentInformation(appCode),
         ])
 
-        setAgentCount(countResponse)
-        const formattedAgents = agentList.map((agent) => ({
+        setAgentCount(agentInfoResponse)
+
+        const formattedAgents = agentInfoResponse.agents.map((agent) => ({
           id: agent.agnt_id,
           name: agent.agnt_nm,
-          status: "Active", // since API doesn't return status
-          description: `${agent.agnt_nm} agent built using ${agent.agnt_type}`,
-          models: [agent.agnt_type] // Cortex or LangGraph
+          status: agent.status?.toLowerCase() === "active" ? "Active" : "Draft",
+          description: agent.agnt_desc,
+          agentType: agent.agnt_type,
+          modelName: agent.llm_nm || null,
         }))
+
         setAgents(formattedAgents)
 
       } catch (error) {

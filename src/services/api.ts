@@ -104,19 +104,28 @@ export interface GenerateAgentResponse {
   agent_url: string
 }
 
-export interface AgentCountResponse {
-  active_agents: {
-    total_count: number
-    cortex_count: number
-    langgraph_count: number
-  }
+export interface AgentInformationResponse {
   total_agents: {
     total_count: number
     cortex_count: number
     langgraph_count: number
   }
+  active_agents: {
+    total_count: number
+    cortex_count: number
+    langgraph_count: number
+  }
+  agents: Array<{
+    agnt_id: string
+    agnt_nm: string
+    agnt_type: string
+    agnt_desc: string
+    status: string
+    llm_nm?: string
+    llm_prvdr?: string
+    orch_llm_prvdr?: string
+  }>
 }
- 
 export const agentApi = {
     // Create a new agent
     async createAgent(payload: CreateAgentPayload): Promise<CreateAgentResponse> {
@@ -243,9 +252,9 @@ export const agentApi = {
     return data
   },
 
-  async fetchAgentCount(appCode: string): Promise<AgentCountResponse> {
+ async fetchAgentInformation(appCode: string): Promise<AgentInformationResponse> {
   const response = await fetch(
-    `${API_CONFIG.BASE_URL}/api/common/agents/count?aplctn_cd=${appCode}`,
+    `${API_CONFIG.BASE_URL}/api/common/agents/information?aplctn_cd=${appCode}`,
     {
       method: "GET",
       headers: {
@@ -255,7 +264,7 @@ export const agentApi = {
   )
 
   if (!response.ok) {
-    throw new Error("Failed to fetch agent count")
+    throw new Error("Failed to fetch agent information")
   }
 
   return response.json()

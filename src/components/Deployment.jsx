@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
-
+const BLUE = "#0079c2";
 const LOGS = [
     "[14:34:32] INFO VERIFYING BUILD ENVIRONMENT CONFIGURATION ...",
     "[14:34:41] INFO LOADING DEPENDENCY GRAPH MODULES ...",
@@ -43,22 +43,40 @@ function CheckIcon({ size = 16 }) {
     );
 }
 
+
+
 function WizardStep({ step, index, total }) {
     return (
         <div className="flex items-center">
             <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2
-          ${step.done ? "bg-primary-color border-blue-600 text-white" :
-                        step.active ? "bg-primary-color border-blue-600 text-white" :
-                            "bg-white border-gray-300 text-gray-400"}`}>
-                    {step.done ? <CheckIcon size={14} /> : step.number}
+                <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2"
+                    style={
+                        step.done
+                            ? { backgroundColor: BLUE, borderColor: BLUE, color: "white" }
+                            : step.active
+                                ? { backgroundColor: BLUE, borderColor: BLUE, color: "white" }
+                                : { backgroundColor: "white", borderColor: "#d1d5db", color: "#9ca3af" }
+                    }
+                >
+                    {step.done ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    ) : step.number}
                 </div>
-                <span className="text-xs text-primary-color font-medium mt-1.5 text-center whitespace-pre-line leading-tight max-w-[90px]">
+                <span
+                    className="text-xs font-medium mt-1.5 text-center whitespace-pre-line leading-tight max-w-[90px]"
+                    style={{ color: step.done || step.active ? BLUE : "#9ca3af" }}
+                >
                     {step.label}
                 </span>
             </div>
             {index < total - 1 && (
-                <div className={`h-0.5 w-16 mx-1 mb-5 ${step.done ? "bg-primary-color" : "bg-gray-300"}`} />
+                <div
+                    className="h-0.5 w-16 mx-1 mb-5"
+                    style={{ backgroundColor: step.done ? BLUE : "#e5e7eb" }}
+                />
             )}
         </div>
     );
