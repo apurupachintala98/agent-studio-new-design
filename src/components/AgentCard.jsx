@@ -17,10 +17,9 @@ export default function AgentCard({ agent }) {
 
     // Route based on agent type
     if (agent.agentType === "Cortex") {
-      navigate("/cortex-agent", {
-        state: { agentDetails }
-      })
-    } else if (agent.agentType === "LangGraph") {
+  navigate(`/cortex-agent/${agent.id}`)
+}
+     else if (agent.agentType === "LangGraph") {
       navigate("/langraph-agent", {
         state: { agentDetails }
       })

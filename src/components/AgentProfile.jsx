@@ -3,6 +3,8 @@ import {
   SectionHeader,
   FooterButtons,
 } from "../components/SharedComponents";
+import { api } from "../services/api"
+
 
 // --- Icon Components ---
 const InfoIcon = () => (
@@ -33,6 +35,26 @@ const PencilIcon = () => (
 
 // --- Agent Profile Card ---
 function AgentProfileCard() {
+  const [models, setModels] = useState([]);
+  const [selectedModel, setSelectedModel] = useState < string > ("");
+
+  useEffect(() => {
+    const fetchLLMs = async () => {
+      try {
+        const data = await api.getLLMs();
+        setModels(data);
+
+        // Set default selection (first model)
+        if (data.length > 0) {
+          setSelectedModel(data[0].model_id);
+        }
+      } catch (error) {
+        console.error("Failed to load LLM models:", error);
+      }
+    };
+
+    fetchLLMs();
+  }, []);
   return (
     <div
       className="rounded-lg bg-white overflow-hidden"
@@ -120,7 +142,7 @@ function AgentProfileCard() {
             <div className="flex items-center">
               <label className="text-sm flex-shrink-0 pr-3" style={{ color: "#C0C8CC" }}>Agent Name</label>
               <input
-                type="text" defaultValue="HR - Assistant - 01" disabled
+                type="text" value={agentDetails?.agnt_nm || ""} disabled
                 className="flex-1 px-3 py-2.5 text-sm rounded-sm"
                 style={{ color: "#A0AEB5", backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none", cursor: "not-allowed" }}
               />
@@ -131,11 +153,25 @@ function AgentProfileCard() {
               <label className="text-sm flex-shrink-0 pr-3" style={{ color: "#37474F", fontWeight: 600 }}>Model Selection</label>
               <div className="relative flex-1">
                 <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm appearance-none rounded-sm pr-8"
-                  style={{ color: "#37474F", backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none" }}
-                  defaultValue="HR - Assistant - 01"
+                  style={{
+                    color: "#37474F",
+                    backgroundColor: "#F5F7F8",
+                    border: "1px solid #ECEFF1",
+                    outline: "none",
+                  }}
                 >
-                  <option>HR - Assistant - 01</option>
+                  {models.length === 0 ? (
+                    <option>Loading models...</option>
+                  ) : (
+                    models.map((model) => (
+                      <option key={model.model_id} value={model.model_id}>
+                        {model.model_name}
+                      </option>
+                    ))
+                  )}
                 </select>
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"><ChevronDown /></div>
               </div>
@@ -146,7 +182,7 @@ function AgentProfileCard() {
         <div className="mt-6 flex items-center">
           <label className="text-sm flex-shrink-0 pr-3" style={{ color: "#C0C8CC" }}>Agent Description</label>
           <input
-            type="text" defaultValue="A specialized data agent for HR analytics and policy information retrieval." disabled
+            type="text" value={agentDetails?.agnt_desc || ""} disabled
             className="flex-1 px-3 py-2.5 text-sm rounded-sm"
             style={{ color: "#A0AEB5", backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none", cursor: "not-allowed" }}
           />
@@ -191,7 +227,7 @@ function AppConfigCard() {
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <label className="text-xs font-medium" style={{ color: "#90A4AE", whiteSpace: "nowrap" }}>Snowflake Database</label>
-              <input type="text" defaultValue="PROD_ANALYTICS_DB" disabled
+              <input type="text" value={agentDetails?.db_nm || ""} disabled
                 className="flex-1 px-3 py-2.5 text-sm rounded-md"
                 style={{ color: "#78909C", backgroundColor: "#F5F7FA", border: "1px solid #E0E0E0", outline: "none", cursor: "not-allowed" }}
               />
@@ -200,7 +236,7 @@ function AppConfigCard() {
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <label className="text-xs font-medium" style={{ color: "#90A4AE", whiteSpace: "nowrap" }}>Database Schema</label>
-              <input type="text" defaultValue="CUSTOMER_SERVICE" disabled
+              <input type="text" value={agentDetails?.schma_nm || ""} disabled
                 className="flex-1 px-3 py-2.5 text-sm rounded-md"
                 style={{ color: "#78909C", backgroundColor: "#F5F7FA", border: "1px solid #E0E0E0", outline: "none", cursor: "not-allowed" }}
               />
@@ -260,7 +296,8 @@ function ResourcesCard() {
 }
 
 // --- Main Page ---
-export default function AgentProfile({ onSaveAndContinue }) {
+export default function AgentProfile({ agentDetails, onSaveAndContinue }) {
+  
   const [isSaving, setIsSaving] = useState(false);
 
   const handleDiscard = () => {
@@ -288,12 +325,12 @@ export default function AgentProfile({ onSaveAndContinue }) {
     <>
       <div className="mt-5">
         <SectionHeader>Agent Profile</SectionHeader>
-        <AgentProfileCard />
+       <AgentProfileCard agentDetails={agentDetails} />
       </div>
 
       <div className="mt-7">
         <SectionHeader>Application Configuration</SectionHeader>
-        <AppConfigCard />
+        <AppConfigCard agentDetails={agentDetails} />
       </div>
 
       <div className="mt-7">

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   PageLayout,
   BackToDashboard,
@@ -7,9 +8,28 @@ import {
 import AgentProfile from "../components/AgentProfile";
 import Tools from "../components/Tools";
 import Deployment from "../components/Deployment";
+import { fetchSpecificAgent } from "../services/agents";
 
 export default function AgentStudio() {
   const [activeStep, setActiveStep] = useState(1);
+  const [agentDetails, setAgentDetails] = useState(null);
+  const { agentId } = useParams();
+
+  useEffect(() => {
+    const loadAgent = async () => {
+      try {
+        const response = await fetchSpecificAgent(agentId);
+        const record = response?.data?.record;
+        setAgentDetails(record);
+      } catch (error) {
+        console.error("Failed to fetch agent details:", error);
+      }
+    };
+
+    if (agentId) {
+      loadAgent();
+    }
+  }, [agentId]);
 
   const goToNextStep = () => {
     setActiveStep((prev) => Math.min(prev + 1, 3));
@@ -27,16 +47,20 @@ export default function AgentStudio() {
       <Stepper activeStep={activeStep} />
 
       {activeStep === 1 && (
-        <AgentProfile onSaveAndContinue={goToNextStep} />
+        <AgentProfile
+          agentDetails={agentDetails}
+          onSaveAndContinue={goToNextStep}
+        />
       )}
 
       {activeStep === 2 && (
-        <Tools onSaveAndContinue={goToNextStep} />
+        <Tools
+          agentDetails={agentDetails}
+          onSaveAndContinue={goToNextStep}
+        />
       )}
 
-      {activeStep === 3 && (
-        <Deployment />
-      )}
+      {activeStep === 3 && <Deployment agentDetails={agentDetails} />}
     </PageLayout>
   );
 }
