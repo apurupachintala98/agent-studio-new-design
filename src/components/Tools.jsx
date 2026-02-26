@@ -196,11 +196,11 @@ function OrchestrationSection({ value, onChange }) {
 }
 
 // --- Main Page ---
-export default function Tools({ agentDetails, onSaveAndContinue, onCreateAgent }) 
- const [tools, setTools] = useState([]);
-  const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-  const [loading, setLoading] = useState(false);
+export default function Tools({ agentDetails, onSaveAndContinue, onCreateAgent }) {
+ const [tools, setTools] = useState([])
+  const [orchestrationInstruction, setOrchestrationInstruction] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
 
 useEffect(() => {
