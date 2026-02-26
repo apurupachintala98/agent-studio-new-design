@@ -293,43 +293,18 @@ const loadTools = async (scopesArray) => {
   };
 
 const handleSaveAndContinue = () => {
-  const selectedTools = tools.filter((t) => t.selected)
-
-  const formattedTools = selectedTools.map((tool) => ({
-    type: tool.type,
-    name: tool.name,
-    description: tool.description,
-    input_schema:
-      tool.original?.tool_rsrc_config?.input_schema || "Default",
-  }))
-
-  const toolResources = selectedTools.map((tool) => ({
-    name: tool.name,
-    semantic_model_file:
-      tool.original?.tool_rsrc_config?.semantic_model_file,
-    input_schema:
-      tool.original?.tool_rsrc_config?.input_schema || "Default",
-    execution_environment_type:
-      tool.original?.tool_rsrc_config?.execution_environment?.type,
-    warehouse:
-      tool.original?.tool_rsrc_config?.execution_environment?.warehouse,
-    query_timeout:
-      tool.original?.tool_rsrc_config?.execution_environment?.query_timeout,
-  }))
+  const selectedTools = tools.filter(t => t.selected)
 
   const toolData = {
-    tools: formattedTools,
-    toolResources,
+    tools: selectedTools,
     orchestrationInstructions: orchestrationInstruction,
-    toolChoiceType: "auto",
-    toolChoiceName: null,
     budgetSeconds: 60,
     budgetTokens: 1000,
   }
 
   onSaveAndContinue(toolData)
 
-  setIsSaved(true)
+  setIsSaved(true)   // ✅ show create agent button
 }
 
 const handleCreateAgent = async () => {
@@ -355,11 +330,17 @@ const handleCreateAgent = async () => {
         buttons={[
           { label: "Discard", variant: "outline", onClick: handleDiscard },
           { label: "Save as Draft", variant: "outline", onClick: handleSaveDraft },
-{
-  label: isSaved ? "Create Agent" : "Save & Continue",
-  variant: "primary",
-  onClick: isSaved ? handleCreateAgent : handleSaveAndContinue,
-}        ]}
+!isSaved
+  ? {
+      label: "Save & Continue",
+      variant: "primary",
+      onClick: handleSaveAndContinue,
+    }
+  : {
+      label: "Create Agent",
+      variant: "primary",
+      onClick: onCreateAgent,
+    }       ]}
       />
     </>
   );

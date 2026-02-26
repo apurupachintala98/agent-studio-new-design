@@ -58,7 +58,7 @@ const handleCreateAgent = async () => {
   }
 
   if (!stepOneData || !toolData) {
-    alert("Missing profile or tool data")
+    alert("Missing required data")
     return
   }
 
@@ -68,28 +68,16 @@ const handleCreateAgent = async () => {
     const sesnId = crypto.randomUUID()
     const userId = localStorage.getItem("user_id")
 
-    // 🔥 Extract data from stepOneData
-    const {
-      agentName,
-      description,
-      db,
-      schema,
-      applicationName,
-      selectedModel,
-      responseInstructions,
-      orchestrationInstructions,
-      systemInstructions,
-    } = stepOneData
-
-    const profilePayload = {
+    // 1️⃣ CONFIGURE
+    await agentApi.configureAgent(agentId, {
       sesn_id: sesnId,
-      agent_name: agentName,
-      description: description,
-      db: db,
-      schema: schema,
-      application_name: applicationName,
+      agent_name: stepOneData.agentName,
+      description: stepOneData.description,
+      db: stepOneData.db,
+      schema: stepOneData.schema,
+      application_name: stepOneData.applicationName,
       model_config: {
-        orchestration: selectedModel,
+        orchestration: stepOneData.selectedModel,
       },
       orchestration_config: {
         budget: {
@@ -98,64 +86,30 @@ const handleCreateAgent = async () => {
         },
         features: { thread_memory: true },
         agent_instructions: {
-          response: responseInstructions,
-          orchestration: orchestrationInstructions,
-          system: systemInstructions,
+          response: stepOneData.responseInstructions,
+          orchestration: stepOneData.orchestrationInstructions,
+          system: stepOneData.systemInstructions,
         },
       },
       features: { thread_memory: true },
-    }
+    })
 
-    await agentApi.configureAgent(agentId, profilePayload)
-
+    // 2️⃣ RUNTIME
     await agentApi.configureRuntime(agentId, {
-      agent_name: agentName,
-      db: db,
-      schema: schema,
-      application_name: applicationName,
+      agent_name: stepOneData.agentName,
+      db: stepOneData.db,
+      schema: stepOneData.schema,
+      application_name: stepOneData.applicationName,
       user_identity: userId,
     })
 
-    const formattedResources = {}
+    // 3️⃣ TOOLS
+    await agentApi.configureTools(agentId, toolData)
 
-    toolData.toolResources.forEach((resource) => {
-      formattedResources[resource.name] = {
-        semantic_model_file: resource.semantic_model_file,
-        db_name: db,
-        input_schema: resource.input_schema || "Default",
-        execution_environment: {
-          type: resource.execution_environment_type,
-          warehouse: resource.warehouse,
-          query_timeout: resource.query_timeout || 120,
-        },
-      }
-    })
+    alert("Agent Created Successfully ✅")
 
-    const toolsPayload = {
-      sesn_id: sesnId,
-      tool_choice: {
-        type: toolData.toolChoiceType,
-        name:
-          toolData.toolChoiceType === "tool" &&
-          toolData.toolChoiceName
-            ? [toolData.toolChoiceName]
-            : [],
-      },
-      tools: toolData.tools.map((tool) => ({
-        type: tool.type,
-        name: tool.name,
-        description: tool.description,
-        db_name: db,
-        input_schema: tool.input_schema || "Default",
-      })),
-      tool_resources: formattedResources,
-      orchestration_instructions:
-        toolData.orchestrationInstructions,
-    }
-
-    await agentApi.configureTools(agentId, toolsPayload)
-
-    alert("Agent Created Successfully ")
+    // 🚀 NOW move to deployment
+    setActiveStep(3)
 
   } catch (error) {
     console.error(error)
