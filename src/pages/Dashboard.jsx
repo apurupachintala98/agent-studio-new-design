@@ -305,7 +305,7 @@ export default function Dashboard() {
                   }}
                 >
                   <option value="">Select</option>
-                  {[...new Set(agents.map(a => a.models[0]))].map(type => (
+                  {[...new Set(agents.map(a => a.agentType))].map(type => (
                     <option key={type} value={type}>
                       {type}
                     </option>
