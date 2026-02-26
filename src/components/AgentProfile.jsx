@@ -35,6 +35,8 @@ const PencilIcon = () => (
 
 // --- Agent Profile Card ---
 function AgentProfileCard({
+  agentName,
+  agentDescription,
   agentDetails,
   selectedModel,
   setSelectedModel,
