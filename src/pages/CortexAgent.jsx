@@ -31,7 +31,7 @@ export default function AgentStudio() {
       )}
 
       {activeStep === 2 && (
-        <ToolsAndOrchestration onSaveAndContinue={goToNextStep} />
+        <Tools onSaveAndContinue={goToNextStep} />
       )}
 
       {activeStep === 3 && (
