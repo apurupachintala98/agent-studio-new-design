@@ -28,43 +28,89 @@ export default function Dashboard() {
   const [selectedAgentName, setSelectedAgentName] = useState("")
 
 
+  // useEffect(() => {
+  //   if (!appCode || hasFetched.current) return
+
+  //   hasFetched.current = true
+
+  //   const loadDashboardData = async () => {
+  //     try {
+  //       setLoading(true)
+
+  //       // Call both APIs but only use agent information response
+  //       const [_, agentInfoResponse] = await Promise.all([
+  //         fetchAgentsByAppCode(appCode),
+  //         agentApi.fetchAgentInformation(appCode),
+  //       ])
+
+  //       setAgentCount(agentInfoResponse)
+
+  //       const formattedAgents = agentInfoResponse.agents.map((agent) => ({
+  //         id: agent.agnt_id,
+  //         name: agent.agnt_nm,
+  //         status: agent.status?.toLowerCase() === "active" ? "Active" : "Draft",
+  //         description: agent.agnt_desc,
+  //         agentType: agent.agnt_type,
+  //         modelName: agent.llm_nm || null,
+  //       }))
+
+  //       setAgents(formattedAgents)
+
+  //     } catch (error) {
+  //       console.error("Dashboard API Error:", error)
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+
+  //   loadDashboardData()
+  // }, [appCode])
   useEffect(() => {
-    if (!appCode || hasFetched.current) return
+  if (!appCode) return;
 
-    hasFetched.current = true
+  const controller = new AbortController();
 
-    const loadDashboardData = async () => {
-      try {
-        setLoading(true)
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
 
-        // Call both APIs but only use agent information response
-        const [_, agentInfoResponse] = await Promise.all([
-          fetchAgentsByAppCode(appCode),
-          agentApi.fetchAgentInformation(appCode),
-        ])
+      const agentInfoResponse =
+        await agentApi.fetchAgentInformation(appCode, {
+          signal: controller.signal,
+        });
 
-        setAgentCount(agentInfoResponse)
+      setAgentCount(agentInfoResponse);
 
-        const formattedAgents = agentInfoResponse.agents.map((agent) => ({
+      setAgents(
+        agentInfoResponse.agents.map((agent) => ({
           id: agent.agnt_id,
           name: agent.agnt_nm,
-          status: agent.status?.toLowerCase() === "active" ? "Active" : "Draft",
+          status:
+            agent.status?.toLowerCase() === "active"
+              ? "Active"
+              : "Draft",
           description: agent.agnt_desc,
           agentType: agent.agnt_type,
           modelName: agent.llm_nm || null,
         }))
+      );
 
-        setAgents(formattedAgents)
-
-      } catch (error) {
-        console.error("Dashboard API Error:", error)
-      } finally {
-        setLoading(false)
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Dashboard API Error:", error);
       }
+    } finally {
+      setLoading(false);
     }
+  };
 
-    loadDashboardData()
-  }, [appCode])
+  loadDashboardData();
+
+  return () => {
+    controller.abort();
+  };
+
+}, [appCode]);
 
   const filteredAgents = agents.filter(agent => {
     const matchesSearch =
