@@ -34,9 +34,17 @@ const PencilIcon = () => (
 );
 
 // --- Agent Profile Card ---
-function AgentProfileCard({ agentDetails }) {
+function AgentProfileCard({
+  agentDetails,
+  selectedModel,
+  setSelectedModel,
+  systemInstruction,
+  setSystemInstruction,
+  responseInstruction,
+  setResponseInstruction
+}) {
   const [models, setModels] = useState([]);
-  const [selectedModel, setSelectedModel] = useState("");
+  
 
   useEffect(() => {
     const fetchLLMs = async () => {
@@ -142,7 +150,7 @@ function AgentProfileCard({ agentDetails }) {
             <div className="flex items-center">
               <label className="text-sm flex-shrink-0 pr-3" style={{ color: "#C0C8CC" }}>Agent Name</label>
               <input
-                type="text" value={agentDetails?.agnt_nm || ""} disabled
+                type="text" value={agentName} disabled
                 className="flex-1 px-3 py-2.5 text-sm rounded-sm"
                 style={{ color: "#A0AEB5", backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none", cursor: "not-allowed" }}
               />
@@ -182,7 +190,7 @@ function AgentProfileCard({ agentDetails }) {
         <div className="mt-6 flex items-center">
           <label className="text-sm flex-shrink-0 pr-3" style={{ color: "#C0C8CC" }}>Agent Description</label>
           <input
-            type="text" value={agentDetails?.agnt_desc || ""} disabled
+            type="text" value={agentDescription} disabled
             className="flex-1 px-3 py-2.5 text-sm rounded-sm"
             style={{ color: "#A0AEB5", backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none", cursor: "not-allowed" }}
           />
@@ -191,6 +199,18 @@ function AgentProfileCard({ agentDetails }) {
         <div className="mt-6 flex items-start">
           <label className="text-sm flex-shrink-0 pr-3 pt-3" style={{ color: "#37474F", fontWeight: 500 }}>System Instruction</label>
           <textarea
+           value={systemInstruction}
+  onChange={(e) => setSystemInstruction(e.target.value)}
+            className="flex-1 rounded-sm p-3 text-sm resize-none" rows={6}
+            style={{ backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none", color: "#263238" }}
+          />
+        </div>
+
+         <div className="mt-6 flex items-start">
+          <label className="text-sm flex-shrink-0 pr-3 pt-3" style={{ color: "#37474F", fontWeight: 500 }}>Response Instruction</label>
+          <textarea
+          value={responseInstruction}
+  onChange={(e) => setResponseInstruction(e.target.value)}
             className="flex-1 rounded-sm p-3 text-sm resize-none" rows={6}
             style={{ backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none", color: "#263238" }}
           />
@@ -205,7 +225,7 @@ function AgentProfileCard({ agentDetails }) {
 }
 
 // --- Application Configuration Card ---
-function AppConfigCard({ agentDetails }) {
+function AppConfigCard({ database, schema }) {
   return (
     <div
       className="rounded-lg bg-white overflow-hidden"
@@ -227,7 +247,7 @@ function AppConfigCard({ agentDetails }) {
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <label className="text-xs font-medium" style={{ color: "#90A4AE", whiteSpace: "nowrap" }}>Snowflake Database</label>
-              <input type="text" value={agentDetails?.db_nm || ""} disabled
+              <input type="text" value={database} disabled
                 className="flex-1 px-3 py-2.5 text-sm rounded-md"
                 style={{ color: "#78909C", backgroundColor: "#F5F7FA", border: "1px solid #E0E0E0", outline: "none", cursor: "not-allowed" }}
               />
@@ -236,7 +256,7 @@ function AppConfigCard({ agentDetails }) {
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <label className="text-xs font-medium" style={{ color: "#90A4AE", whiteSpace: "nowrap" }}>Database Schema</label>
-              <input type="text" value={agentDetails?.schma_nm || ""} disabled
+              <input type="text" value={schema} disabled
                 className="flex-1 px-3 py-2.5 text-sm rounded-md"
                 style={{ color: "#78909C", backgroundColor: "#F5F7FA", border: "1px solid #E0E0E0", outline: "none", cursor: "not-allowed" }}
               />
@@ -257,8 +277,8 @@ function AppConfigCard({ agentDetails }) {
 }
 
 // --- Resources Card ---
-function ResourcesCard() {
-  const [toolChoice, setToolChoice] = useState("auto");
+function ResourcesCard({ toolChoice, setToolChoice }) {
+
 
   return (
     <div
@@ -297,8 +317,21 @@ function ResourcesCard() {
 
 // --- Main Page ---
 export default function AgentProfile({ agentDetails, onSaveAndContinue }) {
-  
+
   const [isSaving, setIsSaving] = useState(false);
+
+  // Prefilled values (from backend)
+  const agentName = agentDetails?.agnt_nm || "";
+  const agentDescription = agentDetails?.agnt_desc || "";
+  const database = agentDetails?.db_nm || "";
+  const schema = agentDetails?.schma_nm || "";
+
+  // User-entered values
+  const [selectedModel, setSelectedModel] = useState("");
+  const [systemInstruction, setSystemInstruction] = useState("");
+  const [responseInstruction, setResponseInstruction] = useState("");
+  const [toolChoice, setToolChoice] = useState("auto");
+
 
   const handleDiscard = () => {
     console.log("Discard clicked");
@@ -308,34 +341,69 @@ export default function AgentProfile({ agentDetails, onSaveAndContinue }) {
     console.log("Save as Draft clicked");
   };
 
-  const handleSaveAndContinue = async () => {
-    setIsSaving(true);
-    try {
-      // Save form data here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      onSaveAndContinue();
-    } catch (error) {
-      console.error("Save failed:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
+const handleSaveAndContinue = async () => {
+  setIsSaving(true);
+
+  try {
+    const allAgentData = {
+      // Prefilled
+      agentName,
+      agentDescription,
+      database,
+      schema,
+
+      // User entered
+      selectedModel,
+      systemInstruction,
+      responseInstruction,
+      toolChoice,
+    };
+
+    console.log("Forwarding Data:", allAgentData);
+
+    // Send everything forward
+    onSaveAndContinue(allAgentData);
+
+  } catch (error) {
+    console.error("Save failed:", error);
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   return (
     <>
       <div className="mt-5">
         <SectionHeader>Agent Profile</SectionHeader>
-       <AgentProfileCard agentDetails={agentDetails} />
+     <AgentProfileCard
+  agentDetails={agentDetails}
+  agentName={agentName}
+  agentDescription={agentDescription}
+  selectedModel={selectedModel}
+  setSelectedModel={setSelectedModel}
+  systemInstruction={systemInstruction}
+  setSystemInstruction={setSystemInstruction}
+  responseInstruction={responseInstruction}
+  setResponseInstruction={setResponseInstruction}
+/>
       </div>
 
       <div className="mt-7">
         <SectionHeader>Application Configuration</SectionHeader>
-        <AppConfigCard agentDetails={agentDetails} />
+        <AppConfigCard
+  database={database}
+  schema={schema}
+/>
       </div>
 
       <div className="mt-7">
         <SectionHeader>Resources</SectionHeader>
-        <ResourcesCard />
+
+
+<ResourcesCard
+  toolChoice={toolChoice}
+  setToolChoice={setToolChoice}
+/>
       </div>
 
       <FooterButtons

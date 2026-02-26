@@ -14,6 +14,7 @@ export default function AgentStudio() {
   const [activeStep, setActiveStep] = useState(1);
   const [agentDetails, setAgentDetails] = useState(null);
   const { agentId } = useParams();
+  const [stepOneData, setStepOneData] = useState(null);
 
   useEffect(() => {
     const loadAgent = async () => {
@@ -31,10 +32,14 @@ export default function AgentStudio() {
     }
   }, [agentId]);
 
-  const goToNextStep = () => {
-    setActiveStep((prev) => Math.min(prev + 1, 3));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const goToNextStep = (dataFromStepOne) => {
+  if (dataFromStepOne) {
+    setStepOneData(dataFromStepOne);
+  }
+
+  setActiveStep((prev) => Math.min(prev + 1, 3));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
   const goToPrevStep = () => {
     setActiveStep((prev) => Math.max(prev - 1, 1));
@@ -53,12 +58,13 @@ export default function AgentStudio() {
         />
       )}
 
-      {activeStep === 2 && (
-        <Tools
-          agentDetails={agentDetails}
-          onSaveAndContinue={goToNextStep}
-        />
-      )}
+     {activeStep === 2 && (
+  <Tools
+    agentDetails={agentDetails}
+    stepOneData={stepOneData}
+    onSaveAndContinue={goToNextStep}
+  />
+)}
 
       {activeStep === 3 && <Deployment agentDetails={agentDetails} />}
     </PageLayout>
