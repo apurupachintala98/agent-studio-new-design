@@ -145,18 +145,20 @@ export async function listServers() {
   throw new Error('Failed to fetch servers')
 }
 
-export async function fetchToolsByScopes(
+
+
+ export async function fetchToolsByScopes(
   scopes: string[]
-): Promise<any[]> {
+): Promise<FetchToolsResponse> {
   const response = await hmacFetch<FetchToolsResponse>(
-    '/edagenai/fetch-tools-by-scopes',
-    'POST',
+    "/edagenai/fetch-tools-by-scopes",
+    "POST",
     { scopes }
   )
 
   if (response.success) {
-    return response.data?.tools ?? []
+    return response   
   }
 
-  throw new Error('Failed to fetch tools by scopes')
+  throw new Error("Failed to fetch tools")
 }
