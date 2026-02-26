@@ -1,26 +1,24 @@
-import React from "react";
+import { useState } from "react";
 import AgentProfile from "../components/AgentProfile";
 import Tools from "../components/Tools";
 import Deployment from "../components/Deployment";
 
 export default function CortexAgent() {
+  const [step, setStep] = useState(1);
+
+  const handleNext = () => {
+    setStep((prev) => prev + 1);
+  };
+
+  const handleBack = () => {
+    setStep((prev) => prev - 1);
+  };
+
   return (
-    <div
-      style={{
-        padding: "24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-      }}
-    >
-      {/* Agent Profile Section */}
-      <AgentProfile />
-
-      {/* Tools Section */}
-      <Tools />
-
-      {/* Deployment Section */}
-      <Deployment />
-    </div>
+    <>
+      {step === 1 && <AgentProfile onNext={handleNext} />}
+      {step === 2 && <Tools onNext={handleNext} onBack={handleBack} />}
+      {step === 3 && <Deployment onBack={handleBack} />}
+    </>
   );
 }

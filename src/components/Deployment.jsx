@@ -115,7 +115,7 @@ function DeployStep({ step, index, total }) {
     );
 }
 
-export default function Deployment() {
+export default function Deployment({ onBack }) {
 
     const [finishDeployment, setFinishDeployment] = useState(false);
 
@@ -231,7 +231,7 @@ export default function Deployment() {
 
             {/* ── Footer actions ── */}
             <footer className="bg-gray-50 border-t border-gray-200 px-8 py-4 flex items-center justify-end gap-3">
-                <button className="px-5 py-2 rounded-full border border-primary-color text-sm font-medium text-primary-color hover:bg-gray-100 transition-colors">
+                <button onClick={onBack} className="px-5 py-2 rounded-full border border-primary-color text-sm font-medium text-primary-color hover:bg-gray-100 transition-colors">
                     Discard
                 </button>
                 <button onClick={() => navigate("/chat")} className={`px-5 py-2 rounded-full text-sm font-medium ${finishDeployment ? " bg-primary-color text-white" : "text-gray-500 bg-gray-300"}`} disabled={!finishDeployment}>

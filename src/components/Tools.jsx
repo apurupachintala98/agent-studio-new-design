@@ -118,7 +118,7 @@ function ToolCard({ tool, onToggle }) {
     );
 }
 
-export default function Tools() {
+export default function Tools({ onNext, onBack }) {
     const [tools, setTools] = useState(TOOLS);
     const [search, setSearch] = useState("");
     const [orchestration, setOrchestration] = useState("");
@@ -209,13 +209,14 @@ export default function Tools() {
 
             {/* ── Footer ── */}
             <footer className="bg-gray-100 border-t border-gray-200 px-8 py-4 flex items-center justify-end gap-3">
-                <button className="px-5 py-2 rounded-full border border-primary-color text-sm font-medium text-primary-color bg-white hover:bg-gray-50 transition-colors">
+                <button onClick={onBack} className="px-5 py-2 rounded-full border border-primary-color text-sm font-medium text-primary-color bg-white hover:bg-gray-50 transition-colors">
                     Discard
                 </button>
                 <button className="px-5 py-2 rounded-full border border-primary-color text-sm font-medium text-primary-color bg-white hover:bg-gray-50 transition-colors">
                     Save as Draft
                 </button>
                 <button
+                onClick={onNext}
                     className="px-6 py-2 rounded-full text-white text-sm font-semibold transition-colors shadow"
                     style={{ backgroundColor: BLUE }}
                     onMouseOver={e => e.currentTarget.style.backgroundColor = "#005f9e"}

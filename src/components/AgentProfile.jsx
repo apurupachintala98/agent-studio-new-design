@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ArrowLeft, Upload, Info, CheckCircle, ChevronDown } from 'lucide-react'
 import Header from './Header'
 
-export default function AgentProfile() {
+export default function AgentProfile({onNext}) {
   const [agentName, setAgentName] = useState('HR - Assistant - 01')
   const [modelSelection, setModelSelection] = useState('HR - Assistant - 01')
   const [agentDescription, setAgentDescription] = useState('A specialized data agent for HR analytics and policy information retrieval.')
@@ -665,18 +665,21 @@ export default function AgentProfile() {
           }}>
             Save as Draft
           </button>
-          <button style={{
-            padding: '10px 24px',
-            border: 'none',
-            background: '#0079C2',
-            color: 'white',
-            borderRadius: '6px',
-            fontSize: '13px',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}>
-            Save & Continue
-          </button>
+          <button
+  onClick={onNext}
+  style={{
+    padding: "10px 24px",
+    border: "none",
+    background: "#0079C2",
+    color: "white",
+    borderRadius: "6px",
+    fontSize: "13px",
+    fontWeight: "600",
+    cursor: "pointer"
+  }}
+>
+  Save & Continue
+</button>
         </div>
       </main>
     </div>
