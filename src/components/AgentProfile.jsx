@@ -370,8 +370,8 @@ const handleSaveAndContinue = async () => {
       applicationName: agentDetails?.aplctn_cd,
       selectedModel,
       responseInstructions: responseInstruction,
-      orchestrationInstructions: orchestrationInstruction,
       systemInstructions: systemInstruction,
+      toolChoice,
     })
 
   } catch (error) {
