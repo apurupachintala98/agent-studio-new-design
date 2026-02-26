@@ -160,7 +160,7 @@ function DeploymentLogs() {
 }
 
 // --- Source Artifacts Card ---
-function SourceArtifacts({ agentId, agentApi, setErrorNotification })
+function SourceArtifacts({ agentId, agentApi, setErrorNotification }){
 const [isDownloading, setIsDownloading] = useState(false);
 
 const handleDownloadCode = async () => {
