@@ -16,6 +16,7 @@ export default function AgentStudio() {
   const { agentId } = useParams();
   const [stepOneData, setStepOneData] = useState(null);
   const [toolData, setToolData] = useState(null)
+const [isCreating, setIsCreating] = useState(false)
 
   useEffect(() => {
     const loadAgent = async () => {
@@ -47,9 +48,123 @@ export default function AgentStudio() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 const handleToolsSave = (data) => {
-  setToolData(data)     // now this works
-  goToNextStep()
+  setToolData(data)
 }
+
+const handleCreateAgent = async () => {
+  if (!agentId) {
+    alert("Agent ID missing")
+    return
+  }
+
+  if (!stepOneData || !toolData) {
+    alert("Missing profile or tool data")
+    return
+  }
+
+  setIsCreating(true)
+
+  try {
+    const sesnId = crypto.randomUUID()
+    const userId = localStorage.getItem("user_id")
+
+    // 🔥 Extract data from stepOneData
+    const {
+      agentName,
+      description,
+      db,
+      schema,
+      applicationName,
+      selectedModel,
+      responseInstructions,
+      orchestrationInstructions,
+      systemInstructions,
+    } = stepOneData
+
+    const profilePayload = {
+      sesn_id: sesnId,
+      agent_name: agentName,
+      description: description,
+      db: db,
+      schema: schema,
+      application_name: applicationName,
+      model_config: {
+        orchestration: selectedModel,
+      },
+      orchestration_config: {
+        budget: {
+          seconds: toolData.budgetSeconds,
+          tokens: toolData.budgetTokens,
+        },
+        features: { thread_memory: true },
+        agent_instructions: {
+          response: responseInstructions,
+          orchestration: orchestrationInstructions,
+          system: systemInstructions,
+        },
+      },
+      features: { thread_memory: true },
+    }
+
+    await agentApi.configureAgent(agentId, profilePayload)
+
+    await agentApi.configureRuntime(agentId, {
+      agent_name: agentName,
+      db: db,
+      schema: schema,
+      application_name: applicationName,
+      user_identity: userId,
+    })
+
+    const formattedResources = {}
+
+    toolData.toolResources.forEach((resource) => {
+      formattedResources[resource.name] = {
+        semantic_model_file: resource.semantic_model_file,
+        db_name: db,
+        input_schema: resource.input_schema || "Default",
+        execution_environment: {
+          type: resource.execution_environment_type,
+          warehouse: resource.warehouse,
+          query_timeout: resource.query_timeout || 120,
+        },
+      }
+    })
+
+    const toolsPayload = {
+      sesn_id: sesnId,
+      tool_choice: {
+        type: toolData.toolChoiceType,
+        name:
+          toolData.toolChoiceType === "tool" &&
+          toolData.toolChoiceName
+            ? [toolData.toolChoiceName]
+            : [],
+      },
+      tools: toolData.tools.map((tool) => ({
+        type: tool.type,
+        name: tool.name,
+        description: tool.description,
+        db_name: db,
+        input_schema: tool.input_schema || "Default",
+      })),
+      tool_resources: formattedResources,
+      orchestration_instructions:
+        toolData.orchestrationInstructions,
+    }
+
+    await agentApi.configureTools(agentId, toolsPayload)
+
+    alert("Agent Created Successfully ")
+
+  } catch (error) {
+    console.error(error)
+    alert("Agent creation failed")
+  } finally {
+    setIsCreating(false)
+  }
+}
+
   return (
     <PageLayout>
       <BackToDashboard />
@@ -66,6 +181,7 @@ const handleToolsSave = (data) => {
   <Tools
     agentDetails={agentDetails}
     onSaveAndContinue={handleToolsSave}
+    onCreateAgent={handleCreateAgent}
   />
 )}
 

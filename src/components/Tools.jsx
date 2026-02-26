@@ -106,19 +106,7 @@ function ToolCard({ name, description, selected, type = "monitor", onToggle }) {
   );
 }
 
-// --- Tools Data ---
-// const initialTools = [
-//   { id: 1, name: "Claims_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-//   { id: 2, name: "Aedl_metadata_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-//   { id: 3, name: "Merge_pr", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-//   { id: 4, name: "Aedl_metadata_analyst_text_to_sql", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-//   { id: 5, name: "Promote_tokenization_metadata", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-//   { id: 6, name: "Validate_change_task", description: "Lorem Ipsum is simply dummy text", selected: true, type: "monitor" },
-//   { id: 7, name: "Validate_change_request", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
-//   { id: 8, name: "Validate_change_task", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
-//   { id: 9, name: "Check_merge_status", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
-//   { id: 10, name: "Validate_ritm", description: "Lorem Ipsum is simply dummy text", selected: false, type: "envelope" },
-// ];
+
 
 // --- Tools Grid Section ---
 function ToolsSection({ tools, toggleTool }) {
@@ -208,11 +196,12 @@ function OrchestrationSection({ value, onChange }) {
 }
 
 // --- Main Page ---
-export default function Tools({ agentDetails, onSaveAndContinue }) {
-  const [tools, setTools] = useState([]);
+export default function Tools({ agentDetails, onSaveAndContinue, onCreateAgent }) 
+ const [tools, setTools] = useState([]);
   const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isSaved, setIsSaved] = useState(false)
 
 useEffect(() => {
   if (!agentDetails) {
@@ -303,53 +292,50 @@ const loadTools = async (scopesArray) => {
     console.log("Saving draft:", draftData);
   };
 
-  const handleSaveAndContinue = async () => {
-  setIsSaving(true)
+const handleSaveAndContinue = () => {
+  const selectedTools = tools.filter((t) => t.selected)
 
-  try {
-    const selectedTools = tools.filter((t) => t.selected)
+  const formattedTools = selectedTools.map((tool) => ({
+    type: tool.type,
+    name: tool.name,
+    description: tool.description,
+    input_schema:
+      tool.original?.tool_rsrc_config?.input_schema || "Default",
+  }))
 
-    const formattedTools = selectedTools.map((tool) => ({
-      type: tool.type,
-      name: tool.name,
-      description: tool.description,
-      input_schema:
-        tool.original?.tool_rsrc_config?.input_schema || "Default",
-    }))
+  const toolResources = selectedTools.map((tool) => ({
+    name: tool.name,
+    semantic_model_file:
+      tool.original?.tool_rsrc_config?.semantic_model_file,
+    input_schema:
+      tool.original?.tool_rsrc_config?.input_schema || "Default",
+    execution_environment_type:
+      tool.original?.tool_rsrc_config?.execution_environment?.type,
+    warehouse:
+      tool.original?.tool_rsrc_config?.execution_environment?.warehouse,
+    query_timeout:
+      tool.original?.tool_rsrc_config?.execution_environment?.query_timeout,
+  }))
 
-    const toolResources = selectedTools.map((tool) => ({
-      name: tool.name,
-      semantic_model_file:
-        tool.original?.tool_rsrc_config?.semantic_model_file,
-      input_schema:
-        tool.original?.tool_rsrc_config?.input_schema || "Default",
-      execution_environment_type:
-        tool.original?.tool_rsrc_config?.execution_environment?.type,
-      warehouse:
-        tool.original?.tool_rsrc_config?.execution_environment?.warehouse,
-      query_timeout:
-        tool.original?.tool_rsrc_config?.execution_environment?.query_timeout,
-    }))
-
-    const toolData = {
-      tools: formattedTools,
-      toolResources,
-      orchestrationInstructions: orchestrationInstruction,
-      toolChoiceType: "auto", // or dynamic later
-      toolChoiceName: null,
-      budgetSeconds: 60,
-      budgetTokens: 1000,
-    }
-
-    onSaveAndContinue(toolData)
-
-  } catch (error) {
-    console.error("Save failed:", error)
-  } finally {
-    setIsSaving(false)
+  const toolData = {
+    tools: formattedTools,
+    toolResources,
+    orchestrationInstructions: orchestrationInstruction,
+    toolChoiceType: "auto",
+    toolChoiceName: null,
+    budgetSeconds: 60,
+    budgetTokens: 1000,
   }
+
+  onSaveAndContinue(toolData)
+
+  setIsSaved(true)
 }
 
+const handleCreateAgent = async () => {
+  if (!onCreateAgent) return
+  await onCreateAgent()
+}
   return (
     <>
       <div className="mt-5">
@@ -369,8 +355,11 @@ const loadTools = async (scopesArray) => {
         buttons={[
           { label: "Discard", variant: "outline", onClick: handleDiscard },
           { label: "Save as Draft", variant: "outline", onClick: handleSaveDraft },
-          { label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue },
-        ]}
+{
+  label: isSaved ? "Create Agent" : "Save & Continue",
+  variant: "primary",
+  onClick: isSaved ? handleCreateAgent : handleSaveAndContinue,
+}        ]}
       />
     </>
   );

@@ -363,8 +363,17 @@ const handleSaveAndContinue = async () => {
 
     console.log("Forwarding Data:", allAgentData);
 
-    // Send everything forward
-    onSaveAndContinue(allAgentData);
+    onSaveAndContinue({
+  agentName,
+  description,
+  db,
+  schema,
+  applicationName,
+  selectedModel,
+  responseInstructions,
+  orchestrationInstructions,
+  systemInstructions,
+})
 
   } catch (error) {
     console.error("Save failed:", error);
