@@ -20,13 +20,12 @@ export default function Dashboard() {
   const [agents, setAgents] = useState([])
   const [agentCount, setAgentCount] = useState(null)
   const [loading, setLoading] = useState(true)
-  const location = useLocation()
-    const { userId } = location.state || {}
-  const appCode = location.state?.appCode || localStorage.getItem("appCode")
   const hasFetched = useRef(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedType, setSelectedType] = useState("")
   const [selectedAgentName, setSelectedAgentName] = useState("")
+  const appCode = localStorage.getItem("aplctn_cd");
+const userId = localStorage.getItem("user_id");
 
 
 useEffect(() => {
