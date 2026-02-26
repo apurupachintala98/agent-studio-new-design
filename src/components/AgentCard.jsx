@@ -1,34 +1,46 @@
 import { useNavigate } from "react-router-dom";
 import { fetchSpecificAgent } from "../services/agents"
+import { v4 as uuidv4 } from "uuid";
+import { agentApi } from "../services/api";
 
 export default function AgentCard({ agent }) {
   const navigate = useNavigate();
 
   const handleEditClick = async () => {
-  try {
-    const response = await fetchSpecificAgent(agent.id)
+    try {
+      const sessionId = uuidv4();
+      const userId = sessionStorage.getItem("user_id");
+      const appCode = sessionStorage.getItem("appCode");
+      const response = await fetchSpecificAgent(agent.id)
 
-    const agentDetails = response?.data?.record
+      const agentDetails = response?.data?.record
 
-    if (!agentDetails) {
-      console.error("Agent details not found")
-      return
+      await agentApi.createAgent({
+        agent_uuid: agent.id,
+        sesn_id: sessionId,
+        user_id: userId,
+        aplctn_cd: appCode,
+      });
+
+      if (!agentDetails) {
+        console.error("Agent details not found")
+        return
+      }
+
+      // Route based on agent type
+      if (agent.agentType === "Cortex") {
+        navigate(`/cortex-agent/${agent.id}`)
+      }
+      else if (agent.agentType === "LangGraph") {
+        navigate("/langraph-agent", {
+          state: { agentDetails }
+        })
+      }
+
+    } catch (error) {
+      console.error("Failed to fetch specific agent:", error)
     }
-
-    // Route based on agent type
-    if (agent.agentType === "Cortex") {
-  navigate(`/cortex-agent/${agent.id}`)
-}
-     else if (agent.agentType === "LangGraph") {
-      navigate("/langraph-agent", {
-        state: { agentDetails }
-      })
-    }
-
-  } catch (error) {
-    console.error("Failed to fetch specific agent:", error)
   }
-}
 
   return (
     <div
@@ -233,60 +245,60 @@ export default function AgentCard({ agent }) {
             </div>
           )
         })} */}
-       {/* Agent Type Box */}
-<div
-  style={{
-    display: 'flex',
-    padding: '9px 11px 10px 12px',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: '8px',
-    border: '1px solid rgba(0, 121, 194, 0.20)',
-    background: 'rgba(0, 121, 194, 0.10)'
-  }}
->
-  <span
-    style={{
-      color: '#0079C2',
-      fontFamily: 'Open Sans',
-      fontSize: '11px',
-      fontWeight: '600',
-      lineHeight: '16.5px'
-    }}
-  >
-    {agent.agentType}
-  </span>
-</div>
+        {/* Agent Type Box */}
+        <div
+          style={{
+            display: 'flex',
+            padding: '9px 11px 10px 12px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: '8px',
+            border: '1px solid rgba(0, 121, 194, 0.20)',
+            background: 'rgba(0, 121, 194, 0.10)'
+          }}
+        >
+          <span
+            style={{
+              color: '#0079C2',
+              fontFamily: 'Open Sans',
+              fontSize: '11px',
+              fontWeight: '600',
+              lineHeight: '16.5px'
+            }}
+          >
+            {agent.agentType}
+          </span>
+        </div>
 
-{/* Model Name Box */}
-{agent.modelName && (
-  <div
-    style={{
-      display: 'flex',
-      padding: '9px 11px 10px 12px',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: '8px',
-      border: '1px solid #E2E8F0',
-      background: '#F1F5F9'
-    }}
-  >
-    <span
-      style={{
-        color: '#5B6770',
-        fontFamily: 'Open Sans',
-        fontSize: '11px',
-        fontWeight: '600',
-        lineHeight: '16.5px'
-      }}
-    >
-      {agent.modelName}
-    </span>
-  </div>
-)}
+        {/* Model Name Box */}
+        {agent.modelName && (
+          <div
+            style={{
+              display: 'flex',
+              padding: '9px 11px 10px 12px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: '8px',
+              border: '1px solid #E2E8F0',
+              background: '#F1F5F9'
+            }}
+          >
+            <span
+              style={{
+                color: '#5B6770',
+                fontFamily: 'Open Sans',
+                fontSize: '11px',
+                fontWeight: '600',
+                lineHeight: '16.5px'
+              }}
+            >
+              {agent.modelName}
+            </span>
+          </div>
+        )}
         {/* Edit Icon Container */}
         <div
-           onClick={handleEditClick}
+          onClick={handleEditClick}
           style={{
             display: "flex",
             width: "31px",
