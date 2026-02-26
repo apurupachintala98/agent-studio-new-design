@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-export default function LoginPage() {
+export default function Login() {
   const navigate = useNavigate()
   const [userId, setUserId] = useState("")
   const [password, setPassword] = useState("")

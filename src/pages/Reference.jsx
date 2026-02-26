@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Search } from 'lucide-react'
 import Header from '../components/Header'
 
-export default function ReferencePage() {
+export default function Reference() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const referenceCards = [

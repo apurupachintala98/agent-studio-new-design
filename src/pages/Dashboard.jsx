@@ -14,7 +14,7 @@ const getStatusBgColor = (status) => {
   return status === 'Active' ? 'bg-emerald-50' : 'bg-yellow-50'
 }
 
-export default function DashboardPage() {
+export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
   const [agents, setAgents] = useState([])

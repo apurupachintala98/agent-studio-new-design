@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 export default function AgentCard({ agent }) {
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -204,22 +208,60 @@ export default function AgentCard({ agent }) {
         })}
         {/* Edit Icon Container */}
         <div
+          onClick={() => navigate("/cortex-agent")}
           style={{
-            display: 'flex',
-            width: '31px',
-            height: '32px',
-            padding: '8.5px 8px 0 8px',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            borderRadius: '16px',
-            marginLeft: 'auto',
-            cursor: 'pointer'
+            display: "flex",
+            width: "31px",
+            height: "32px",
+            padding: "8.5px 8px 0 8px",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            borderRadius: "16px",
+            marginLeft: "auto",
+            cursor: "pointer",
+            transition: "transform 0.2s ease, background 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.2)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
           }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ height: '15px', flexShrink: 0, alignSelf: 'stretch' }}>
-            <path d="M9.375 1.875H13.125V5.625" stroke="#94A3B8" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M6.25 8.75L13.125 1.875" stroke="#94A3B8" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M11.25 8.125V11.875C11.25 12.2065 11.1183 12.5245 10.8839 12.7589C10.6495 12.9933 10.3315 13.125 10 13.125H3.125C2.79348 13.125 2.47554 12.9933 2.24112 12.7589C2.0067 12.5245 1.875 12.2065 1.875 11.875V5C1.875 4.66848 2.0067 4.35054 2.24112 4.11612C2.47554 3.8817 2.79348 3.75 3.125 3.75H6.875" stroke="#94A3B8" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="15"
+            viewBox="0 0 15 15"
+            fill="none"
+            style={{
+              height: "15px",
+              flexShrink: 0,
+              alignSelf: "stretch",
+              transition: "transform 0.2s ease",
+            }}
+          >
+            <path
+              d="M9.375 1.875H13.125V5.625"
+              stroke="#94A3B8"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M6.25 8.75L13.125 1.875"
+              stroke="#94A3B8"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M11.25 8.125V11.875C11.25 12.2065 11.1183 12.5245 10.8839 12.7589C10.6495 12.9933 10.3315 13.125 10 13.125H3.125C2.79348 13.125 2.47554 12.9933 2.24112 12.7589C2.0067 12.5245 1.875 12.2065 1.875 11.875V5C1.875 4.66848 2.0067 4.35054 2.24112 4.11612C2.47554 3.8817 2.79348 3.75 3.125 3.75H6.875"
+              stroke="#94A3B8"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
       </div>
