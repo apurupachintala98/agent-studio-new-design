@@ -17,7 +17,7 @@ export default function AgentStudio() {
   const { agentId } = useParams();
   const [stepOneData, setStepOneData] = useState(null);
   const [toolData, setToolData] = useState(null)
-const [isCreating, setIsCreating] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
 
   useEffect(() => {
     const loadAgent = async () => {
@@ -36,89 +36,91 @@ const [isCreating, setIsCreating] = useState(false)
   }, [agentId]);
 
   const goToNextStep = (dataFromStepOne) => {
-  if (dataFromStepOne) {
-    setStepOneData(dataFromStepOne);
-  }
+    if (dataFromStepOne) {
+      setStepOneData(dataFromStepOne);
+    }
 
-  setActiveStep((prev) => Math.min(prev + 1, 3));
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
+    setActiveStep((prev) => Math.min(prev + 1, 3));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const goToPrevStep = () => {
     setActiveStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-const handleToolsSave = (data) => {
-  setToolData(data)
-}
-
-const handleCreateAgent = async () => {
-  if (!agentId) {
-    alert("Agent ID missing")
-    return
+  const handleToolsSave = (data) => {
+    setToolData(data)
   }
 
-  if (!stepOneData || !toolData) {
-    alert("Missing required data")
-    return
-  }
+  const handleCreateAgent = async () => {
+    if (!agentId) {
+      alert("Agent ID missing")
+      return
+    }
 
-  setIsCreating(true)
+    if (!stepOneData || !toolData) {
+      alert("Missing required data")
+      return
+    }
 
-  try {
-    const sesnId = localStorage.getItem("session_Id")
-    const userId = localStorage.getItem("user_id")
+    setIsCreating(true)
 
-    await agentApi.configureAgent(agentId, {
-      sesn_id: sesnId,
-      agent_name: stepOneData.agentName,
-      description: stepOneData.description,
-      db: stepOneData.db,
-      schema: stepOneData.schema,
-      application_name: stepOneData.applicationName,
-      model_config: {
-        orchestration: stepOneData.selectedModel,
-      },
-      orchestration_config: {
-        budget: {
-          seconds: toolData.budgetSeconds,
-          tokens: toolData.budgetTokens,
+    try {
+      const sesnId = localStorage.getItem("session_Id")
+      const userId = localStorage.getItem("user_id")
+
+      await agentApi.configureAgent(agentId, {
+        sesn_id: sesnId,
+        agent_name: stepOneData.agentName,
+        description: stepOneData.description,
+        db: stepOneData.db,
+        schema: stepOneData.schema,
+        application_name: stepOneData.applicationName,
+        model_config: {
+          orchestration: stepOneData.selectedModel,
+        },
+        orchestration_config: {
+          budget: {
+            seconds: toolData.budgetSeconds,
+            tokens: toolData.budgetTokens,
+          },
+          features: { thread_memory: true },
+          agent_instructions: {
+            response: stepOneData.responseInstructions,
+            orchestration: stepOneData.orchestrationInstructions,
+            system: stepOneData.systemInstructions,
+          },
         },
         features: { thread_memory: true },
-        agent_instructions: {
-          response: stepOneData.responseInstructions,
-          orchestration: stepOneData.orchestrationInstructions,
-          system: stepOneData.systemInstructions,
-        },
-      },
-      features: { thread_memory: true },
-    })
+      })
 
-    await agentApi.configureRuntime(agentId, {
-      agent_name: stepOneData.agentName,
-      db: stepOneData.db,
-      schema: stepOneData.schema,
-      application_name: stepOneData.applicationName,
-      user_identity: userId,
-    })
+      await agentApi.configureRuntime(agentId, {
+        agent_name: stepOneData.agentName,
+        db: stepOneData.db,
+        schema: stepOneData.schema,
+        application_name: stepOneData.applicationName,
+        user_identity: userId,
+      })
 
-    const toolsPayload = {
-  sesn_id: sesnId,
-  ...toolData
-}
-    await agentApi.configureTools(agentId, toolsPayload)
+      const toolsPayload = {
+        sesn_id: sesnId,
+        ...toolData
+      }
+      await agentApi.configureTools(agentId, toolsPayload)
+      const response = await agentApi.generateAgentInSnowflake(agentId)
 
-    alert("Agent Created Successfully ")
+    if (response?.agent_url) {
+      localStorage.setItem("agent_url", response.agent_url)
+    }
+      setActiveStep(3)
 
-    setActiveStep(3)
-
-  } catch (error) {
-    console.error(error)
-    alert("Agent creation failed")
-  } finally {
-    setIsCreating(false)
+    } catch (error) {
+      console.error(error)
+      alert("Agent creation failed")
+    } finally {
+      setIsCreating(false)
+    }
   }
-}
 
   return (
     <PageLayout>
@@ -132,13 +134,13 @@ const handleCreateAgent = async () => {
         />
       )}
 
-   {activeStep === 2 && (
-  <Tools
-    agentDetails={agentDetails}
-    onSaveAndContinue={handleToolsSave}
-    onCreateAgent={handleCreateAgent}
-  />
-)}
+      {activeStep === 2 && (
+        <Tools
+          agentDetails={agentDetails}
+          onSaveAndContinue={handleToolsSave}
+          onCreateAgent={handleCreateAgent}
+        />
+      )}
 
       {activeStep === 3 && <Deployment agentDetails={agentDetails} />}
     </PageLayout>
