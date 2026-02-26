@@ -206,12 +206,10 @@ export default function Deployment() {
     <PageLayout>
       <BackToDashboard />
       <Stepper activeStep={3} />
-
       <div className="mt-6">
         <SectionHeader>Deployment Progress</SectionHeader>
         <DeploymentStepper />
       </div>
-
       <div className="mt-6 flex gap-5" style={{ alignItems: "stretch" }}>
         <div style={{ flex: "1.6" }}>
           <DeploymentLogs />
@@ -220,7 +218,6 @@ export default function Deployment() {
           <SourceArtifacts />
         </div>
       </div>
-
       <FooterButtons />
     </PageLayout>
   );

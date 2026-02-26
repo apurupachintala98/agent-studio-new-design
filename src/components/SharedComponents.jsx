@@ -113,7 +113,7 @@ export function BackToDashboard() {
   return (
     <div className="pt-4 pb-1">
       <a
-        href="#"
+        href="/dashboard"
         className="text-sm font-medium inline-flex items-center"
         style={{ color: "#0072C6", textDecoration: "none" }}
       >
@@ -150,7 +150,7 @@ export function PageLayout({ children }) {
       }}
     >
       <Navbar />
-      <main className="max-w-5xl mx-auto px-6 pb-6">
+      <main className="px-6 pb-6">
         {children}
         {/* Copyright */}
         <div className="text-center pb-4">
