@@ -208,13 +208,12 @@ function OrchestrationSection({ value, onChange }) {
 }
 
 // --- Main Page ---
-export default function Tools({ agentDetails, stepOneData, onSaveAndContinue }) {
+export default function Tools({ agentDetails, onSaveAndContinue }) {
   const [tools, setTools] = useState([]);
   const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-   const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  
   useEffect(() => {
     if (!agentDetails?.agnt_access_scope) {
     return;
@@ -233,20 +232,33 @@ export default function Tools({ agentDetails, stepOneData, onSaveAndContinue }) 
     }
   }, [agentDetails])
 
-  const loadTools = async (scopesArray) => {
-    try {
-      setLoading(true)
+ const loadTools = async (scopesArray) => {
+  try {
+    setLoading(true)
 
-      const toolsData = await fetchToolsByScopes(scopesArray)
+    const response = await fetchToolsByScopes(scopesArray)
 
-      setTools(toolsData)
+    const groupedTools = response?.grouped_tools || []
 
-    } catch (error) {
-      console.error("Failed to fetch tools:", error)
-    } finally {
-      setLoading(false)
-    }
+    // Flatten tools across scopes
+    const formattedTools = groupedTools.flatMap((group, groupIndex) =>
+      group.tools.map((tool, toolIndex) => ({
+        id: `${groupIndex}-${toolIndex}`,   // unique id
+        name: tool.tool_nm,
+        description: tool.tool_desc,
+        selected: false,        // user selection
+        type: "monitor",        // default as required
+      }))
+    )
+
+    setTools(formattedTools)
+
+  } catch (error) {
+    console.error("Failed to fetch tools:", error)
+  } finally {
+    setLoading(false)
   }
+}
 
   const toggleTool = (id) => {
     setTools((prev) =>
@@ -268,17 +280,51 @@ export default function Tools({ agentDetails, stepOneData, onSaveAndContinue }) 
   };
 
   const handleSaveAndContinue = async () => {
-    setIsSaving(true);
-    try {
-      // Save form data here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      onSaveAndContinue();
-    } catch (error) {
-      console.error("Save failed:", error);
-    } finally {
-      setIsSaving(false);
+  setIsSaving(true)
+
+  try {
+    const selectedTools = tools.filter((t) => t.selected)
+
+    const formattedTools = selectedTools.map((tool) => ({
+      type: tool.type,
+      name: tool.name,
+      description: tool.description,
+      input_schema:
+        tool.original?.tool_rsrc_config?.input_schema || "Default",
+    }))
+
+    const toolResources = selectedTools.map((tool) => ({
+      name: tool.name,
+      semantic_model_file:
+        tool.original?.tool_rsrc_config?.semantic_model_file,
+      input_schema:
+        tool.original?.tool_rsrc_config?.input_schema || "Default",
+      execution_environment_type:
+        tool.original?.tool_rsrc_config?.execution_environment?.type,
+      warehouse:
+        tool.original?.tool_rsrc_config?.execution_environment?.warehouse,
+      query_timeout:
+        tool.original?.tool_rsrc_config?.execution_environment?.query_timeout,
+    }))
+
+    const toolData = {
+      tools: formattedTools,
+      toolResources,
+      orchestrationInstructions: orchestrationInstruction,
+      toolChoiceType: "auto", // or dynamic later
+      toolChoiceName: null,
+      budgetSeconds: 60,
+      budgetTokens: 1000,
     }
-  };
+
+    onSaveAndContinue(toolData)
+
+  } catch (error) {
+    console.error("Save failed:", error)
+  } finally {
+    setIsSaving(false)
+  }
+}
 
   return (
     <>

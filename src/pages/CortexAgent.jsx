@@ -58,11 +58,13 @@ export default function AgentStudio() {
         />
       )}
 
-     {activeStep === 2 && (
+    {activeStep === 2 && (
   <Tools
     agentDetails={agentDetails}
-    stepOneData={stepOneData}
-    onSaveAndContinue={goToNextStep}
+    onSaveAndContinue={(data) => {
+      setToolData(data)
+      goToNextStep()
+    }}
   />
 )}
 
