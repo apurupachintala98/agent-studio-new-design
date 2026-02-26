@@ -208,7 +208,7 @@ function OrchestrationSection({ value, onChange }) {
 }
 
 // --- Main Page ---
-export default function Tools({ onSaveAndContinue }) {
+export default function Tools({ agentDetails, stepOneData, onSaveAndContinue }) {
   const [tools, setTools] = useState([]);
   const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
   const [isSaving, setIsSaving] = useState(false);
