@@ -71,7 +71,7 @@ export default function Dashboard() {
       agent.name.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesType =
-      selectedType === "" || agent.models[0] === selectedType
+      selectedType === "" || agent.agentType === selectedType
 
     const matchesName =
       selectedAgentName === "" || agent.name === selectedAgentName
