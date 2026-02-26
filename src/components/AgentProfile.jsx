@@ -34,9 +34,9 @@ const PencilIcon = () => (
 );
 
 // --- Agent Profile Card ---
-function AgentProfileCard() {
+function AgentProfileCard({ agentDetails }) {
   const [models, setModels] = useState([]);
-  const [selectedModel, setSelectedModel] = useState < string > ("");
+  const [selectedModel, setSelectedModel] = useState("");
 
   useEffect(() => {
     const fetchLLMs = async () => {
@@ -205,7 +205,7 @@ function AgentProfileCard() {
 }
 
 // --- Application Configuration Card ---
-function AppConfigCard() {
+function AppConfigCard({ agentDetails }) {
   return (
     <div
       className="rounded-lg bg-white overflow-hidden"
