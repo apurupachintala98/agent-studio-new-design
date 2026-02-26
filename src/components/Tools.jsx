@@ -207,7 +207,7 @@ function OrchestrationSection({ value, onChange }) {
 }
 
 // --- Main Page ---
-export default function ToolsAndOrchestration({ onSaveAndContinue }) {
+export default function Tools({ onSaveAndContinue }) {
   const [tools, setTools] = useState(initialTools);
   const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -234,17 +234,9 @@ export default function ToolsAndOrchestration({ onSaveAndContinue }) {
   const handleSaveAndContinue = async () => {
     setIsSaving(true);
     try {
-      const selectedTools = tools.filter((t) => t.selected);
-      const payload = {
-        tools: selectedTools.map((t) => ({ id: t.id, name: t.name, type: t.type })),
-        orchestrationInstruction,
-      };
-
-      // Save data + call APIs here
-      // await api.saveToolsConfig(payload);
+      // Save form data here
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      onSaveAndContinue(payload);
+      onSaveAndContinue();
     } catch (error) {
       console.error("Save failed:", error);
     } finally {
