@@ -115,7 +115,7 @@ function DeployStep({ step, index, total }) {
     );
 }
 
-export default function DeploymentProgress() {
+export default function Deployment() {
 
     const [finishDeployment, setFinishDeployment] = useState(false);
 
