@@ -209,17 +209,16 @@ function OrchestrationSection({ value, onChange }) {
 
 // --- Main Page ---
 export default function Tools({ onSaveAndContinue }) {
-   const [tools, setTools] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
-    const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
+  const [tools, setTools] = useState([]);
+  const [orchestrationInstruction, setOrchestrationInstruction] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+   const [loading, setLoading] = useState(false)
 
-
+  
   useEffect(() => {
     if (!agentDetails?.agnt_access_scope) {
     return;
   }
-
     try {
       const parsed = JSON.parse(agentDetails.agnt_access_scope)
 
