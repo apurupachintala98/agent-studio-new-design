@@ -57,6 +57,7 @@ export default function Login() {
 
       // store user
       localStorage.setItem("user_id", userId)
+      localStorage.setItem("appCode", appCode)
 
     } catch (err) {
       console.error(err)
