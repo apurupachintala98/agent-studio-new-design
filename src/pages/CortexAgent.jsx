@@ -9,6 +9,7 @@ import AgentProfile from "../components/AgentProfile";
 import Tools from "../components/Tools";
 import Deployment from "../components/Deployment";
 import { fetchSpecificAgent } from "../services/agents";
+import { agentApi } from "../services/api"
 
 export default function AgentStudio() {
   const [activeStep, setActiveStep] = useState(1);
