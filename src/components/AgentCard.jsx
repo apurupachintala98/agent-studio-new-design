@@ -22,6 +22,7 @@ export default function AgentCard({ agent }) {
         aplctn_cd: appCode,
       });
 
+      const session_Id = localStorage.getItem("session_Id");
       if (!agentDetails) {
         console.error("Agent details not found")
         return
