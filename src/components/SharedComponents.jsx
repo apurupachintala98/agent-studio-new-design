@@ -402,7 +402,7 @@ export function PageLayout({ children }) {
       }}
     >
       <Navbar />
-      <main className="max-w-5xl mx-auto px-6 pb-6">
+      <main className="px-6 pb-6">
         {children}
         {/* Copyright */}
         <div className="text-center pb-4">
