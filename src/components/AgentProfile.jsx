@@ -4,6 +4,7 @@ import {
   FooterButtons,
 } from "../components/SharedComponents";
 import { agentApi } from "../services/api"
+import { useNavigate } from "react-router-dom";
 
 
 // --- Icon Components ---
@@ -318,9 +319,14 @@ function ResourcesCard({ toolChoice, setToolChoice }) {
 }
 
 // --- Main Page ---
-export default function AgentProfile({ agentDetails, onSaveAndContinue }) {
+export default function AgentProfile({ 
+  agentDetails, 
+  onSaveAndContinue,
+  onBack 
+}) {
 
   const [isSaving, setIsSaving] = useState(false);
+  const navigate = useNavigate();
 
   // Prefilled values (from backend)
   const agentName = agentDetails?.agnt_nm || "";
@@ -336,8 +342,8 @@ export default function AgentProfile({ agentDetails, onSaveAndContinue }) {
 
 
   const handleDiscard = () => {
-    console.log("Discard clicked");
-  };
+  navigate("/dashboard");   
+};
 
   const handleSaveDraft = () => {
     console.log("Save as Draft clicked");
@@ -419,8 +425,9 @@ const handleSaveAndContinue = async () => {
       <FooterButtons
         loading={isSaving}
         buttons={[
+                  { label: "Back", variant: "outline", onClick: onBack },
+
           { label: "Discard", variant: "outline", onClick: handleDiscard },
-          { label: "Save as Draft", variant: "outline", onClick: handleSaveDraft },
           { label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue },
         ]}
       />

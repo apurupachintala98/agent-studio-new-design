@@ -4,6 +4,8 @@ import {
   FooterButtons,
 } from "../components/SharedComponents";
 import { fetchToolsByScopes } from "../services/agents"
+  import { useNavigate } from "react-router-dom";
+
 
 // --- Tool Card Icons ---
 const MonitorIcon = ({ selected }) => (
@@ -196,7 +198,14 @@ function OrchestrationSection({ value, onChange }) {
 }
 
 // --- Main Page ---
-export default function Tools({ agentDetails, onSaveAndContinue, onCreateAgent }) {
+export default function Tools({ 
+  agentDetails, 
+  onSaveAndContinue, 
+  onCreateAgent,
+  onBack 
+}) {
+
+const navigate = useNavigate();
  const [tools, setTools] = useState([])
   const [orchestrationInstruction, setOrchestrationInstruction] = useState("")
   const [isSaving, setIsSaving] = useState(false)
@@ -280,9 +289,8 @@ const loadTools = async (scopesArray) => {
   };
 
   const handleDiscard = () => {
-    setTools(initialTools);
-    setOrchestrationInstruction("");
-  };
+  navigate("/dashboard");   
+};
 
   const handleSaveDraft = () => {
     const draftData = {
@@ -360,8 +368,9 @@ const handleCreateAgent = async () => {
       <FooterButtons
         loading={isSaving}
         buttons={[
+           { label: "Back", variant: "outline", onClick: onBack },
           { label: "Discard", variant: "outline", onClick: handleDiscard },
-          { label: "Save as Draft", variant: "outline", onClick: handleSaveDraft },
+         
 !isSaved
   ? {
       label: "Save & Continue",

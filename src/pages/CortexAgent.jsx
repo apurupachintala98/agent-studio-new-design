@@ -128,19 +128,21 @@ export default function AgentStudio() {
       <Stepper activeStep={activeStep} />
 
       {activeStep === 1 && (
-        <AgentProfile
-          agentDetails={agentDetails}
-          onSaveAndContinue={goToNextStep}
-        />
-      )}
+  <AgentProfile
+    agentDetails={agentDetails}
+    onSaveAndContinue={goToNextStep}
+    onBack={goToPrevStep}
+  />
+)}
 
       {activeStep === 2 && (
-        <Tools
-          agentDetails={agentDetails}
-          onSaveAndContinue={handleToolsSave}
-          onCreateAgent={handleCreateAgent}
-        />
-      )}
+  <Tools
+    agentDetails={agentDetails}
+    onSaveAndContinue={handleToolsSave}
+    onCreateAgent={handleCreateAgent}
+    onBack={goToPrevStep}
+  />
+)}
 
       {activeStep === 3 && <Deployment agentDetails={agentDetails} />}
     </PageLayout>
