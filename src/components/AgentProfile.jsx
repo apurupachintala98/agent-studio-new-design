@@ -364,10 +364,10 @@ const handleSaveAndContinue = async () => {
     console.log("Forwarding Data:", allAgentData);
 onSaveAndContinue({
   agentName,
-  description: agentDescription,  
-  db,
-  schema,
-  applicationName,
+  description: agentDescription,
+  db: agentDetails?.db_nm,     
+  schema: agentDetails?.schma_nm, 
+  applicationName: agentDetails?.aplctn_cd,
   selectedModel,
   responseInstructions,
   orchestrationInstructions,
