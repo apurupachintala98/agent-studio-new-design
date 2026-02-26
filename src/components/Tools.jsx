@@ -233,7 +233,7 @@ export default function Tools({ onSaveAndContinue }) {
     }
   }, [agentDetails])
 
-  const loadTools = async (scopesArray: string[]) => {
+  const loadTools = async (scopesArray) => {
     try {
       setLoading(true)
 
