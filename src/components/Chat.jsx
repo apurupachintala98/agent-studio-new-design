@@ -108,7 +108,7 @@ function StructuredResponse() {
 }
 
 export default function ChatPage() {
-    const [messages, setMessages] = useState(initialMessages);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const bottomRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false)
