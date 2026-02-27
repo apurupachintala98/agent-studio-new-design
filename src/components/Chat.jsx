@@ -119,19 +119,10 @@ export default function ChatPage() {
     }, [agentName]);
 
 
-
-
-
     const handleSubmit = async () => {
         const content = input.trim();
         if (!content) return;
 
-        if (!agentId || !appCode || !userId || !sesnId) {
-            setErrorNotification("Missing required session details.");
-            return;
-        }
-
-        // Add user message to UI
         const userMessage = {
             id: Date.now(),
             role: "user",
@@ -142,9 +133,16 @@ export default function ChatPage() {
             }),
         };
 
+        // Always show user message
         setMessages(prev => [...prev, userMessage]);
         setInput("");
         setIsLoading(true);
+
+        if (!apiUrl) {
+            console.error("API URL missing");
+            setIsLoading(false);
+            return;
+        }
 
         try {
             const endpoint = `${apiUrl.replace(/\/$/, "")}/agent/chat`;
@@ -163,7 +161,7 @@ export default function ChatPage() {
                         },
                     ],
                 },
-            }
+            };
 
             const res = await fetch(endpoint, {
                 method: "POST",
@@ -225,9 +223,8 @@ export default function ChatPage() {
 
 
             <Header />
-            {/* example of the new ServiceEndpoint component */}
             <div className="px-6 py-4">
-                <ServiceEndpoint url="https://infrastructure.cortex-platform.example.com/api/v2/runtime/cluster/environment/staging/build/pipeline/execution/metadata/components/cortex-runtime-v2.1/diagnostics/logs/system/health/status/extended/stream/session/498237498237498237498237/node/ops/longpath/configuration/assets/resources/cortex-engine/modules/dependencies/v4/security/validation/scan/results/detail/report/index.html" />
+                <ServiceEndpoint url={apiUrl} />
             </div>
 
             <div className='flex flex-col h-full flex-1'>
@@ -307,6 +304,7 @@ export default function ChatPage() {
                             <div className=" flex items-center gap-2 pb-2">
 
                                 <button
+                                    type="button"
                                     onClick={handleSubmit}
                                     className="w-10 h-10 rounded-[50%] bg-blue-500 hover:bg-blue-600 flex items-center justify-center transition-colors shadow"
                                 >

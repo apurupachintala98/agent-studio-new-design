@@ -1,13 +1,11 @@
 import { useState } from "react";
 
-const URL =
-    "https://infrastructure.cortex-platform.example.com/api/v2/runtime/cluster/environment/staging/build/pipeline/execution/metadata/components/cortex-runtime-v2.1/diagnostics/logs/system/health/status/extended/stream/session/4982374982374982374982374/node/ops/longpath/configuration/assets/resources/cortex-engine/modules/dependencies/v4/security/validation/scan/results/detail/report/index.html";
-
-export default function ServiceEndpoint() {
+export default function ServiceEndpoint({ url = "" }) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(URL);
+        if (!url) return;
+        navigator.clipboard.writeText(url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -35,7 +33,9 @@ export default function ServiceEndpoint() {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     <h2 className="text-base font-bold text-gray-800 mb-1.5">Service Endpoint</h2>
-                    <p className="text-sm text-gray-500 break-all leading-relaxed">{URL}</p>
+                   <p className="text-sm text-gray-500 break-all leading-relaxed">
+                        {url || "No endpoint available"}
+                    </p>
                 </div>
             </div>
 
