@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import ServiceEndpoint from "../components/ServiceEndpoint";
 import { SendHorizonal } from "lucide-react";
-import { API_CONFIG } from "../config/api-config"
+import API_CONFIG from "../config/api-config"
 
 const SSE_LOGS = [
     // { time: "10:43:01", type: "EVENT", content: 'node:start\n  name="policy_retriever"' },
@@ -100,6 +100,11 @@ export default function ChatPage() {
     const userId = localStorage.getItem("user_id")
     const appCode = localStorage.getItem("aplctn_cd");
     const agentName = localStorage.getItem("agentName");
+
+    useEffect(() => {
+    console.log("API_CONFIG:", API_CONFIG);
+    console.log("BASE_URL:", API_CONFIG?.BASE_URL);
+}, []);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
