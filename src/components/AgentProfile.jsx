@@ -418,7 +418,7 @@ export default function AgentProfile({
       <FooterButtons
         loading={isSaving}
         buttons={[
-          { label: "Back", variant: "outline", onClick: onBack },
+          { label: "Back", variant: "outline", onClick: handleDiscard },
           { label: "Discard", variant: "outline", onClick: handleDiscard },
           { label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue },
         ]}
