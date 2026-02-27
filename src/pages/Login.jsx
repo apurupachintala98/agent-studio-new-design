@@ -566,8 +566,7 @@ export default function Login() {
                   display: 'flex',
                   alignItems: 'center',
                   padding: '0 12px',
-                  height: '48px',          // slightly increased
-                  position: 'relative',
+                  height: '48px',
                   width: '100%'
                 }}
               >
@@ -588,7 +587,8 @@ export default function Login() {
                   disabled={!isValidated}
                   onChange={(e) => setAppCode(e.target.value)}
                   style={{
-                    flex: 1,
+                    width: '100%',
+                    minWidth: 0,
                     height: '100%',
                     border: 'none',
                     outline: 'none',
@@ -600,9 +600,7 @@ export default function Login() {
                     WebkitAppearance: 'none',
                     MozAppearance: 'none',
                     cursor: isValidated ? 'pointer' : 'not-allowed',
-                    opacity: isValidated ? 1 : 0.6,
-                    width: '100%',
-                    paddingRight: '24px',
+                    padding: '0 32px 0 0',
                     boxSizing: 'border-box'
                   }}
                 >
