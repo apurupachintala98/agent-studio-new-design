@@ -103,7 +103,7 @@ export default function Login() {
         alignItems: 'flex-start',
         background: '#0079C2',
         color: 'white',
-        height: '100vh',
+        minHeight: '100vh',
         boxSizing: 'border-box',
         flexShrink: 0
       }}>
