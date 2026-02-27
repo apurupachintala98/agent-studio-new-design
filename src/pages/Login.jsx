@@ -86,7 +86,7 @@ export default function Login() {
   return (
     <div style={{
       display: 'flex',
-      minHeight: '1200px',
+      minHeight: '100vh',
       width: '100vw',
       margin: 0,
       padding: 0,
