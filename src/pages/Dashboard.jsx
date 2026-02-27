@@ -25,45 +25,45 @@ export default function Dashboard() {
   const [selectedType, setSelectedType] = useState("")
   const [selectedAgentName, setSelectedAgentName] = useState("")
   const appCode = localStorage.getItem("aplctn_cd");
-const userId = localStorage.getItem("user_id");
+  const userId = localStorage.getItem("user_id");
 
 
-useEffect(() => {
-  if (!appCode) return;
+  useEffect(() => {
+    if (!appCode) return;
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
 
-      const agentInfoResponse =
-        await agentApi.fetchAgentInformation(appCode);
+        const agentInfoResponse =
+          await agentApi.fetchAgentInformation(appCode);
 
-      setAgentCount(agentInfoResponse);
+        setAgentCount(agentInfoResponse);
 
-      setAgents(
-        agentInfoResponse.agents.map((agent) => ({
-          id: agent.agnt_id,
-          name: agent.agnt_nm,
-          status:
-            agent.status?.toLowerCase() === "active"
-              ? "Active"
-              : "Draft",
-          description: agent.agnt_desc,
-          agentType: agent.agnt_type,
-          modelName: agent.llm_nm || null,
-        }))
-      );
+        setAgents(
+          agentInfoResponse.agents.map((agent) => ({
+            id: agent.agnt_id,
+            name: agent.agnt_nm,
+            status:
+              agent.status?.toLowerCase() === "active"
+                ? "Active"
+                : "Draft",
+            description: agent.agnt_desc,
+            agentType: agent.agnt_type,
+            modelName: agent.llm_nm || null,
+          }))
+        );
 
-    } catch (error) {
-      console.error("Dashboard API Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      } catch (error) {
+        console.error("Dashboard API Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  loadDashboardData();
+    loadDashboardData();
 
-}, [appCode]);
+  }, [appCode]);
   const filteredAgents = agents.filter(agent => {
     const matchesSearch =
       agent.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -95,21 +95,25 @@ useEffect(() => {
         {/* Page Title */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-open-sans text-base font-semibold text-black" style={{ lineHeight: '24px' }}>Key Performance Indicators</h1>
-          <button style={{
-            color: '#0079C2',
-            textAlign: 'center',
-            fontFamily: 'Open Sans',
-            fontSize: '13px',
-            fontStyle: 'normal',
-            fontWeight: '600',
-            lineHeight: '16px',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            padding: '0',
-            margin: '0'
-          }}>Register New Agent
-          </button>
+          <a
+            href="https://aedl-dashboard.edl.prod.awsdns.internal.das/write-mode/genai/agent-config"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: '#0079C2',
+              textAlign: 'center',
+              fontFamily: 'Open Sans',
+              fontSize: '13px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: '16px',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              padding: '0',
+              margin: '0'
+            }}>Register New Agent
+          </a>
         </div>
 
         {loading && (

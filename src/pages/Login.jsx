@@ -14,13 +14,19 @@ export default function Login() {
   const [appCode, setAppCode] = useState("")    // selected value
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [isValidated, setIsValidated] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
 
   const validateLDAP = async () => {
     try {
-      if (!userId || !password) return
+      if (!userId || !password) {
+        setError("User ID and Password are required")
+        return
+      }
 
-      setIsLoading(true)
+      setIsValidating(true)
       setError("")
+      setIsValidated(false)
 
       const response = await fetch(
         "https://pbee9gz5pe-vpce-0bd9a454888e84407.execute-api.us-east-1.amazonaws.com/prod/validateldapcredentials",
@@ -46,20 +52,19 @@ export default function Login() {
 
       const codes = data.app_cd || []
 
-      if (codes.length === 0) {
-        setError("No application codes found")
-        return
+      if (!codes.length) {
+        throw new Error("No application codes found")
       }
 
-
       setAppCodes(Array.isArray(codes) ? codes : [])
-      setAppCode("")
+      setIsValidated(true)
 
     } catch (err) {
       console.error(err)
-      setError(err.message || "Login failed")
+      setError(err.message || "Validation failed")
+      setIsValidated(false)
     } finally {
-      setIsLoading(false)
+      setIsValidating(false)
     }
   }
 
@@ -161,7 +166,7 @@ export default function Login() {
           justifyContent: 'center'
         }}>
           {/* Enterprise Portal Badge */}
-          <div style={{
+          {/* <div style={{
             display: 'flex',
             padding: '4px 12px',
             alignItems: 'center',
@@ -181,7 +186,7 @@ export default function Login() {
             }}>
               ENTERPRISE PORTAL
             </span>
-          </div>
+          </div> */}
 
           {/* Agent Studio Title */}
           <h2 style={{
@@ -247,7 +252,7 @@ export default function Login() {
           fontWeight: '300',
           lineHeight: '20px'
         }}>
-          <p style={{ margin: '0 0 4px 0' }}>© 2024 Elevance Health. All rights reserved.</p>
+          <p style={{ margin: '0 0 4px 0' }}>© 2026 Elevance Health. All rights reserved.</p>
           <p style={{ margin: 0 }}>Authorized Personnel Only.</p>
         </div>
       </div>
@@ -374,7 +379,7 @@ export default function Login() {
             </div>
 
             {/* Password */}
-            <div style={{ width: '100%' }}>
+            {/* <div style={{ width: '100%' }}>
               <label style={{
                 color: '#333',
                 fontFamily: '"Source Sans 3"',
@@ -444,6 +449,96 @@ export default function Login() {
                   )}
                 </button>
               </div>
+            </div> */}
+
+            <div style={{ width: '100%' }}>
+              <label style={{
+                color: '#333',
+                fontFamily: '"Source Sans 3"',
+                fontSize: '14px',
+                fontWeight: '700',
+                lineHeight: '20px',
+                display: 'block',
+                marginBottom: '8px'
+              }}>
+                Password
+              </label>
+
+              <div style={{
+                borderRadius: '6px',
+                border: isValidated ? '1px solid #16A34A' : '1px solid #CBD5E1',
+                background: '#FFF',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px 12px',
+                gap: '8px'
+              }}>
+
+                {/* Lock Icon */}
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+
+                {/* Password Input */}
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setIsValidated(false) // reset validation if user edits
+                  }}
+                  placeholder="••••••••"
+                  style={{
+                    flex: 1,
+                    outline: 'none',
+                    border: 'none',
+                    color: '#333',
+                    fontFamily: '"Source Sans 3"',
+                    fontSize: '16px',
+                    background: 'transparent'
+                  }}
+                />
+
+                {/* Eye Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#94A3B8',
+                    padding: 0
+                  }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+
+                {/* Validate Tick Button */}
+                <button
+                  type="button"
+                  onClick={validateLDAP}
+                  disabled={isValidating}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                    marginLeft: '6px',
+                    color: isValidated ? '#16A34A' : '#94A3B8'
+                  }}
+                >
+                  {isValidating ? (
+                    <span style={{ fontSize: '12px' }}>...</span>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </button>
+
+              </div>
             </div>
 
             {/* Application Code */}
@@ -489,6 +584,7 @@ export default function Login() {
 
                 <select
                   value={appCode}
+                  disabled={!isValidated}
                   onChange={(e) => setAppCode(e.target.value)}
                   style={{
                     flex: 1,
@@ -502,7 +598,8 @@ export default function Login() {
                     appearance: 'none',
                     WebkitAppearance: 'none',
                     MozAppearance: 'none',
-                    cursor: 'pointer',
+                    cursor: isValidated ? 'pointer' : 'not-allowed',
+                    opacity: isValidated ? 1 : 0.6,
                     width: '100%',
                     paddingRight: '24px',
                     boxSizing: 'border-box'

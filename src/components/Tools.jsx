@@ -4,7 +4,7 @@ import {
   FooterButtons,
 } from "../components/SharedComponents";
 import { fetchToolsByScopes } from "../services/agents"
-  import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 // --- Tool Card Icons ---
@@ -111,12 +111,18 @@ function ToolCard({ name, description, selected, type = "monitor", onToggle }) {
 
 
 // --- Tools Grid Section ---
-function ToolsSection({ tools, toggleTool }) {
+function ToolsSection({ tools, toggleTool, searchTerm, setSearchTerm }) {
+  const [searchTerm, setSearchTerm] = useState("")
+
+  const filteredTools = tools.filter(tool =>
+    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tool.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div>
       {/* Header row with Search */}
-      <div className="flex items-center justify-between mb-4">
+      {/* <div className="flex items-center justify-between mb-4">
         <SectionHeader>Tools</SectionHeader>
         <div className="flex items-center gap-2">
           <span className="text-sm" style={{ color: "#78909C" }}>Search</span>
@@ -137,6 +143,36 @@ function ToolsSection({ tools, toggleTool }) {
             />
           </div>
         </div>
+      </div> */}
+
+      {/* Header row with Search */}
+      <div className="flex items-center justify-between mb-4">
+        <SectionHeader>Tools</SectionHeader>
+        <div className="flex items-center gap-3">
+          <span
+            className="text-sm flex-shrink-0"
+            style={{ color: "#78909C", fontWeight: 400 }}
+          >
+            Search
+          </span>
+          <input
+            type="text"
+            placeholder="Search tools..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="text-sm"
+            style={{
+              width: 220,
+              height: 36,
+              backgroundColor: "#F0F2F3",
+              border: "none",
+              borderRadius: 6,
+              padding: "0 12px",
+              color: "#546E7A",
+              outline: "none",
+            }}
+          />
+        </div>
       </div>
 
       {/* Cards Grid */}
@@ -146,7 +182,7 @@ function ToolsSection({ tools, toggleTool }) {
           gridTemplateColumns: "repeat(4, 1fr)",
         }}
       >
-        {tools.map((tool) => (
+        {filteredTools.map((tool) => (
           <ToolCard
             key={tool.id}
             name={tool.name}
@@ -156,6 +192,12 @@ function ToolsSection({ tools, toggleTool }) {
             onToggle={() => toggleTool(tool.id)}
           />
         ))}
+
+        {tools.length === 0 && (
+  <div className="col-span-4 text-center text-gray-400 py-6">
+    No tools found
+  </div>
+)}
       </div>
     </div>
   );
@@ -198,89 +240,89 @@ function OrchestrationSection({ value, onChange }) {
 }
 
 // --- Main Page ---
-export default function Tools({ 
-  agentDetails, 
-  onSaveAndContinue, 
+export default function Tools({
+  agentDetails,
+  onSaveAndContinue,
   onCreateAgent,
-  onBack 
+  onBack
 }) {
 
-const navigate = useNavigate();
- const [tools, setTools] = useState([])
+  const navigate = useNavigate();
+  const [tools, setTools] = useState([])
   const [orchestrationInstruction, setOrchestrationInstruction] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
 
-useEffect(() => {
-  if (!agentDetails) {
-    console.log("AgentDetails not available yet")
-    return
-  }
-
-  if (!agentDetails.agnt_access_scope) {
-    console.log("No access scope found")
-    return
-  }
-
-  try {
-    const parsedScope = JSON.parse(agentDetails.agnt_access_scope)
-
-    const scopesArray = parsedScope?.scopes || []
-
-    console.log("Scopes Array:", scopesArray)
-
-    if (!scopesArray.length) {
-      console.log("Scopes array empty")
+  useEffect(() => {
+    if (!agentDetails) {
+      console.log("AgentDetails not available yet")
       return
     }
 
-    loadTools(scopesArray)
-
-  } catch (error) {
-    console.error("Error parsing scope:", error)
-  }
-
-}, [agentDetails])
-
-
-const loadTools = async (scopesArray) => {
-  try {
-    setLoading(true)
-
-    const response = await fetchToolsByScopes(scopesArray)
-
-    console.log("FULL TOOLS API RESPONSE:", response)
-
-    const groupedTools = response?.data?.grouped_tools
-
-    if (!groupedTools || groupedTools.length === 0) {
-      console.log("No grouped tools found")
-      setTools([])
+    if (!agentDetails.agnt_access_scope) {
+      console.log("No access scope found")
       return
     }
 
-    const formatted = groupedTools.flatMap((group) =>
-      group.tools.map((tool) => ({
-        id: tool.tool_id,
-        name: tool.tool_nm,
-        description: tool.tool_desc,
-        selected: false,
-        type: "monitor",
-        original: tool,
-      }))
-    )
+    try {
+      const parsedScope = JSON.parse(agentDetails.agnt_access_scope)
 
-    console.log("Formatted Tools:", formatted)
+      const scopesArray = parsedScope?.scopes || []
 
-    setTools(formatted)
+      console.log("Scopes Array:", scopesArray)
 
-  } catch (error) {
-    console.error("Failed to fetch tools:", error)
-  } finally {
-    setLoading(false)
+      if (!scopesArray.length) {
+        console.log("Scopes array empty")
+        return
+      }
+
+      loadTools(scopesArray)
+
+    } catch (error) {
+      console.error("Error parsing scope:", error)
+    }
+
+  }, [agentDetails])
+
+
+  const loadTools = async (scopesArray) => {
+    try {
+      setLoading(true)
+
+      const response = await fetchToolsByScopes(scopesArray)
+
+      console.log("FULL TOOLS API RESPONSE:", response)
+
+      const groupedTools = response?.data?.grouped_tools
+
+      if (!groupedTools || groupedTools.length === 0) {
+        console.log("No grouped tools found")
+        setTools([])
+        return
+      }
+
+      const formatted = groupedTools.flatMap((group) =>
+        group.tools.map((tool) => ({
+          id: tool.tool_id,
+          name: tool.tool_nm,
+          description: tool.tool_desc,
+          selected: false,
+          type: "monitor",
+          original: tool,
+        }))
+      )
+
+      console.log("Formatted Tools:", formatted)
+
+      setTools(formatted)
+
+    } catch (error) {
+      console.error("Failed to fetch tools:", error)
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
   const toggleTool = (id) => {
     setTools((prev) =>
@@ -289,8 +331,8 @@ const loadTools = async (scopesArray) => {
   };
 
   const handleDiscard = () => {
-  navigate("/dashboard");   
-};
+    navigate("/dashboard");
+  };
 
   const handleSaveDraft = () => {
     const draftData = {
@@ -300,61 +342,66 @@ const loadTools = async (scopesArray) => {
     console.log("Saving draft:", draftData);
   };
 
-const handleSaveAndContinue = () => {
-  const selectedTools = tools.filter(t => t.selected)
+  const handleSaveAndContinue = () => {
+    const selectedTools = tools.filter(t => t.selected)
 
-  if (!selectedTools.length) {
-    alert("Please select at least one tool")
-    return
-  }
+    if (!selectedTools.length) {
+      alert("Please select at least one tool")
+      return
+    }
 
-  const formattedTools = selectedTools.map(tool => ({
-    type: tool.original?.tool_id || "monitor",  // adjust if backend expects different type
-    name: tool.name,
-    description: tool.description,
-    db_name: tool.original?.tool_rsrc_config?.db_name || "Default",
-    input_schema:
-      tool.original?.tool_rsrc_config?.input_schema || "Default",
-  }))
-
-  const formattedResources = {}
-
-  selectedTools.forEach(tool => {
-    formattedResources[tool.name] = {
-      semantic_model_file:
-        tool.original?.tool_rsrc_config?.semantic_model_file,
-      db_name:
-        tool.original?.tool_rsrc_config?.db_name || "Default",
+    const formattedTools = selectedTools.map(tool => ({
+      type: tool.original?.tool_id || "monitor",  // adjust if backend expects different type
+      name: tool.name,
+      description: tool.description,
+      db_name: tool.original?.tool_rsrc_config?.db_name || "Default",
       input_schema:
         tool.original?.tool_rsrc_config?.input_schema || "Default",
-      execution_environment:
-        tool.original?.tool_rsrc_config?.execution_environment || {},
-    }
-  })
+    }))
 
-  const toolData = {
-    tool_choice: {
-      type: "auto",
-      name: [],
-    },
-    tools: formattedTools,
-    tool_resources: formattedResources,
-    orchestration_instructions: orchestrationInstruction,
+    const formattedResources = {}
+
+    selectedTools.forEach(tool => {
+      formattedResources[tool.name] = {
+        semantic_model_file:
+          tool.original?.tool_rsrc_config?.semantic_model_file,
+        db_name:
+          tool.original?.tool_rsrc_config?.db_name || "Default",
+        input_schema:
+          tool.original?.tool_rsrc_config?.input_schema || "Default",
+        execution_environment:
+          tool.original?.tool_rsrc_config?.execution_environment || {},
+      }
+    })
+
+    const toolData = {
+      tool_choice: {
+        type: "auto",
+        name: [],
+      },
+      tools: formattedTools,
+      tool_resources: formattedResources,
+      orchestration_instructions: orchestrationInstruction,
+    }
+
+    onSaveAndContinue(toolData)
+
+    setIsSaved(true)
   }
 
-  onSaveAndContinue(toolData)
-
-  setIsSaved(true)
-}
-
-const handleCreateAgent = async () => {
-  if (!onCreateAgent) return
-  await onCreateAgent()
-}
+  const handleCreateAgent = async () => {
+    if (!onCreateAgent) return
+    await onCreateAgent()
+  }
   return (
     <>
       <div className="mt-5">
-        <ToolsSection tools={tools} toggleTool={toggleTool} />
+        <ToolsSection
+          tools={filteredTools}
+          toggleTool={toggleTool}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
       </div>
 
       <div className="mt-7">
@@ -368,20 +415,20 @@ const handleCreateAgent = async () => {
       <FooterButtons
         loading={isSaving}
         buttons={[
-           { label: "Back", variant: "outline", onClick: onBack },
+          { label: "Back", variant: "outline", onClick: onBack },
           { label: "Discard", variant: "outline", onClick: handleDiscard },
-         
-!isSaved
-  ? {
-      label: "Save & Continue",
-      variant: "primary",
-      onClick: handleSaveAndContinue,
-    }
-  : {
-      label: "Create Agent",
-      variant: "primary",
-      onClick: onCreateAgent,
-    }       ]}
+
+          !isSaved
+            ? {
+              label: "Save & Continue",
+              variant: "primary",
+              onClick: handleSaveAndContinue,
+            }
+            : {
+              label: "Create Agent",
+              variant: "primary",
+              onClick: onCreateAgent,
+            }]}
       />
     </>
   );
