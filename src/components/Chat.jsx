@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import ServiceEndpoint from "../components/ServiceEndpoint";
 import { SendHorizonal } from "lucide-react";
-import { API_CONFIG } from "../config/api-config";
 
 const SSE_LOGS = [
     // { time: "10:43:01", type: "EVENT", content: 'node:start\n  name="policy_retriever"' },
@@ -110,8 +109,9 @@ export default function ChatPage() {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+
     useEffect(() => {
-        const API_URL = API_CONFIG.BASE_URL;
+        const API_URL = "https://agentbuilder-demo.edl.dev.awsdns.internal.das/";
 
         if (!agentName || !API_URL) return;
 
