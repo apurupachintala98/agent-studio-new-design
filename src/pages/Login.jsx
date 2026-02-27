@@ -573,17 +573,7 @@ export default function Login() {
                   position: 'relative'
                 }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
-                  <circle cx="5" cy="5" r="1.5" />
-                  <circle cx="12" cy="5" r="1.5" />
-                  <circle cx="19" cy="5" r="1.5" />
-                  <circle cx="5" cy="12" r="1.5" />
-                  <circle cx="12" cy="12" r="1.5" />
-                  <circle cx="19" cy="12" r="1.5" />
-                  <circle cx="5" cy="19" r="1.5" />
-                  <circle cx="12" cy="19" r="1.5" />
-                  <circle cx="19" cy="19" r="1.5" />
-                </svg>
+                
 
                 <select
                   value={appCode}
@@ -608,6 +598,17 @@ export default function Login() {
                     boxSizing: 'border-box'
                   }}
                 >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
+                  <circle cx="5" cy="5" r="1.5" />
+                  <circle cx="12" cy="5" r="1.5" />
+                  <circle cx="19" cy="5" r="1.5" />
+                  <circle cx="5" cy="12" r="1.5" />
+                  <circle cx="12" cy="12" r="1.5" />
+                  <circle cx="19" cy="12" r="1.5" />
+                  <circle cx="5" cy="19" r="1.5" />
+                  <circle cx="12" cy="19" r="1.5" />
+                  <circle cx="19" cy="19" r="1.5" />
+                </svg>
                   <option value="" style={{ padding: '10px' }}>
                     Select Application Code
                   </option>
@@ -619,18 +620,28 @@ export default function Login() {
                       </option>
                     ))}
                 </select>
-
-                {/* Custom Arrow */}
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#94A3B8"
-                  strokeWidth="2"
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: '14px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    pointerEvents: 'none'
+                  }}
                 >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+
+                  {/* Custom Arrow */}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#94A3B8"
+                    strokeWidth="2"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
               </div>
             </div>
 
@@ -645,16 +656,16 @@ export default function Login() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                cursor: 'not-allowed', 
+                cursor: 'not-allowed',
                 fontSize: '14px',
                 fontFamily: '"Source Sans 3"',
                 color: '#333',
-                opacity: 0.7  
+                opacity: 0.7
               }}>
                 <input
                   type="checkbox"
                   checked={rememberMe}
-                  disabled 
+                  disabled
                   onChange={() => setRememberMe(!rememberMe)}
                   style={{
                     width: '16px',
@@ -731,15 +742,19 @@ export default function Login() {
             color: '#4D4D4D'
           }}>
             New agent?{' '}
-            <button style={{
-              background: 'none',
-              border: 'none',
-              color: '#0079C2',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}>
+            <a
+              href="https://aedl-dashboard.edl.prod.awsdns.internal.das/write-mode/genai/agent-config"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#0079C2',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}>
               Request access
-            </button>
+            </a>
           </div>
         </div>
       </div>
