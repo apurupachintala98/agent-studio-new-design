@@ -545,13 +545,14 @@ export default function Login() {
             <div style={{ width: '100%' }}>
               <label
                 style={{
-                  color: '#333',
+                  color: isValidated ? '#333' : '#94A3B8',
                   fontFamily: '"Source Sans 3"',
                   fontSize: '14px',
                   fontWeight: '700',
                   lineHeight: '20px',
                   display: 'block',
-                  marginBottom: '8px'
+                  marginBottom: '8px',
+                  opacity: isValidated ? 1 : 0.6
                 }}
               >
                 Application Code
