@@ -121,36 +121,13 @@ function ToolsSection({ tools, toggleTool, searchTerm, setSearchTerm }) {
   return (
     <div>
       {/* Header row with Search */}
-      {/* <div className="flex items-center justify-between mb-4">
-        <SectionHeader>Tools</SectionHeader>
-        <div className="flex items-center gap-2">
-          <span className="text-sm" style={{ color: "#78909C" }}>Search</span>
-          <div className="flex items-center">
-            <span
-              className="text-sm"
-              style={{ color: "#546E7A", fontWeight: 500, paddingRight: 4 }}
-            >
-              Default
-            </span>
-            <div
-              style={{
-                width: 160,
-                height: 1,
-                backgroundColor: "#E0E0E0",
-                marginLeft: 4,
-              }}
-            />
-          </div>
-        </div>
-      </div> */}
-
-      {/* Header row with Search */}
       <div className="flex items-center justify-between mb-4">
         <SectionHeader>Tools</SectionHeader>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" style={{ flex: 1, maxWidth: 500, marginLeft: 24 }}>
           <span
             className="text-sm flex-shrink-0"
-            style={{ color: "#78909C", fontWeight: 400 }}
+            style={{ color: "#78909C", fontWeight: 400 , fontSize: 15,
+        letterSpacing: 0.2,}}
           >
             Search
           </span>
@@ -161,13 +138,14 @@ function ToolsSection({ tools, toggleTool, searchTerm, setSearchTerm }) {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="text-sm"
             style={{
+              flex: 1,
               width: 220,
               height: 36,
-              backgroundColor: "#F0F2F3",
+              backgroundColor: "#EDEEEE",
               border: "none",
-              borderRadius: 6,
+              borderRadius: 8,
               padding: "0 12px",
-              color: "#546E7A",
+              color: "#5b6770",
               outline: "none",
             }}
           />
