@@ -248,6 +248,7 @@ export default function Tools({
 
   const navigate = useNavigate();
   const [tools, setTools] = useState([])
+  const [searchTerm, setSearchTerm] = useState("")
   const [orchestrationInstruction, setOrchestrationInstruction] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [loading, setLoading] = useState(false)
