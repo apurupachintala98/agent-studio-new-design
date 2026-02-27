@@ -569,7 +569,8 @@ export default function Login() {
                   alignItems: 'center',
                   padding: '0 12px',
                   height: '48px',
-                  width: '100%'
+                  width: '100%',
+                  position: 'relative'
                 }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
@@ -602,7 +603,8 @@ export default function Login() {
                     WebkitAppearance: 'none',
                     MozAppearance: 'none',
                     cursor: isValidated ? 'pointer' : 'not-allowed',
-                    padding: '0 32px 0 0',
+                    // padding: '0 32px 0 0',
+                    padding: '0 40px 0 16px',
                     boxSizing: 'border-box'
                   }}
                 >
@@ -617,18 +619,28 @@ export default function Login() {
                       </option>
                     ))}
                 </select>
-
-                {/* Custom Arrow */}
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#94A3B8"
-                  strokeWidth="2"
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: '14px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    pointerEvents: 'none'
+                  }}
                 >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+
+                  {/* Custom Arrow */}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#94A3B8"
+                    strokeWidth="2"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
               </div>
             </div>
 
@@ -643,16 +655,16 @@ export default function Login() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                cursor: 'not-allowed', 
+                cursor: 'not-allowed',
                 fontSize: '14px',
                 fontFamily: '"Source Sans 3"',
                 color: '#333',
-                opacity: 0.7  
+                opacity: 0.7
               }}>
                 <input
                   type="checkbox"
                   checked={rememberMe}
-                  disabled 
+                  disabled
                   onChange={() => setRememberMe(!rememberMe)}
                   style={{
                     width: '16px',
