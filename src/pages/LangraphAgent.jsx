@@ -77,26 +77,8 @@ export default function LangraphAgent() {
           >
             This feature is currently under development.
             <br />
-            Stay tuned for powerful orchestration capabilities coming soon.
+            Stay tuned for capabilities coming soon.
           </p>
-
-          {/* CTA */}
-          <button
-            onClick={() => navigate("/dashboard")}
-            style={{
-              padding: "12px 24px",
-              borderRadius: "6px",
-              border: "none",
-              background: "#0072C6",
-              color: "#FFFFFF",
-              fontSize: "15px",
-              fontWeight: "600",
-              cursor: "pointer",
-              boxShadow: "0 4px 10px rgba(0, 121, 194, 0.2)",
-            }}
-          >
-            Return to Dashboard
-          </button>
         </div>
       </div>
     </PageLayout>
