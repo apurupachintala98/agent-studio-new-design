@@ -114,7 +114,6 @@ export default function ChatPage() {
         const base = API_URL.replace(/\/$/, "");
 
         const generatedUrl = `${base}/${formatted}be-service/`;
-
         setApiUrl(generatedUrl);
     }, [agentName]);
 

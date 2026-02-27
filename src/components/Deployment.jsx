@@ -320,7 +320,7 @@ export default function Deployment({ onFinish, agentDetails }) {
         </div>
         <div style={{ flex: "1" }}>
           <SourceArtifacts
-            agentId={createdAgent?.id}
+            agentId={agentDetails?.agnt_id}
             agentApi={agentApi}
             setErrorNotification={setErrorNotification}
           />
