@@ -112,7 +112,6 @@ function ToolCard({ name, description, selected, type = "monitor", onToggle }) {
 
 // --- Tools Grid Section ---
 function ToolsSection({ tools, toggleTool, searchTerm, setSearchTerm }) {
-  const [searchTerm, setSearchTerm] = useState("")
 
   const filteredTools = tools.filter(tool =>
     tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -182,7 +181,7 @@ function ToolsSection({ tools, toggleTool, searchTerm, setSearchTerm }) {
           gridTemplateColumns: "repeat(4, 1fr)",
         }}
       >
-        {filteredTools.map((tool) => (
+       {filteredTools.map((tool) => (
           <ToolCard
             key={tool.id}
             name={tool.name}
@@ -193,11 +192,11 @@ function ToolsSection({ tools, toggleTool, searchTerm, setSearchTerm }) {
           />
         ))}
 
-        {tools.length === 0 && (
-  <div className="col-span-4 text-center text-gray-400 py-6">
-    No tools found
-  </div>
-)}
+        {filteredTools.length === 0 && (
+          <div className="col-span-4 text-center text-gray-400 py-6">
+            No tools found
+          </div>
+        )}
       </div>
     </div>
   );
