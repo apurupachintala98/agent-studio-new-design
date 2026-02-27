@@ -212,7 +212,7 @@ export default function Reference() {
                     key={card.id}
                     style={{
                       display: "flex",
-                      width: "405.328px",
+                      // width: "405.328px",
                       height: "146px",
                       padding: "24px 0 0 24px",
                       flexDirection: "column",
