@@ -146,7 +146,7 @@ export default function Header() {
           {/* Contact Us */}
 
           <a
-            href={`mailto:apurupa.chintala@elevancehealth.com
+            href={`mailto:DL-EDA_Data_Intelligence_Platform
     ?subject=Agent%20Studio%20Support%20Request
     &body=Hi%20Team,%0D%0A%0D%0A
     I%20need%20assistance%20with%20Agent%20Studio.%0D%0A%0D%0A
