@@ -181,7 +181,7 @@ function ToolsSection({ tools, toggleTool, searchTerm, setSearchTerm }) {
           gridTemplateColumns: "repeat(4, 1fr)",
         }}
       >
-       {filteredTools.map((tool) => (
+        {filteredTools.map((tool) => (
           <ToolCard
             key={tool.id}
             name={tool.name}
@@ -252,6 +252,11 @@ export default function Tools({
   const [isSaving, setIsSaving] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
+
+  const filteredTools = tools.filter(tool =>
+    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tool.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   useEffect(() => {
     if (!agentDetails) {
