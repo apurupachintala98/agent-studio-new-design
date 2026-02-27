@@ -101,11 +101,6 @@ export default function ChatPage() {
     const agentName = localStorage.getItem("agentName");
 
     useEffect(() => {
-    console.log("API_CONFIG:", API_CONFIG);
-    console.log("BASE_URL:", API_CONFIG?.BASE_URL);
-}, []);
-
-    useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 

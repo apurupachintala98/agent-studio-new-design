@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ServiceEndpoint({ url = "" }) {
     const [copied, setCopied] = useState(false);
+    const [currentUrl, setCurrentUrl] = useState(url);
+
+    useEffect(() => {
+        setCurrentUrl(url);
+    }, [url]);
 
     const handleCopy = () => {
-        if (!url) return;
-        navigator.clipboard.writeText(url);
+        if (!currentUrl) return;
+        navigator.clipboard.writeText(currentUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -33,7 +38,7 @@ export default function ServiceEndpoint({ url = "" }) {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     <h2 className="text-base font-bold text-gray-800 mb-1.5">Service Endpoint</h2>
-                   <p className="text-sm text-gray-500 break-all leading-relaxed">
+                    <p className="text-sm text-gray-500 break-all leading-relaxed">
                         {url || "No endpoint available"}
                     </p>
                 </div>
@@ -41,13 +46,13 @@ export default function ServiceEndpoint({ url = "" }) {
 
             {/* Actions */}
             <div className="flex items-center justify-end gap-4 mt-4 pt-3 border-t border-gray-100">
-                <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                {/* <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
                     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                     </svg>
                     Edit
-                </button>
+                </button> */}
                 <button
                     onClick={handleCopy}
                     className="flex items-center gap-1.5 text-sm text-blue-500 hover:text-blue-700 font-medium transition-colors"
