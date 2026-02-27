@@ -741,7 +741,11 @@ export default function Login() {
             color: '#4D4D4D'
           }}>
             New agent?{' '}
-            <button style={{
+            <a
+    href="https://aedl-dashboard.edl.prod.awsdns.internal.das/write-mode/genai/agent-config"
+    target="_blank"
+    rel="noopener noreferrer" 
+    style={{
               background: 'none',
               border: 'none',
               color: '#0079C2',
@@ -749,7 +753,7 @@ export default function Login() {
               fontWeight: '600'
             }}>
               Request access
-            </button>
+             </a>
           </div>
         </div>
       </div>
