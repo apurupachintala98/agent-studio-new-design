@@ -24,27 +24,6 @@ const typeColors = {
     TOOL: "text-blue-600",
 };
 
-// const initialMessages = [
-//     {
-//         id: 1,
-//         role: "assistant",
-//         text: "Hello! I'm your HR assistant. I can help you with benefits, leave requests, or company policies.\nWhat can I help you with today?",
-//         time: "10:42 AM",
-//     },
-//     {
-//         id: 2,
-//         role: "user",
-//         text: "Can you explain the health insurance premium changes for 2024?",
-//         time: "10:43 AM",
-//     },
-//     {
-//         id: 3,
-//         role: "assistant",
-//         structured: true,
-//         time: "10:43 AM",
-//     },
-// ];
-
 function BotIcon() {
     return (
         <div className="w-9 h-9 rounde  flex items-center justify-center flex-shrink-0"
@@ -106,6 +85,7 @@ function StructuredResponse() {
         </div>
     );
 }
+
 
 export default function ChatPage() {
     const [messages, setMessages] = useState([]);
