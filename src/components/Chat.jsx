@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import ServiceEndpoint from "../components/ServiceEndpoint";
 import { SendHorizonal } from "lucide-react";
-import API_CONFIG from "../config/api-config"
+import { API_CONFIG } from "../config/api-config";
 
 const SSE_LOGS = [
     // { time: "10:43:01", type: "EVENT", content: 'node:start\n  name="policy_retriever"' },
