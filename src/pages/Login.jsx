@@ -643,32 +643,38 @@ export default function Login() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                cursor: 'pointer',
+                cursor: 'not-allowed', 
                 fontSize: '14px',
                 fontFamily: '"Source Sans 3"',
-                color: '#333'
+                color: '#333',
+                opacity: 0.7  
               }}>
                 <input
                   type="checkbox"
                   checked={rememberMe}
+                  disabled 
                   onChange={() => setRememberMe(!rememberMe)}
                   style={{
                     width: '16px',
                     height: '16px',
-                    cursor: 'pointer'
+                    cursor: 'not-allowed'
                   }}
                 />
                 Remember me
               </label>
-              <button style={{
-                background: 'none',
-                border: 'none',
-                color: '#0079C2',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontFamily: '"Source Sans 3"',
-                fontWeight: '600'
-              }}>
+              <button
+                disabled
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#B0BEC5',
+                  cursor: 'not-allowed',
+                  fontSize: '14px',
+                  fontFamily: '"Source Sans 3"',
+                  fontWeight: '600',
+                  opacity: 0.7
+                }}
+              >
                 Forgot password?
               </button>
             </div>
