@@ -47,7 +47,7 @@ export default function Reference() {
         style={{
           display: "flex",
           width: "100%",
-          margin: "0 auto",  
+          margin: "0 auto",
           minHeight: "717px",
           flexDirection: "column",
           alignItems: "flex-start",
@@ -204,7 +204,7 @@ export default function Reference() {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(3, 1fr)",
-                  gap: "24px",
+                  gap: "16px",
                 }}
               >
                 {referenceCards.map((card) => (
