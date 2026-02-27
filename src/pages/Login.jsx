@@ -619,28 +619,18 @@ export default function Login() {
                       </option>
                     ))}
                 </select>
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '14px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none'
-                  }}
-                >
 
-                  {/* Custom Arrow */}
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#94A3B8"
-                    strokeWidth="2"
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </div>
+                {/* Custom Arrow */}
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#94A3B8"
+                  strokeWidth="2"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </div>
             </div>
 
@@ -655,16 +645,16 @@ export default function Login() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                cursor: 'not-allowed',
+                cursor: 'not-allowed', 
                 fontSize: '14px',
                 fontFamily: '"Source Sans 3"',
                 color: '#333',
-                opacity: 0.7
+                opacity: 0.7  
               }}>
                 <input
                   type="checkbox"
                   checked={rememberMe}
-                  disabled
+                  disabled 
                   onChange={() => setRememberMe(!rememberMe)}
                   style={{
                     width: '16px',
@@ -741,11 +731,7 @@ export default function Login() {
             color: '#4D4D4D'
           }}>
             New agent?{' '}
-            <a
-    href="https://aedl-dashboard.edl.prod.awsdns.internal.das/write-mode/genai/agent-config"
-    target="_blank"
-    rel="noopener noreferrer" 
-    style={{
+            <button style={{
               background: 'none',
               border: 'none',
               color: '#0079C2',
@@ -753,7 +739,7 @@ export default function Login() {
               fontWeight: '600'
             }}>
               Request access
-             </a>
+            </button>
           </div>
         </div>
       </div>
