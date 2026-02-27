@@ -46,7 +46,8 @@ export default function Reference() {
       <main
         style={{
           display: "flex",
-          width: "1264px",
+          width: "100%",
+          margin: "0 auto",  
           minHeight: "717px",
           flexDirection: "column",
           alignItems: "flex-start",
@@ -56,26 +57,26 @@ export default function Reference() {
       >
         <div
           style={{
-            width: "1264px",
+            width: "100%",
             display: "flex",
             flexDirection: "column",
             gap: "48px",
           }}
         >
           {/* ===================== TOP REFERENCE SECTION ===================== */}
-         <div
-  style={{
-    height: "199px",
-    flexShrink: 0,
-    alignSelf: "stretch",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",      // horizontal center
-    justifyContent: "center",  // vertical center
-    textAlign: "center",
-    gap: "24px",
-  }}
->
+          <div
+            style={{
+              height: "199px",
+              flexShrink: 0,
+              alignSelf: "stretch",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",      // horizontal center
+              justifyContent: "center",  // vertical center
+              textAlign: "center",
+              gap: "24px",
+            }}
+          >
             <h1
               style={{
                 color: "#030213",
@@ -84,11 +85,11 @@ export default function Reference() {
                 fontStyle: "normal",
                 fontWeight: 600,
                 lineHeight: "56px",
-                 display: "inline-flex",
-  
- 
+                display: "inline-flex",
+
+
               }}
-           
+
             >
               References
             </h1>
@@ -168,7 +169,7 @@ export default function Reference() {
                 fontWeight: 600,
                 lineHeight: "24px",
                 display: "flex",
-                width: "1264px",
+                width: "100%",
                 padding: "0.5px 1168px 7.5px 0",
                 alignItems: "center",
               }}
@@ -195,7 +196,7 @@ export default function Reference() {
 
             {/* Cards Grid */}
             <div style={{
-              width: "1264px",
+              width: "100%",
               height: "296px",
               marginTop: '37px',
             }}>
