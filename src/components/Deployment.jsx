@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   SectionHeader,
   FooterButtons,
@@ -13,7 +13,53 @@ const CheckCircleGreen = () => (
 );
 
 // --- Deployment Progress Stepper ---
-function DeploymentStepper() {
+function DeploymentStepper({ onClear }) {
+  const dateNow = new Date()
+  const deploymentTime = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const [messageState, setMessageState] = useState({
+    message: "Agent Creating",
+    percentage: 10,
+  });
+  const initDeployment = async () => {
+    await sleep(5000);
+    setMessageState({ message: "Agent Created Successfully", percentage: 10 });
+    await sleep(5000);
+    setMessageState({ message: "Deploying to Bitbucket", percentage: 20 });
+    await sleep(5000);
+    setMessageState({ message: "Deploying to EKS", percentage: 30 });
+    let interval;
+    interval = setInterval(async () => {
+      const data = await callAPI();
+      if (data.status.toLowerCase() === "completed") {
+        setMessageState({ message: "Deployment Completed", percentage: 100 });
+        // break interval
+        clearInterval(interval);
+        onClear(data)
+      } else if (data.status.toLowerCase() === "failed") {
+        setMessageState({ message: "Agent Deployment Failed", percentage: 30 });
+        clearInterval(interval);
+        onClear(data)
+      } else {
+        setMessageState((s) => ({ message: `Deploying to  EKS`, percentage: s.percentage + 1 }))
+      }
+    }, 30000);
+  }
+
+  const callAPI = async (d1, d2) => {
+    const data = await fetch("https://aedl-devops.edl.dev.awsdns.internal.das/tekton/pipelines/EDA-EKS-NP1-Cluster/bmbpoc-srv-devops")
+      .then(res => res.json())
+      .then(res => res.pipelines)
+      .then(pipelines => pipelines.sort((a, b) => new Date(b.started) - new Date(a.started)))
+      .then(sortedPipelines => sortedPipelines[0])
+    return data
+  }
+
+  useEffect(() => {
+    initDeployment();
+  }, []);
+
   return (
     <div
       className="rounded-lg bg-white px-8 py-6"
@@ -33,7 +79,7 @@ function DeploymentStepper() {
           <span className="font-semibold text-center mt-2" style={{ fontSize: 14, color: "#003366" }}>
             Batch Configuration Submitted
           </span>
-          <span className="text-xs mt-1" style={{ color: "#90A4AE" }}>Completed at 2:34 PM</span>
+          <span className="text-xs mt-1" style={{ color: "#90A4AE" }}>Completed at {deploymentTime}</span>
           <span
             className="mt-2 px-4 py-1 rounded-full text-xs font-semibold text-white"
             style={{ backgroundColor: "#2E8540", fontSize: 11, letterSpacing: "0.5px" }}
@@ -63,12 +109,12 @@ function DeploymentStepper() {
           </div>
           <div className="flex items-center gap-2 mt-2">
             <span className="font-semibold" style={{ fontSize: 14, color: "#0072C6" }}>Deploying to Snowflake & EKS</span>
-            <span className="font-semibold" style={{ fontSize: 14, color: "#003366" }}>100%</span>
+            <span className="font-semibold" style={{ fontSize: 14, color: "#003366" }}>{messageState.percentage}%</span>
           </div>
           <div className="w-full mt-2 rounded-full overflow-hidden" style={{ height: 8, backgroundColor: "#E0E0E0", maxWidth: 220 }}>
-            <div className="h-full rounded-full" style={{ width: "100%", backgroundColor: "#0072C6" }} />
+            <div className="h-full rounded-full" style={{ width: `${messageState.percentage}%`, backgroundColor: "#0072C6" }} />
           </div>
-          <span className="text-xs mt-2" style={{ color: "#90A4AE" }}>Pushing code to Git repository...</span>
+          <span className="text-xs mt-2" style={{ color: "#90A4AE" }}>{messageState.message}...</span>
         </div>
 
         {/* Line between 2 and 3 */}
@@ -100,24 +146,7 @@ function DeploymentStepper() {
 }
 
 // --- Deployment Logs ---
-function DeploymentLogs() {
-  const logs = [
-    "[14:34:32] INFO VERIFYING BUILD ENVIRONMENT CONFIGURATION ...",
-    "[14:34:41] INFO LOADING DEPENDENCY GRAPH MODULES ...",
-    "[14:34:55] INFO RESOLVING PACKAGE VERSIONS FROM MANIFEST ...",
-    "[14:35:02] INFO ESTABLISHING SECURE CONNECTION TO ARTIFACTS REPOSITORY ...",
-    "[14:35:18] INFO FETCHING LATEST RUNTIME EXTENSIONS ...",
-    "[14:35:25] INFO VALIDATING CONTAINER INTEGRITY CHECKS ...",
-    "[14:35:33] INFO INITIALIZING ORCHESTRATOR HANDSHAKE PROTOCOL ...",
-    "[14:35:46] INFO GENERATING OPTIMIZED EXECUTION PLAN ...",
-    "[14:35:59] INFO PREPARING DEPLOYMENT BUNDLE FOR STAGING ...",
-    "[14:36:10] INFO RUNNING STATIC ANALYSIS ON COMPILED COMPONENTS ...",
-    "[14:36:21] INFO REGISTERING ENVIRONMENT VARIABLES FOR RUNTIME CONTEXT ...",
-    "[14:36:33] INFO PERFORMING FINAL CONSISTENCY VALIDATION ...",
-    "[14:36:49] INFO SIGNING BUILD ARTIFACTS WITH SECURE KEY ...",
-    "[14:36:55] INFO UPLOADING BUILD OUTPUTS TO RELEASE CHANNEL ...",
-    "[14:37:04] INFO BUILD SEQUENCE COMPLETED SUCCESSFULLY.",
-  ];
+function DeploymentLogs({ logs = [] }) {
 
   return (
     <div
@@ -160,85 +189,61 @@ function DeploymentLogs() {
 }
 
 // --- Source Artifacts Card ---
-function SourceArtifacts({ agentId, agentApi, setErrorNotification }){
-const [isDownloading, setIsDownloading] = useState(false);
-
-const handleDownloadCode = async () => {
-  if (!agentId) {
-    setErrorNotification("No agent ID found. Please save your profile first.");
-    return;
-  }
-
-  setIsDownloading(true);
-
-  try {
-    const blob = await agentApi.downloadAgent(agentId);
-
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `agent-${agentId}.zip`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-  } catch (error) {
-    console.error("Failed to download agent:", error);
-    setErrorNotification("Failed to download agent code. Please try again.");
-  } finally {
-    setIsDownloading(false);
-  }
-};
-
-return (
-  <div
-    className="rounded-lg bg-white flex flex-col"
-    style={{
-      border: "1px solid #E0E0E0",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-      height: "100%", minHeight: 380,
-    }}
-  >
-    <div className="w-full flex justify-end px-5 pt-4">
-      <a href="https://bitbucket.org/your-workspace/ncr_aedleks_agentbuilder_app"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
-        URL LINK
-      </a>
-
-    </div>
-    <div onClick={handleDownloadCode} className="flex-1 flex flex-col items-center justify-center px-5 pb-6">
-      {/* Folder icon - inline SVG fallback */}
-      <div
-        className="flex items-center justify-center rounded-2xl"
-        style={{
-          width: 80,
-          height: 80,
-          backgroundColor: "#0D1B2A",
-        }}
-      >
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <path d="M6 12C6 10.9 6.9 10 8 10H16L19 13H32C33.1 13 34 13.9 34 15V30C34 31.1 33.1 32 32 32H8C6.9 32 6 31.1 6 30V12Z" fill="#29B6F6" />
-          <rect x="16" y="18" width="3" height="10" rx="1" fill="#0D1B2A" opacity="0.5" />
-          <rect x="21" y="16" width="3" height="12" rx="1" fill="#0D1B2A" opacity="0.4" />
-        </svg>
+function SourceArtifacts() {
+  return (
+    <div
+      className="rounded-lg bg-white flex flex-col"
+      style={{
+        border: "1px solid #E0E0E0",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+        height: "100%", minHeight: 380,
+      }}
+    >
+      <div className="w-full flex justify-end px-5 pt-4">
+        <a href="#" style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
+          URL LINK
+        </a>
       </div>
-      <span className="font-semibold mt-3" style={{ fontSize: 15, color: "#1A1A1A" }}>Source Artifacts</span>
-      <span className="text-sm mt-1" style={{ color: "#78909C" }}>agent_cortex_v1.zip</span>
-      <span className="text-xs mt-0.5" style={{ color: "#90A4AE" }}>(24MB)</span>
+      <div className="flex-1 flex flex-col items-center justify-center px-5 pb-6">
+        {/* Folder icon - inline SVG fallback */}
+        <div
+          className="flex items-center justify-center rounded-2xl"
+          style={{
+            width: 80,
+            height: 80,
+            backgroundColor: "#0D1B2A",
+          }}
+        >
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <path d="M6 12C6 10.9 6.9 10 8 10H16L19 13H32C33.1 13 34 13.9 34 15V30C34 31.1 33.1 32 32 32H8C6.9 32 6 31.1 6 30V12Z" fill="#29B6F6" />
+            <rect x="16" y="18" width="3" height="10" rx="1" fill="#0D1B2A" opacity="0.5" />
+            <rect x="21" y="16" width="3" height="12" rx="1" fill="#0D1B2A" opacity="0.4" />
+          </svg>
+        </div>
+        <span className="font-semibold mt-3" style={{ fontSize: 15, color: "#1A1A1A" }}>Source Artifacts</span>
+        <span className="text-sm mt-1" style={{ color: "#78909C" }}>agent_cortex_v1.zip</span>
+        <span className="text-xs mt-0.5" style={{ color: "#90A4AE" }}>(24MB)</span>
+      </div>
     </div>
-  </div>
-);
+  );
 }
 
 // --- Main Deployment Page ---
 export default function Deployment({ onFinish }) {
   const [isFinishing, setIsFinishing] = useState(false);
-
+  const [logs, setLogs] = useState([])
   const handleDiscard = () => {
     console.log("Discard clicked");
   };
+
+  const callAPI = async (d1, d2, d3) => {
+    return fetch(`https://aedl-devops.edl.dev.awsdns.internal.das/tekton/s3-logs/${d1}/${d2}/${d3}`)
+      .then(res => res.json())
+  }
+  const onClear = async (data) => {
+    const data1 = await callAPI("EDA-EKS-NP1-Cluster", "bmbpoc-srv-devops", data.name)
+    setLogs([data1.log_content])
+  }
 
   const handleFinishDeployment = async () => {
     setIsFinishing(true);
@@ -256,19 +261,15 @@ export default function Deployment({ onFinish }) {
     <>
       <div className="mt-6">
         <SectionHeader>Deployment Progress</SectionHeader>
-        <DeploymentStepper />
+        <DeploymentStepper onClear={onClear} />
       </div>
 
       <div className="mt-6 flex gap-5" style={{ alignItems: "stretch" }}>
         <div style={{ flex: "1.6" }}>
-          <DeploymentLogs />
+          <DeploymentLogs logs={logs} />
         </div>
         <div style={{ flex: "1" }}>
-          <SourceArtifacts
-            agentId={createdAgent?.id}
-            agentApi={agentApi}
-            setErrorNotification={setErrorNotification}
-          />
+          <SourceArtifacts />
         </div>
       </div>
 
