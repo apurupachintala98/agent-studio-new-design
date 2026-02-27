@@ -3,6 +3,7 @@ import {
   SectionHeader,
   FooterButtons,
 } from "../components/SharedComponents";
+import { useNavigate } from "react-router-dom";
 
 // --- Deployment-specific Icons ---
 const CheckCircleGreen = () => (
@@ -189,7 +190,36 @@ function DeploymentLogs({ logs = [] }) {
 }
 
 // --- Source Artifacts Card ---
-function SourceArtifacts() {
+function SourceArtifacts({ agentId, agentApi, setErrorNotification }) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadCode = async () => {
+    if (!agentId) {
+      setErrorNotification("No agent ID found. Please save your profile first.");
+      return;
+    }
+
+    setIsDownloading(true);
+
+    try {
+      const blob = await agentApi.downloadAgent(agentId);
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `agent-${agentId}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Failed to download agent:", error);
+      setErrorNotification("Failed to download agent code. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div
       className="rounded-lg bg-white flex flex-col"
@@ -200,11 +230,13 @@ function SourceArtifacts() {
       }}
     >
       <div className="w-full flex justify-end px-5 pt-4">
-        <a href="#" style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
+        <a href="https://bitbucket.org/your-workspace/ncr_aedleks_agentbuilder_app"
+          target="_blank"
+          rel="noopener noreferrer" style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
           URL LINK
         </a>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center px-5 pb-6">
+      <div onClick={handleDownloadCode} className="flex-1 flex flex-col items-center justify-center px-5 pb-6">
         {/* Folder icon - inline SVG fallback */}
         <div
           className="flex items-center justify-center rounded-2xl"
@@ -229,11 +261,11 @@ function SourceArtifacts() {
 }
 
 // --- Main Deployment Page ---
-export default function Deployment({ onFinish }) {
+export default function Deployment({ onFinish, agentDetails }) {
   const [isFinishing, setIsFinishing] = useState(false);
   const [logs, setLogs] = useState([])
   const handleDiscard = () => {
-    console.log("Discard clicked");
+    navigate("/dashboard");
   };
 
   const callAPI = async (d1, d2, d3) => {
@@ -257,6 +289,24 @@ export default function Deployment({ onFinish }) {
     }
   };
 
+
+  const handleChatWithAgent = () => {
+    if (!agentDetails?.agnt_id) {
+      alert("Agent not ready yet.");
+      return;
+    }
+
+    // Store required details
+    localStorage.setItem("agentName", agentDetails?.agnt_nm); 
+    localStorage.setItem("agentId", agentDetails?.agnt_id);
+    localStorage.getItem("session_Id")
+    localStorage.getItem("user_id")
+    localStorage.getItem("aplctn_cd");
+
+    navigate("/chat");
+  };
+
+
   return (
     <>
       <div className="mt-6">
@@ -269,7 +319,11 @@ export default function Deployment({ onFinish }) {
           <DeploymentLogs logs={logs} />
         </div>
         <div style={{ flex: "1" }}>
-          <SourceArtifacts />
+          <SourceArtifacts
+            agentId={createdAgent?.id}
+            agentApi={agentApi}
+            setErrorNotification={setErrorNotification}
+          />
         </div>
       </div>
 
@@ -277,7 +331,12 @@ export default function Deployment({ onFinish }) {
         loading={isFinishing}
         buttons={[
           { label: "Discard", variant: "outline", onClick: handleDiscard },
-          { label: "Chat with Agent", variant: "disabled-outline", disabled: true },
+          {
+            label: "Chat with Agent",
+            variant: "outline",
+            onClick: handleChatWithAgent,
+            variant: "disabled-outline", disabled: true
+          },
           { label: "Finish Deployment", variant: "primary", onClick: handleFinishDeployment },
         ]}
       />

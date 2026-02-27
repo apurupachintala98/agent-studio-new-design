@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import ServiceEndpoint from "../components/ServiceEndpoint";
 import { SendHorizonal } from "lucide-react";
+import { API_CONFIG } from "../config/api-config"
 
 const SSE_LOGS = [
     // { time: "10:43:01", type: "EVENT", content: 'node:start\n  name="policy_retriever"' },
@@ -23,26 +24,26 @@ const typeColors = {
     TOOL: "text-blue-600",
 };
 
-const initialMessages = [
-    {
-        id: 1,
-        role: "assistant",
-        text: "Hello! I'm your HR assistant. I can help you with benefits, leave requests, or company policies.\nWhat can I help you with today?",
-        time: "10:42 AM",
-    },
-    {
-        id: 2,
-        role: "user",
-        text: "Can you explain the health insurance premium changes for 2024?",
-        time: "10:43 AM",
-    },
-    {
-        id: 3,
-        role: "assistant",
-        structured: true,
-        time: "10:43 AM",
-    },
-];
+// const initialMessages = [
+//     {
+//         id: 1,
+//         role: "assistant",
+//         text: "Hello! I'm your HR assistant. I can help you with benefits, leave requests, or company policies.\nWhat can I help you with today?",
+//         time: "10:42 AM",
+//     },
+//     {
+//         id: 2,
+//         role: "user",
+//         text: "Can you explain the health insurance premium changes for 2024?",
+//         time: "10:43 AM",
+//     },
+//     {
+//         id: 3,
+//         role: "assistant",
+//         structured: true,
+//         time: "10:43 AM",
+//     },
+// ];
 
 function BotIcon() {
     return (
@@ -110,31 +111,129 @@ export default function ChatPage() {
     const [messages, setMessages] = useState(initialMessages);
     const [input, setInput] = useState("");
     const bottomRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [errorNotification, setErrorNotification] = useState("")
+    const [apiUrl, setApiUrl] = useState("")
+    const agentId = localStorage.getItem("agentId");
+    const sesnId = localStorage.getItem("session_Id")
+    const userId = localStorage.getItem("user_id")
+    const appCode = localStorage.getItem("aplctn_cd");
+    const agentName = localStorage.getItem("agentName");
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    const handleSubmit = () => {
-        if (!input.trim()) return;
+    useEffect(() => {
+        const API_URL = API_CONFIG.BASE_URL;
+
+        if (!agentName || !API_URL) return;
+
+        const formatted = agentName.toLowerCase().trim();
+        const base = API_URL.replace(/\/$/, "");
+
+        const generatedUrl = `${base}/${formatted}be-service/`;
+
+        setApiUrl(generatedUrl);
+    }, [agentName]);
 
 
-        // TODO: Integrate with backend API to send message and receive response
-        // const payload = {
-        //     agent_id: applicationCode,
-        //     application_id: applicationId,
-        //     user_id: userId,
-        //     session_id: sessionId,
-        //     body: {
-        //         content_type: "text",
-        //         messages: [
-        //             {
-        //                 role: "user",
-        //                 content: content,
-        //             },
-        //         ],
-        //     },
-        // }
+
+
+
+    const handleSubmit = async () => {
+        const content = input.trim();
+        if (!content) return;
+
+        if (!agentId || !appCode || !userId || !sesnId) {
+            setErrorNotification("Missing required session details.");
+            return;
+        }
+
+        // Add user message to UI
+        const userMessage = {
+            id: Date.now(),
+            role: "user",
+            text: content,
+            time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            }),
+        };
+
+        setMessages(prev => [...prev, userMessage]);
+        setInput("");
+        setIsLoading(true);
+
+        try {
+            const endpoint = `${apiUrl.replace(/\/$/, "")}/agent/chat`;
+
+            const payload = {
+                agent_id: agentId,
+                application_id: appCode,
+                user_id: userId,
+                session_id: sesnId,
+                body: {
+                    content_type: "text",
+                    messages: [
+                        {
+                            role: "user",
+                            content: content,
+                        },
+                    ],
+                },
+            }
+
+            const res = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                throw new Error(`API Error ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            const assistantText =
+                data?.response?.messages?.[0]?.content ||
+                data?.response ||
+                "No response received.";
+
+            const assistantMessage = {
+                id: Date.now() + 1,
+                role: "assistant",
+                text: assistantText,
+                time: new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                }),
+            };
+
+            setMessages(prev => [...prev, assistantMessage]);
+
+        } catch (error) {
+            console.error(error);
+
+            setMessages(prev => [
+                ...prev,
+                {
+                    id: Date.now() + 2,
+                    role: "assistant",
+                    text: "Sorry, something went wrong.",
+                    time: new Date().toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    }),
+                },
+            ]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -160,7 +259,7 @@ export default function ChatPage() {
                         <div className="bg-gray-100 border-b border-gray-200 px-6 py-2 flex items-center gap-2">
                             <span className="text-sm text-gray-500">Testing:</span>
                             <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow shadow-blue-200" />
-                            <span className="text-sm font-semibold text-gray-700">HR-Assistant v2.4</span>
+                            <span className="text-sm font-semibold text-gray-700">{agentName || "Agent"}</span>
                         </div>
 
                         {/* Messages */}
@@ -197,7 +296,10 @@ export default function ChatPage() {
                                     value={input}
                                     onChange={e => setInput(e.target.value)}
                                     onKeyDown={e => {
-                                        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
+                                        if (e.key === "Enter" && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSubmit();
+                                        }
                                     }}
                                     placeholder="Type your message to test the agent..."
                                     rows={2}

@@ -47,7 +47,7 @@ function AgentProfileCard({
   setResponseInstruction
 }) {
   const [models, setModels] = useState([]);
-  
+
 
   useEffect(() => {
     const fetchLLMs = async () => {
@@ -202,18 +202,18 @@ function AgentProfileCard({
         <div className="mt-6 flex items-start">
           <label className="text-sm flex-shrink-0 pr-3 pt-3" style={{ color: "#37474F", fontWeight: 500 }}>System Instruction</label>
           <textarea
-           value={systemInstruction}
-  onChange={(e) => setSystemInstruction(e.target.value)}
+            value={systemInstruction}
+            onChange={(e) => setSystemInstruction(e.target.value)}
             className="flex-1 rounded-sm p-3 text-sm resize-none" rows={6}
             style={{ backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none", color: "#263238" }}
           />
         </div>
 
-         <div className="mt-6 flex items-start">
+        <div className="mt-6 flex items-start">
           <label className="text-sm flex-shrink-0 pr-3 pt-3" style={{ color: "#37474F", fontWeight: 500 }}>Response Instruction</label>
           <textarea
-          value={responseInstruction}
-  onChange={(e) => setResponseInstruction(e.target.value)}
+            value={responseInstruction}
+            onChange={(e) => setResponseInstruction(e.target.value)}
             className="flex-1 rounded-sm p-3 text-sm resize-none" rows={6}
             style={{ backgroundColor: "#F5F7F8", border: "1px solid #ECEFF1", outline: "none", color: "#263238" }}
           />
@@ -319,10 +319,10 @@ function ResourcesCard({ toolChoice, setToolChoice }) {
 }
 
 // --- Main Page ---
-export default function AgentProfile({ 
-  agentDetails, 
+export default function AgentProfile({
+  agentDetails,
   onSaveAndContinue,
-  onBack 
+  onBack
 }) {
 
   const [isSaving, setIsSaving] = useState(false);
@@ -340,93 +340,85 @@ export default function AgentProfile({
   const [responseInstruction, setResponseInstruction] = useState("");
   const [toolChoice, setToolChoice] = useState("auto");
 
-
   const handleDiscard = () => {
-  navigate("/dashboard");   
-};
-
-  const handleSaveDraft = () => {
-    console.log("Save as Draft clicked");
+    navigate("/dashboard");
   };
 
-const handleSaveAndContinue = async () => {
-  setIsSaving(true);
+  const handleSaveAndContinue = async () => {
+    setIsSaving(true);
 
-  try {
-    const allAgentData = {
-      // Prefilled
-      agentName,
-      agentDescription,
-      database,
-      schema,
+    try {
+      const allAgentData = {
+        // Prefilled
+        agentName,
+        agentDescription,
+        database,
+        schema,
 
-      // User entered
-      selectedModel,
-      systemInstruction,
-      responseInstruction,
-      toolChoice,
-    };
+        // User entered
+        selectedModel,
+        systemInstruction,
+        responseInstruction,
+        toolChoice,
+      };
 
-    console.log("Forwarding Data:", allAgentData);
- onSaveAndContinue({
-      agentName,
-      description: agentDescription,
-      db: agentDetails?.db_nm,
-      schema: agentDetails?.schma_nm,
-      applicationName: agentDetails?.aplctn_cd,
-      selectedModel,
-      responseInstructions: responseInstruction,
-      systemInstructions: systemInstruction,
-      toolChoice,
-    })
+      console.log("Forwarding Data:", allAgentData);
+      onSaveAndContinue({
+        agentName,
+        description: agentDescription,
+        db: agentDetails?.db_nm,
+        schema: agentDetails?.schma_nm,
+        applicationName: agentDetails?.aplctn_cd,
+        selectedModel,
+        responseInstructions: responseInstruction,
+        systemInstructions: systemInstruction,
+        toolChoice,
+      })
 
-  } catch (error) {
-    console.error("Save failed:", error);
-  } finally {
-    setIsSaving(false);
-  }
-};
+    } catch (error) {
+      console.error("Save failed:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>
       <div className="mt-5">
         <SectionHeader>Agent Profile</SectionHeader>
-     <AgentProfileCard
-  agentDetails={agentDetails}
-  agentName={agentName}
-  agentDescription={agentDescription}
-  selectedModel={selectedModel}
-  setSelectedModel={setSelectedModel}
-  systemInstruction={systemInstruction}
-  setSystemInstruction={setSystemInstruction}
-  responseInstruction={responseInstruction}
-  setResponseInstruction={setResponseInstruction}
-/>
+        <AgentProfileCard
+          agentDetails={agentDetails}
+          agentName={agentName}
+          agentDescription={agentDescription}
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+          systemInstruction={systemInstruction}
+          setSystemInstruction={setSystemInstruction}
+          responseInstruction={responseInstruction}
+          setResponseInstruction={setResponseInstruction}
+        />
       </div>
 
       <div className="mt-7">
         <SectionHeader>Application Configuration</SectionHeader>
         <AppConfigCard
-  database={database}
-  schema={schema}
-/>
+          database={database}
+          schema={schema}
+        />
       </div>
 
       <div className="mt-7">
         <SectionHeader>Resources</SectionHeader>
-
-
-<ResourcesCard
-  toolChoice={toolChoice}
-  setToolChoice={setToolChoice}
-/>
+        <ResourcesCard
+          toolChoice={toolChoice}
+          setToolChoice={setToolChoice}
+        />
       </div>
 
       <FooterButtons
         loading={isSaving}
         buttons={[
-                  { label: "Back", variant: "outline", onClick: onBack },
-
+          { label: "Back", variant: "outline", onClick: onBack },
           { label: "Discard", variant: "outline", onClick: handleDiscard },
           { label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue },
         ]}
