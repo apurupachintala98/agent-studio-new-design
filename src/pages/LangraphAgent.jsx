@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   PageLayout,
   BackToDashboard,
   Stepper,
 } from "../components/SharedComponents";
 import AgentProfile from "../components/AgentProfile";
-import Tools from "../components/Tools";
-import Deployment from "../components/Deployment";
 import { fetchSpecificAgent } from "../services/agents";
 import { agentApi } from "../services/api";
 
