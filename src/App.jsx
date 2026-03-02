@@ -17,7 +17,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reference" element={<Reference />} />
         <Route path="/cortex-agent/:agentId" element={<CortexAgent />} />
-        <Route path="/langraph-agent" element={<LangraphAgent />} />
+        <Route path="/langraph-agent/:agentId" element={<LangraphAgent />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

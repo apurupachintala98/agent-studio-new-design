@@ -3,84 +3,29 @@ import { useNavigate } from "react-router-dom";
 
 export default function LangraphAgent() {
   const navigate = useNavigate();
+  const agentDetails = location.state?.agentDetails || null;
+
+  const [activeStep, setActiveStep] = useState(1);
+
+  const goToNextStep = (data) => {
+    console.log(`[LangGraph] Step ${activeStep} data:`, data);
+    setActiveStep((prev) => Math.min(prev + 1, 3));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <PageLayout>
-
-
-      {/* Back Navigation */}
       <BackToDashboard />
+     <Stepper activeStep={activeStep} />
 
-      {/* Center Content */}
-      <div
-        className="flex items-center justify-center"
-        style={{ minHeight: "70vh" }}
-      >
-        <div
-          style={{
-            width: "520px",
-            background: "#FFFFFF",
-            borderRadius: "12px",
-            padding: "48px",
-            textAlign: "center",
-            boxShadow: "0 10px 30px -10px rgba(0, 38, 119, 0.15)",
-            border: "1px solid #E5E7EB",
-          }}
-        >
-          {/* Icon */}
-          <div
-            style={{
-              width: "72px",
-              height: "72px",
-              borderRadius: "50%",
-              background: "#EBF5FB",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 24px auto",
-            }}
-          >
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#0072C6"
-              strokeWidth="2"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <circle cx="12" cy="16" r="1" />
-            </svg>
-          </div>
-
-          {/* Title */}
-          <h2
-            style={{
-              fontSize: "28px",
-              fontWeight: "700",
-              marginBottom: "12px",
-              color: "#1F2937",
-            }}
-          >
-            LangGraph Integration
-          </h2>
-
-          {/* Description */}
-          <p
-            style={{
-              fontSize: "16px",
-              color: "#6B7280",
-              lineHeight: "24px",
-              marginBottom: "32px",
-            }}
-          >
-            This feature is currently under development.
-            <br />
-            Stay tuned for capabilities coming soon.
-          </p>
-        </div>
-      </div>
+      {activeStep === 1 && (
+        <AgentProfile
+          agentType="LangGraph"
+          agentDetails={agentDetails}
+          onSaveAndContinue={goToNextStep}
+        />
+      )}
+    
     </PageLayout>
   );
 }
