@@ -9,28 +9,23 @@ export default function AgentCard({ agent }) {
   const handleEditClick = async () => {
     try {
       const sessionId = uuidv4();
-       localStorage.setItem("session_Id", sessionId);
+      localStorage.setItem("session_Id", sessionId);
       const userId = localStorage.getItem("user_id");
       const appCode = localStorage.getItem("aplctn_cd");
       const response = await fetchSpecificAgent(agent.id)
-
       const agentDetails = response?.data?.record
-
-      await agentApi.createAgent({
-        agent_uuid: agent.id,
-        sesn_id: sessionId,
-        user_id: userId,
-        aplctn_cd: appCode,
-      });
-
-     
       if (!agentDetails) {
         console.error("Agent details not found")
         return
       }
-
       // Route based on agent type
       if (agent.agentType === "Cortex") {
+        await agentApi.createAgent({
+          agent_uuid: agent.id,
+          sesn_id: sessionId,
+          user_id: userId,
+          aplctn_cd: appCode,
+        });
         navigate(`/cortex-agent/${agent.id}`)
       }
       else if (agent.agentType === "LangGraph") {

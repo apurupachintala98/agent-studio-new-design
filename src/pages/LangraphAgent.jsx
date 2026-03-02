@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   PageLayout,
   BackToDashboard,
@@ -7,15 +7,12 @@ import {
 } from "../components/SharedComponents";
 import AgentProfile from "../components/AgentProfile";
 import { fetchSpecificAgent } from "../services/agents";
-import { agentApi } from "../services/api";
 
 export default function LangGraphAgent() {
   const { agentId } = useParams();
   const [activeStep, setActiveStep] = useState(1);
   const [agentDetails, setAgentDetails] = useState(null);
   const [stepOneData, setStepOneData] = useState(null);
-  const [toolData, setToolData] = useState(null);
-  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     const loadAgent = async () => {
@@ -33,9 +30,9 @@ export default function LangGraphAgent() {
     }
   }, [agentId]);
 
-  const goToNextStep = (dataFromStepOne) => {
-    if (dataFromStepOne) {
-      setStepOneData(dataFromStepOne);
+  const goToNextStep = (dataFromStep) => {
+    if (dataFromStep) {
+      setStepOneData(dataFromStep);
     }
     setActiveStep((prev) => Math.min(prev + 1, 3));
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -45,7 +42,6 @@ export default function LangGraphAgent() {
     setActiveStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
 
   return (
     <PageLayout>
@@ -61,7 +57,7 @@ export default function LangGraphAgent() {
         />
       )}
 
-      
+     
 
     </PageLayout>
   );
