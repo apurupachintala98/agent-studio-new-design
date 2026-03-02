@@ -34,9 +34,7 @@ export default function AgentCard({ agent }) {
         navigate(`/cortex-agent/${agent.id}`)
       }
       else if (agent.agentType === "LangGraph") {
-        navigate("/langraph-agent", {
-          state: { agentDetails }
-        })
+        navigate(`/langraph-agent/${agent.id}`)
       }
 
     } catch (error) {
