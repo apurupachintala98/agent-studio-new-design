@@ -1573,7 +1573,6 @@ export default function AgentProfile({
         buttons={[
           ...(onBack ? [{ label: "Back", variant: "outline", onClick: onBack }] : []),
           { label: "Discard", variant: "outline", onClick: handleDiscard },
-          { label: "Save as Draft", variant: "outline", onClick: handleSaveDraft },
           { label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue },
         ]}
       />
