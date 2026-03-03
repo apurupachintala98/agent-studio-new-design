@@ -437,7 +437,7 @@ export function PageLayout({ children }) {
       {/* Copyright - always at bottom */}
       <div className="text-center py-4">
         <span className="text-xs" style={{ color: "#90A4AE" }}>
-          © 2024 Elevance Health Agent Studio. All rights reserved.
+          © 2026 Elevance Health Agent Studio. All rights reserved.
         </span>
       </div>
     </div>
