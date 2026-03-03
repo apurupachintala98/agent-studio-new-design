@@ -166,9 +166,6 @@ export default function MemoryConfig({
     navigate("/dashboard");
   };
 
-  const handleSaveDraft = () => {
-    console.log("Save as Draft clicked");
-  };
 
   const handleSaveAndContinue = async () => {
     setIsSaving(true);
@@ -297,8 +294,8 @@ export default function MemoryConfig({
       <FooterButtons
         loading={isSaving}
         buttons={[
+          ...(onBack ? [{ label: "Back", variant: "outline", onClick: onBack }] : []),
           { label: "Discard", variant: "outline", onClick: handleDiscard },
-          { label: "Save as Draft", variant: "outline", onClick: handleSaveDraft },
           { label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue },
         ]}
       />
