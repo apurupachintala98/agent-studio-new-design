@@ -1,5 +1,5 @@
+// --- Shared Icon Components ---
 import { Link, useNavigate } from "react-router-dom";
-import Header from "./Header";
 
 export const ArrowLeft = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}>
@@ -17,7 +17,93 @@ const CheckCircleStep = () => (
 // --- Navbar ---
 export function Navbar() {
   return (
-   <Header />
+    <header
+      className="relative flex items-center justify-between px-6 bg-white"
+      style={{
+        height: 56,
+        borderBottom: "1px solid #E0E0E0",
+        overflow: "hidden",
+      }}
+    >
+      {/* Decorative lines top-right */}
+      <svg
+        className="absolute top-0 right-0"
+        width="320"
+        height="56"
+        viewBox="0 0 320 56"
+        fill="none"
+        style={{ pointerEvents: "none" }}
+      >
+        <line x1="160" y1="-20" x2="320" y2="56" stroke="#D6E4ED" strokeWidth="1" />
+        <line x1="180" y1="-20" x2="340" y2="56" stroke="#D6E4ED" strokeWidth="1" />
+        <line x1="200" y1="-20" x2="360" y2="56" stroke="#D6E4ED" strokeWidth="1" />
+        <line x1="220" y1="-20" x2="380" y2="56" stroke="#D6E4ED" strokeWidth="1" />
+        <line x1="140" y1="56" x2="280" y2="-10" stroke="#D6E4ED" strokeWidth="1" />
+        <line x1="160" y1="56" x2="300" y2="-10" stroke="#D6E4ED" strokeWidth="1" />
+      </svg>
+
+      <div className="flex items-center gap-3 z-10">
+        <div className="flex flex-col leading-none" style={{ fontFamily: "'Segoe UI', sans-serif" }}>
+          <span
+            style={{
+              fontSize: 22,
+              fontWeight: 300,
+              color: "#003366",
+              letterSpacing: "-0.5px",
+              lineHeight: 1,
+            }}
+          >
+            <span style={{ fontStyle: "italic", fontWeight: 400 }}>E</span>levance
+          </span>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#003366",
+              letterSpacing: "1.5px",
+              marginTop: 1,
+              paddingLeft: 2,
+            }}
+          >
+            Health
+          </span>
+        </div>
+        <span
+          style={{
+            fontSize: 16,
+            fontWeight: 300,
+            color: "#263238",
+            letterSpacing: "3px",
+            marginLeft: 12,
+            textTransform: "uppercase",
+          }}
+        >
+          AGENT STUDIO
+        </span>
+      </div>
+
+      <nav className="flex items-center gap-8 z-10">
+        <a
+          href="#"
+          className="text-sm"
+          style={{
+            color: "#263238",
+            fontWeight: 600,
+            textDecoration: "none",
+            borderBottom: "2px solid #263238",
+            paddingBottom: 2,
+          }}
+        >
+          My Agents
+        </a>
+        <a href="#" className="text-sm" style={{ color: "#546E7A", textDecoration: "none" }}>
+          Reference
+        </a>
+        <a href="#" className="text-sm" style={{ color: "#546E7A", textDecoration: "none" }}>
+          Contact Us
+        </a>
+      </nav>
+    </header>
   );
 }
 
@@ -41,11 +127,9 @@ export { CORTEX_STEPS, LANGGRAPH_STEPS };
 // --- Stepper ---
 // Pass steps prop to override default 3-step Cortex flow
 export function Stepper({ activeStep = 1, steps = CORTEX_STEPS }) {
-  // Adjust line width based on step count
-  const lineWidth = steps.length > 3 ? 80 : 120;
-  const labelWidth = steps.length > 3 ? 110 : 130;
+  const LINE_WIDTH = 120;
 
-  const renderCircle = (step) => {
+  const getCircle = (step) => {
     if (step.num < activeStep) {
       return <CheckCircleStep />;
     }
@@ -54,12 +138,9 @@ export function Stepper({ activeStep = 1, steps = CORTEX_STEPS }) {
         <div
           className="flex items-center justify-center rounded-full font-semibold"
           style={{
-            width: 32,
-            height: 32,
-            backgroundColor: "#0072C6",
-            color: "#FFFFFF",
-            fontSize: 14,
-            flexShrink: 0,
+            width: 32, height: 32,
+            backgroundColor: "#0072C6", color: "#FFFFFF",
+            fontSize: 14, flexShrink: 0,
           }}
         >
           {step.num}
@@ -70,13 +151,10 @@ export function Stepper({ activeStep = 1, steps = CORTEX_STEPS }) {
       <div
         className="flex items-center justify-center rounded-full font-semibold"
         style={{
-          width: 32,
-          height: 32,
+          width: 32, height: 32,
           backgroundColor: "transparent",
-          border: "2px solid #B0BEC5",
-          color: "#78909C",
-          fontSize: 14,
-          flexShrink: 0,
+          border: "2px solid #B0BEC5", color: "#78909C",
+          fontSize: 14, flexShrink: 0,
         }}
       >
         {step.num}
@@ -84,29 +162,43 @@ export function Stepper({ activeStep = 1, steps = CORTEX_STEPS }) {
     );
   };
 
+  // Line is blue if connecting to a completed or active step
+  const getLineColor = (index) => {
+    return (index + 1 <= activeStep) ? "#0072C6" : "#B0BEC5";
+  };
+
   return (
-    <div className="flex justify-center pt-6 pb-4" style={{width: "697px"}}>
-      <div className="flex flex-col items-center">
-        {/* Circles and lines row */}
-        <div className="flex items-center">
+    <div className="flex justify-center pt-6 pb-4">
+      <div>
+        {/* Row 1: Circles and lines */}
+        <div className="flex items-center justify-center">
           {steps.map((step, i) => (
             <div key={step.num} className="flex items-center">
-              {renderCircle(step)}
+              {getCircle(step)}
               {i < steps.length - 1 && (
-                <div style={{ width: lineWidth, height: 2, backgroundColor: "#B0BEC5" }} />
+                <div style={{ width: LINE_WIDTH, height: 2, backgroundColor: getLineColor(i) }} />
               )}
             </div>
           ))}
         </div>
-        {/* Labels row */}
+
+        {/* Row 2: Labels - use same widths as circles+lines to align */}
         <div className="flex items-start" style={{ marginTop: 8 }}>
-          {steps.map((step) => (
-            <div key={step.num} className="text-center" style={{ width: labelWidth }}>
+          {steps.map((step, i) => (
+            <div
+              key={step.num}
+              className="text-center"
+              style={{
+                // Each label container = circle(32px) + line(120px), except last = just circle(32px)
+                width: i < steps.length - 1 ? 32 + LINE_WIDTH : 32,
+                flexShrink: 0,
+              }}
+            >
               <span
                 style={{
                   fontSize: 13,
-                  color: step.num === activeStep ? "#0072C6" : "#78909C",
-                  fontWeight: step.num === activeStep ? 600 : 400,
+                  color: step.num <= activeStep ? "#0072C6" : "#78909C",
+                  fontWeight: step.num <= activeStep ? 600 : 400,
                   lineHeight: 1.3,
                   display: "inline-block",
                 }}
@@ -163,7 +255,7 @@ export function PageLayout({ children }) {
       }}
     >
       <Navbar />
-      <main className="px-6 pb-6">
+      <main className="max-w-5xl mx-auto px-6 pb-6">
         {children}
         {/* Copyright */}
         <div className="text-center pb-4">
@@ -196,6 +288,21 @@ const Spinner = () => (
   </svg>
 );
 
+// --- Footer Buttons ---
+// Props:
+//   buttons: Array of { label, onClick, variant, disabled }
+//     variant: "outline" | "disabled-outline" | "primary"
+//   loading: boolean — shows spinner on the primary button when true
+//
+// Example usage:
+//   <FooterButtons
+//     loading={isSaving}
+//     buttons={[
+//       { label: "Discard", variant: "outline", onClick: handleDiscard },
+//       { label: "Save as Draft", variant: "outline", onClick: handleDraft },
+//       { label: "Save & Continue", variant: "primary", onClick: handleSave },
+//     ]}
+//   />
 export function FooterButtons({ buttons = [], loading = false }) {
   const getButtonStyle = (variant, disabled) => {
     if (variant === "primary") {
