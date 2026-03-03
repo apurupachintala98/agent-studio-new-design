@@ -3,7 +3,7 @@ const hostname = window.location.hostname.toLowerCase()
 let BASE_URL = ""
  
 if (hostname === "localhost" || hostname === "127.0.0.1") {
-  BASE_URL = "http://10.188.220.91:8000"
+  BASE_URL = "https://agentbuilder-be.edl.dev.awsdns.internal.das"
  
 } else if (hostname.includes(".sit.")) {
   BASE_URL = "https://agentbuilder-be.edl.sit.awsdns.internal.das"

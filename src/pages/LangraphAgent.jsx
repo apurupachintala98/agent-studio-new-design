@@ -4,15 +4,25 @@ import {
   PageLayout,
   BackToDashboard,
   Stepper,
+  LANGGRAPH_STEPS,
 } from "../components/SharedComponents";
 import AgentProfile from "../components/AgentProfile";
+import MemoryConfig from "../components/MemoryConfig";
+import Tools from "../components/Tools";
+import ApiUiConfig from "../components/ApiUiConfig";
+import Deployment from "../components/Deployment";
 import { fetchSpecificAgent } from "../services/agents";
 
 export default function LangGraphAgent() {
   const { agentId } = useParams();
   const [activeStep, setActiveStep] = useState(1);
   const [agentDetails, setAgentDetails] = useState(null);
+
+  // Accumulated data from each step
   const [stepOneData, setStepOneData] = useState(null);
+  const [stepTwoData, setStepTwoData] = useState(null);
+  const [stepThreeData, setStepThreeData] = useState(null);
+  const [stepFourData, setStepFourData] = useState(null);
 
   useEffect(() => {
     const loadAgent = async () => {
@@ -30,11 +40,31 @@ export default function LangGraphAgent() {
     }
   }, [agentId]);
 
-  const goToNextStep = (dataFromStep) => {
-    if (dataFromStep) {
-      setStepOneData(dataFromStep);
-    }
-    setActiveStep((prev) => Math.min(prev + 1, 3));
+  // Step 1: Agent Profile → Save & Continue
+  const handleStepOneSave = (data) => {
+    setStepOneData(data);
+    setActiveStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Step 2: Memory Config → Save & Continue
+  const handleStepTwoSave = (data) => {
+    setStepTwoData(data);
+    setActiveStep(3);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Step 3: Tools → Save & Continue
+  const handleStepThreeSave = (data) => {
+    setStepThreeData(data);
+    setActiveStep(4);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Step 4: API & UI → Save & Continue
+  const handleStepFourSave = (data) => {
+    setStepFourData(data);
+    setActiveStep(5);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -46,19 +76,44 @@ export default function LangGraphAgent() {
   return (
     <PageLayout>
       <BackToDashboard />
-      <Stepper activeStep={activeStep} />
+      <Stepper activeStep={activeStep} steps={LANGGRAPH_STEPS} />
 
       {activeStep === 1 && (
         <AgentProfile
           agentType="LangGraph"
           agentDetails={agentDetails}
-          onSaveAndContinue={goToNextStep}
+          onSaveAndContinue={handleStepOneSave}
           onBack={goToPrevStep}
         />
       )}
 
-     
+      {activeStep === 2 && (
+        <MemoryConfig
+          agentDetails={agentDetails}
+          stepOneData={stepOneData}
+          onSaveAndContinue={handleStepTwoSave}
+          onBack={goToPrevStep}
+        />
+      )}
 
+      {activeStep === 3 && (
+        <Tools
+          agentDetails={agentDetails}
+          onSaveAndContinue={handleStepThreeSave}
+          onBack={goToPrevStep}
+        />
+      )}
+
+      {activeStep === 4 && (
+        <ApiUiConfig
+          agentDetails={agentDetails}
+          stepOneData={{ ...stepOneData, ...stepTwoData, ...stepThreeData }}
+          onSaveAndContinue={handleStepFourSave}
+          onBack={goToPrevStep}
+        />
+      )}
+
+      {activeStep === 5 && <Deployment agentDetails={agentDetails} />}
     </PageLayout>
   );
 }
