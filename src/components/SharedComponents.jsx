@@ -85,7 +85,7 @@ export function Stepper({ activeStep = 1, steps = CORTEX_STEPS }) {
   };
 
   return (
-    <div className="flex justify-center pt-6 pb-4">
+    <div className="flex justify-center pt-6 pb-4" style={{width: "697px"}}>
       <div className="flex flex-col items-center">
         {/* Circles and lines row */}
         <div className="flex items-center">
