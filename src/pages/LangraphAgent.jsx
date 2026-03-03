@@ -12,11 +12,13 @@ import Tools from "../components/Tools";
 import ApiUiConfig from "../components/ApiUiConfig";
 import Deployment from "../components/Deployment";
 import { fetchSpecificAgent } from "../services/agents";
+import { langgraphApi } from "../services/langgraph-api";
 
 export default function LangGraphAgent() {
   const { agentId } = useParams();
   const [activeStep, setActiveStep] = useState(1);
   const [agentDetails, setAgentDetails] = useState(null);
+  const [defaultConfig, setDefaultConfig] = useState(null);
 
   // Accumulated data from each step
   const [stepOneData, setStepOneData] = useState(null);
@@ -24,6 +26,7 @@ export default function LangGraphAgent() {
   const [stepThreeData, setStepThreeData] = useState(null);
   const [stepFourData, setStepFourData] = useState(null);
 
+  // Fetch agent details + default config on mount
   useEffect(() => {
     const loadAgent = async () => {
       try {
@@ -35,9 +38,19 @@ export default function LangGraphAgent() {
       }
     };
 
+    const loadDefaultConfig = async () => {
+      try {
+        const config = await langgraphApi.getDefaultConfig();
+        setDefaultConfig(config);
+      } catch (error) {
+        console.error("Failed to fetch default config:", error);
+      }
+    };
+
     if (agentId) {
       loadAgent();
     }
+    loadDefaultConfig();
   }, [agentId]);
 
   // Step 1: Agent Profile → Save & Continue
@@ -82,6 +95,7 @@ export default function LangGraphAgent() {
         <AgentProfile
           agentType="LangGraph"
           agentDetails={agentDetails}
+          defaultConfig={defaultConfig}
           onSaveAndContinue={handleStepOneSave}
           onBack={goToPrevStep}
         />
@@ -90,6 +104,7 @@ export default function LangGraphAgent() {
       {activeStep === 2 && (
         <MemoryConfig
           agentDetails={agentDetails}
+          defaultConfig={defaultConfig}
           stepOneData={stepOneData}
           onSaveAndContinue={handleStepTwoSave}
           onBack={goToPrevStep}
@@ -99,6 +114,7 @@ export default function LangGraphAgent() {
       {activeStep === 3 && (
         <Tools
           agentDetails={agentDetails}
+          defaultConfig={defaultConfig}
           onSaveAndContinue={handleStepThreeSave}
           onBack={goToPrevStep}
         />
@@ -107,6 +123,7 @@ export default function LangGraphAgent() {
       {activeStep === 4 && (
         <ApiUiConfig
           agentDetails={agentDetails}
+          defaultConfig={defaultConfig}
           stepOneData={{ ...stepOneData, ...stepTwoData, ...stepThreeData }}
           onSaveAndContinue={handleStepFourSave}
           onBack={goToPrevStep}

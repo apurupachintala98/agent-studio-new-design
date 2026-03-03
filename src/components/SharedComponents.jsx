@@ -196,21 +196,6 @@ const Spinner = () => (
   </svg>
 );
 
-// --- Footer Buttons ---
-// Props:
-//   buttons: Array of { label, onClick, variant, disabled }
-//     variant: "outline" | "disabled-outline" | "primary"
-//   loading: boolean — shows spinner on the primary button when true
-//
-// Example usage:
-//   <FooterButtons
-//     loading={isSaving}
-//     buttons={[
-//       { label: "Discard", variant: "outline", onClick: handleDiscard },
-//       { label: "Save as Draft", variant: "outline", onClick: handleDraft },
-//       { label: "Save & Continue", variant: "primary", onClick: handleSave },
-//     ]}
-//   />
 export function FooterButtons({ buttons = [], loading = false }) {
   const getButtonStyle = (variant, disabled) => {
     if (variant === "primary") {
