@@ -104,10 +104,6 @@ export default function ApiUiConfig({
     navigate("/dashboard");
   };
 
-  const handleSaveDraft = () => {
-    console.log("Save as Draft clicked");
-  };
-
   const handleSaveAndContinue = async () => {
     setIsSaving(true);
     try {
@@ -141,8 +137,8 @@ export default function ApiUiConfig({
   // Footer buttons: toggle between Save and Continue and Create Agent
   const getFooterButtons = () => {
     const buttons = [
+      ...(onBack ? [{ label: "Back", variant: "outline", onClick: onBack }] : []),
       { label: "Discard", variant: "outline", onClick: handleDiscard },
-      { label: "Save as Draft", variant: "outline", onClick: handleSaveDraft },
     ];
     if (!isSaved) {
       buttons.push({ label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue });
