@@ -70,7 +70,7 @@ function UserIcon() {
 function StructuredResponse() {
     return (
         <div className="text-sm text-gray-700 leading-relaxed space-y-3">
-            <p>For the 2024 plan year, there are a few key updates to premiums depending on your selected tier.</p>
+            <p>For the 2026 plan year, there are a few key updates to premiums depending on your selected tier.</p>
             <ul className="space-y-2">
                 <li className="flex items-start gap-2">
                     <span className="mt-2 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
@@ -393,7 +393,7 @@ export default function ChatPage() {
                     </div>
                 </div>
 
-                <div className="text-gray-400 text-[14px] w-full text-center">© 2024 Elevance Health Agent Studio. All rights reserved.</div>
+                <div className="text-gray-400 text-[14px] w-full text-center">© 2026 Elevance Health Agent Studio. All rights reserved.</div>
             </div>
         </div >
     );
