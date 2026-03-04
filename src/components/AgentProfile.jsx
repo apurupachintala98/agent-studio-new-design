@@ -76,10 +76,15 @@ function AgentProfileCard({
   const bottomLink = BOTTOM_LINK_CONFIG[agentType] || BOTTOM_LINK_CONFIG.Cortex;
   const isLangGraph = agentType === "LangGraph";
 
+  const cortexFetched = useRef(false);
+  const providersFetched = useRef(false);
+  const lastFetchedProvider = useRef("");
+
   // Cortex: fetch LLMs directly on mount
   useEffect(() => {
     if (isLangGraph) return;
-
+    if (cortexFetched.current) return;
+    cortexFetched.current = true;
     const fetchCortexLLMs = async () => {
       try {
         const data = await agentApi.getLLMs();
@@ -97,6 +102,8 @@ function AgentProfileCard({
   // LangGraph: fetch providers on mount
   useEffect(() => {
     if (!isLangGraph) return;
+    if (providersFetched.current) return;
+    providersFetched.current = true;
 
     const fetchProviders = async () => {
       try {
@@ -115,6 +122,8 @@ function AgentProfileCard({
   // LangGraph: fetch LLMs when provider changes
   useEffect(() => {
     if (!isLangGraph || !llmServiceProvider) return;
+    if (lastFetchedProvider.current === llmServiceProvider) return;
+    lastFetchedProvider.current = llmServiceProvider;
 
     const fetchProviderLLMs = async () => {
       setLoadingModels(true);
