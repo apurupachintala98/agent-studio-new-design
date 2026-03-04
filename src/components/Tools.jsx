@@ -289,10 +289,13 @@ export default function Tools({
   // LangGraph STDIO
   const [showStdioForm, setShowStdioForm] = useState(false);
   const [stdioTools, setStdioTools] = useState([]);
+  const toolsFetched = useRef(false);
 
   useEffect(() => {
     if (!agentDetails) return;
     if (!agentDetails.agnt_access_scope) return;
+     if (toolsFetched.current) return;
+    toolsFetched.current = true;
     try {
       const parsedScope = JSON.parse(agentDetails.agnt_access_scope);
       const scopesArray = parsedScope?.scopes || [];
