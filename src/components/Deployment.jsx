@@ -274,6 +274,7 @@ export default function Deployment({ onFinish, agentDetails }) {
   const [isFinishing, setIsFinishing] = useState(false);
   const [isDeployed, setIsDeployed] = useState(false);
   const [logs, setLogs] = useState([])
+  const navigate = useNavigate();
   const handleDiscard = () => {
     navigate("/dashboard");
   };
