@@ -191,38 +191,6 @@ function DeploymentLogs({ logs = [] }) {
   );
 }
 
-// --- Source Artifacts Card ---
-// function SourceArtifacts({ agentId, agentApi, setErrorNotification }) {
-//   const [isDownloading, setIsDownloading] = useState(false);
-
-//   const handleDownloadCode = async () => {
-//     if (!agentId) {
-//       setErrorNotification("No agent ID found. Please save your profile first.");
-//       return;
-//     }
-
-//     setIsDownloading(true);
-
-//     try {
-//       const blob = await agentApi.downloadAgent(agentId);
-
-//       const url = window.URL.createObjectURL(blob);
-//       const a = document.createElement("a");
-//       a.href = url;
-//       a.download = `agent-${agentId}.zip`;
-//       document.body.appendChild(a);
-//       a.click();
-//       window.URL.revokeObjectURL(url);
-//       document.body.removeChild(a);
-//     } catch (error) {
-//       console.error("Failed to download agent:", error);
-//       setErrorNotification("Failed to download agent code. Please try again.");
-//     } finally {
-//       setIsDownloading(false);
-//     }
-//   };
-
-
 function SourceArtifacts({ agentDetails }) {
   const [isDownloading, setIsDownloading] = useState(false);
    const [fileSize, setFileSize] = useState(null);
@@ -272,7 +240,7 @@ function SourceArtifacts({ agentDetails }) {
       }}
     >
       <div className="w-full flex justify-end px-5 pt-4">
-        <a href="https://bitbucket.org/your-workspace/ncr_aedleks_agentbuilder_app"
+        <a href="https://bitbucket.elevancehealth.com/projects/AEDLK8S/repos/ncr_aedleks_agentbuilder_app/browse?at=refs%2Fheads%2Fdevelop"
           target="_blank"
           rel="noopener noreferrer" style={{ fontSize: 11, fontWeight: 600, color: "#0072C6", letterSpacing: "1px", textDecoration: "none", textTransform: "uppercase" }}>
           URL LINK
@@ -304,10 +272,14 @@ function SourceArtifacts({ agentDetails }) {
 // --- Main Deployment Page ---
 export default function Deployment({ onFinish, agentDetails }) {
   const [isFinishing, setIsFinishing] = useState(false);
+  const [isDeployed, setIsDeployed] = useState(false);
   const [logs, setLogs] = useState([])
   const handleDiscard = () => {
     navigate("/dashboard");
   };
+
+   const isLangGraph = agentDetails?.agnt_type === "LangGraph";
+  const agentUuid = agentDetails?.agnt_id;
 
   const callAPI = async (d1, d2, d3) => {
     return fetch(`https://aedl-devops.edl.dev.awsdns.internal.das/tekton/s3-logs/${d1}/${d2}/${d3}`)
@@ -317,19 +289,6 @@ export default function Deployment({ onFinish, agentDetails }) {
     const data1 = await callAPI("EDA-EKS-NP1-Cluster", "bmbpoc-srv-devops", data.name)
     setLogs([data1.log_content])
   }
-
-  const handleFinishDeployment = async () => {
-    setIsFinishing(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (onFinish) onFinish();
-    } catch (error) {
-      console.error("Finish failed:", error);
-    } finally {
-      setIsFinishing(false);
-    }
-  };
-
 
   const handleChatWithAgent = () => {
     if (!agentDetails?.agnt_id) {
@@ -345,6 +304,21 @@ export default function Deployment({ onFinish, agentDetails }) {
     localStorage.getItem("aplctn_cd");
 
     navigate("/chat");
+  };
+
+   const handleFinishDeployment = async () => {
+    setIsFinishing(true);
+    try {
+      if (isLangGraph) {
+        const result = await langgraphApi.deployAgent(agentUuid);
+      }
+      setIsDeployed(true);
+      if (onFinish) onFinish();
+    } catch (error) {
+      console.error("Deployment failed:", error);
+    } finally {
+      setIsFinishing(false);
+    }
   };
 
 
@@ -370,11 +344,16 @@ export default function Deployment({ onFinish, agentDetails }) {
           { label: "Discard", variant: "outline", onClick: handleDiscard },
           {
             label: "Chat with Agent",
-            variant: "outline",
-            onClick: handleChatWithAgent,
-            variant: "disabled-outline", disabled: true
+            variant: isDeployed ? "outline" : "disabled-outline",
+            onClick: isDeployed ? handleChatWithAgent : undefined,
+            disabled: !isDeployed,
           },
-          { label: "Finish Deployment", variant: "primary", onClick: handleFinishDeployment },
+          {
+            label: isFinishing ? "Deploying..." : "Finish Deployment",
+            variant: isDeployed ? "disabled-primary" : "primary",
+            onClick: isDeployed ? undefined : handleFinishDeployment,
+            disabled: isDeployed,
+          },
         ]}
       />
     </>

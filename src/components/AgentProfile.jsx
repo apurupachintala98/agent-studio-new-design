@@ -471,9 +471,6 @@ export default function AgentProfile({
     navigate("/dashboard");
   };
 
-  const handleSaveDraft = () => {
-    console.log("Save as Draft clicked");
-  };
 
   const handleSaveAndContinue = async () => {
     setIsSaving(true);
@@ -496,7 +493,6 @@ export default function AgentProfile({
         }),
       };
 
-      console.log(`[${agentType}] Forwarding Data:`, payload);
       onSaveAndContinue(payload);
     } catch (error) {
       console.error("Save failed:", error);
