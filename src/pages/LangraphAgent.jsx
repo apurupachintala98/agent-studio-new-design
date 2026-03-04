@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
   PageLayout,
@@ -24,8 +24,11 @@ export default function LangGraphAgent() {
   const [stepTwoData, setStepTwoData] = useState(null);
   const [stepThreeData, setStepThreeData] = useState(null);
   const [stepFourData, setStepFourData] = useState(null);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     const loadAgent = async () => {
       try {
         const response = await fetchSpecificAgent(agentId);
