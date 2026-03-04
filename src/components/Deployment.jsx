@@ -5,6 +5,7 @@ import {
 } from "../components/SharedComponents";
 import { useNavigate } from "react-router-dom";
 import { agentApi } from "../services/api"
+import { langgraphApi } from "../services/langgraph-api";
 
 // --- Deployment-specific Icons ---
 const CheckCircleGreen = () => (
@@ -222,7 +223,7 @@ function DeploymentLogs({ logs = [] }) {
 //   };
 
 
-function SourceArtifacts({ agentDetails, agentId, agentApi, setErrorNotification }) {
+function SourceArtifacts({ agentDetails }) {
   const [isDownloading, setIsDownloading] = useState(false);
    const [fileSize, setFileSize] = useState(null);
   const agentId = agentDetails?.agnt_id;
@@ -359,12 +360,7 @@ export default function Deployment({ onFinish, agentDetails }) {
           <DeploymentLogs logs={logs} />
         </div>
         <div style={{ flex: "1" }}>
-          <SourceArtifacts
-           agentDetails={agentDetails}
-            agentId={agentDetails?.agnt_id}
-            agentApi={agentApi}
-            setErrorNotification={setErrorNotification}
-          />
+          <SourceArtifacts agentDetails={agentDetails} />
         </div>
       </div>
 
