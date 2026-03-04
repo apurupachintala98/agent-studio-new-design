@@ -369,7 +369,7 @@ export default function LangGraphAgent() {
         db_schema: memDbDefaults.db_schema || "",
       };
 
-      const memoryResult = await langgraphApi.saveMemoryConfig(agentUuid, memoryPayload);
+      const memoryResult = await langgraphApi.configureMemory(agentUuid, memoryPayload);
       console.log("[LangGraph] Memory saved:", memoryResult);
 
        const stdioTools = toolsData.stdio_mcp_tools || [];
@@ -405,7 +405,7 @@ export default function LangGraphAgent() {
       };
 
       console.log("[LangGraph] API 3 - POST /api/lsa/agent/" + agentUuid + "/tools", toolPayload);
-      const toolResult = await langgraphApi.saveToolConfig(agentUuid, toolPayload);
+      const toolResult = await langgraphApi.configureTools(agentUuid, toolPayload);
       console.log("[LangGraph] Tools saved:", toolResult);
 
         if (stdioTools.length > 0) {
