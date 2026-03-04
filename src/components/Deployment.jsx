@@ -191,20 +191,61 @@ function DeploymentLogs({ logs = [] }) {
 }
 
 // --- Source Artifacts Card ---
-function SourceArtifacts({ agentId, agentApi, setErrorNotification }) {
+// function SourceArtifacts({ agentId, agentApi, setErrorNotification }) {
+//   const [isDownloading, setIsDownloading] = useState(false);
+
+//   const handleDownloadCode = async () => {
+//     if (!agentId) {
+//       setErrorNotification("No agent ID found. Please save your profile first.");
+//       return;
+//     }
+
+//     setIsDownloading(true);
+
+//     try {
+//       const blob = await agentApi.downloadAgent(agentId);
+
+//       const url = window.URL.createObjectURL(blob);
+//       const a = document.createElement("a");
+//       a.href = url;
+//       a.download = `agent-${agentId}.zip`;
+//       document.body.appendChild(a);
+//       a.click();
+//       window.URL.revokeObjectURL(url);
+//       document.body.removeChild(a);
+//     } catch (error) {
+//       console.error("Failed to download agent:", error);
+//       setErrorNotification("Failed to download agent code. Please try again.");
+//     } finally {
+//       setIsDownloading(false);
+//     }
+//   };
+
+
+function SourceArtifacts({ agentDetails }) {
   const [isDownloading, setIsDownloading] = useState(false);
+   const [fileSize, setFileSize] = useState(null);
+  const agentId = agentDetails?.agnt_id;
+  const isLangGraph = agentDetails?.agnt_type === "LangGraph";
+
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    return (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
+  };
 
   const handleDownloadCode = async () => {
-    if (!agentId) {
-      setErrorNotification("No agent ID found. Please save your profile first.");
-      return;
-    }
-
+    if (!agentId) return;
     setIsDownloading(true);
-
     try {
-      const blob = await agentApi.downloadAgent(agentId);
-
+      let blob;
+      if (isLangGraph) {
+        blob = await langgraphApi.downloadAgent(agentId);
+      } else {
+        blob = await agentApi.downloadAgent(agentId);
+      }
+      setFileSize(blob.size);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -215,13 +256,12 @@ function SourceArtifacts({ agentId, agentApi, setErrorNotification }) {
       document.body.removeChild(a);
     } catch (error) {
       console.error("Failed to download agent:", error);
-      setErrorNotification("Failed to download agent code. Please try again.");
     } finally {
       setIsDownloading(false);
     }
   };
 
-  return (
+   return (
     <div
       className="rounded-lg bg-white flex flex-col"
       style={{
@@ -254,13 +294,12 @@ function SourceArtifacts({ agentId, agentApi, setErrorNotification }) {
           </svg>
         </div>
         <span className="font-semibold mt-3" style={{ fontSize: 15, color: "#1A1A1A" }}>Source Artifacts</span>
-        <span className="text-sm mt-1" style={{ color: "#78909C" }}>agent_cortex_v1.zip</span>
-        <span className="text-xs mt-0.5" style={{ color: "#90A4AE" }}>(24MB)</span>
+        <span className="text-sm mt-1" style={{ color: "#78909C" }}>{isDownloading ? "Downloading..." : `agent_${isLangGraph ? "langgraph" : "cortex"}_v1.zip`}</span>
+        <span className="text-xs mt-0.5" style={{ color: "#90A4AE" }}> {fileSize ? `(${formatFileSize(fileSize)})` : ""}</span>
       </div>
     </div>
   );
 }
-
 // --- Main Deployment Page ---
 export default function Deployment({ onFinish, agentDetails }) {
   const [isFinishing, setIsFinishing] = useState(false);
