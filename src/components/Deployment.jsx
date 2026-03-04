@@ -222,7 +222,7 @@ function DeploymentLogs({ logs = [] }) {
 //   };
 
 
-function SourceArtifacts({ agentDetails }) {
+function SourceArtifacts({ agentDetails, agentId, agentApi, setErrorNotification }) {
   const [isDownloading, setIsDownloading] = useState(false);
    const [fileSize, setFileSize] = useState(null);
   const agentId = agentDetails?.agnt_id;
@@ -360,6 +360,7 @@ export default function Deployment({ onFinish, agentDetails }) {
         </div>
         <div style={{ flex: "1" }}>
           <SourceArtifacts
+           agentDetails={agentDetails}
             agentId={agentDetails?.agnt_id}
             agentApi={agentApi}
             setErrorNotification={setErrorNotification}

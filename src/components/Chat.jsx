@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import ServiceEndpoint from "../components/ServiceEndpoint";
 import { SendHorizonal } from "lucide-react";
+import { API_CONFIG } from "../config/api_config";
 
 const SSE_LOGS = [
     // { time: "10:43:01", type: "EVENT", content: 'node:start\n  name="policy_retriever"' },
@@ -94,11 +95,19 @@ export default function ChatPage() {
     const [loading, setLoading] = useState(false)
     const [errorNotification, setErrorNotification] = useState("")
     const [apiUrl, setApiUrl] = useState("")
-    const agentId = localStorage.getItem("agentId");
-    const sesnId = localStorage.getItem("session_Id")
-    const userId = localStorage.getItem("user_id")
-    const appCode = localStorage.getItem("aplctn_cd");
-    const agentName = localStorage.getItem("agentName");
+     const [agentId, setAgentId] = useState("");
+    const [sesnId, setSesnId] = useState("");
+    const [userId, setUserId] = useState("");
+    const [appCode, setAppCode] = useState("");
+    const [agentName, setAgentName] = useState("");
+     useEffect(() => {
+        setAgentId(localStorage.getItem("agentId") || "");
+        setSesnId(localStorage.getItem("session_id") || "");
+        setUserId(localStorage.getItem("user_id") || "");
+        setAppCode(localStorage.getItem("aplctn_cd") || "");
+        setAgentName(localStorage.getItem("agentName") || "");
+    }, []);
+
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -106,15 +115,18 @@ export default function ChatPage() {
 
 
     useEffect(() => {
-        const API_URL = "https://agentbuilder-demo.edl.dev.awsdns.internal.das/";
+        if (!agentName) return;
 
-        if (!agentName || !API_URL) return;
+        try {
+            const base = (API_CONFIG?.BASE_URL || "").replace(/\/$/, "");
+            if (!base) return;
 
-        const formatted = agentName.toLowerCase().trim();
-        const base = API_URL.replace(/\/$/, "");
-
-        const generatedUrl = `${base}/${formatted}be-service/`;
-        setApiUrl(generatedUrl);
+            const formatted = agentName.toLowerCase().trim().replace(/\s+/g, "");
+            const generatedUrl = `${base}/${formatted}be-service/`;
+            setApiUrl(generatedUrl);
+        } catch (error) {
+            console.error("Failed to build service URL:", error);
+        }
     }, [agentName]);
 
 
