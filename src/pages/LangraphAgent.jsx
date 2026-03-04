@@ -372,31 +372,52 @@ export default function LangGraphAgent() {
       const memoryResult = await langgraphApi.saveMemoryConfig(agentUuid, memoryPayload);
       console.log("[LangGraph] Memory saved:", memoryResult);
 
-      const toolPayload = {
-        mcp_tools: (toolsData.mcp_tools || []).map((t) => ({
-          transport: t.transport || "streamable_http",
+       const stdioTools = toolsData.stdio_mcp_tools || [];
+      const normalTools = toolsData.normal_mcp_tools || [];
+
+      let mcpToolsPayload = [];
+
+      if (stdioTools.length > 0) {
+        mcpToolsPayload = stdioTools.map((t) => ({
+          transport: "stdio",
+          name: t.name || "",
+          description: t.description || "",
+          config: {
+            command: t.config?.command || "python",
+            args: t.config?.args || "",
+          },
+        }));
+      } else if (normalTools.length > 0) {
+        mcpToolsPayload = normalTools.map((t) => ({
+          transport: "streamable_http",
           name: t.name || "",
           description: t.description || "",
           config: {
             url: t.config?.url || "",
             config: t.config?.config || "",
           },
-        })),
+        }));
+      }
+
+      const toolPayload = {
+        mcp_tools: mcpToolsPayload,
         orchestration_instructions: toolsData.orchestration_instructions || "",
       };
 
+      console.log("[LangGraph] API 3 - POST /api/lsa/agent/" + agentUuid + "/tools", toolPayload);
       const toolResult = await langgraphApi.saveToolConfig(agentUuid, toolPayload);
       console.log("[LangGraph] Tools saved:", toolResult);
 
-      const mcpTools = toolsData.mcp_tools || [];
-      for (const tool of mcpTools) {
-        if (tool.file) {
-          try {
-            console.log("[LangGraph] API 4 - Uploading file:", tool.fileName);
-            await langgraphApi.uploadToolFile(agentUuid, tool.file);
-            console.log("[LangGraph] File uploaded:", tool.fileName);
-          } catch (err) {
-            console.error("Failed to upload file for tool " + tool.name + ":", err);
+        if (stdioTools.length > 0) {
+        for (const tool of stdioTools) {
+          if (tool.file) {
+            try {
+              console.log("[LangGraph] API 4 - Uploading file:", tool.fileName);
+              await langgraphApi.uploadToolFile(agentUuid, tool.file);
+              console.log("[LangGraph] File uploaded:", tool.fileName);
+            } catch (err) {
+              console.error("Failed to upload file for tool " + tool.name + ":", err);
+            }
           }
         }
       }
