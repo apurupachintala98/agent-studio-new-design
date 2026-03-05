@@ -65,7 +65,7 @@ function ToolCard({ name, description, selected, type = "monitor", onToggle }) {
         backgroundColor: "#FFFFFF",
         border: selected ? "2px solid #0072C6" : "1px solid #E0E0E0",
         boxShadow: selected ? "0 0 0 1px #0072C6" : "0 1px 3px rgba(0,0,0,0.04)",
-        minHeight: 120, display: "flex", flexDirection: "column", justifyContent: "flex-start",
+        minHeight: 120, display: "flex", flexDirection: "column", justifyContent: "space-between",
       }}
       onClick={onToggle}
     >
