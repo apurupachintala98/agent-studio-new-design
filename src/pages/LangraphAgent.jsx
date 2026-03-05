@@ -323,28 +323,6 @@ export default function LangGraphAgent() {
   const [agentDetails, setAgentDetails] = useState(null);
   const [defaultConfig, setDefaultConfig] = useState(null);
 
-  // ---------------------------------------------------------------
-  // Accumulated data from each step's Save and Continue
-  //
-  // stepOneData (AgentProfile):
-  //   { agentName, description, selectedModel, systemInstructions,
-  //     responseInstructions, llmServiceProvider, llmProviderName }
-  //
-  // stepTwoData (MemoryConfig):
-  //   { ...stepOneData, memoryConfig: {
-  //       short_term_memory_needed, long_term_memory_needed,
-  //       long_term_memory_config: { semantic_user_profile,
-  //         episodic_user_experience, procedural_user_instructions, custom }
-  //   }}
-  //
-  // stepThreeData (Tools):
-  //   { tool_choice, tools, tool_resources, orchestration_instructions,
-  //     mcp_tools: [{ transport, name, description, config, file, fileName }] }
-  //
-  // stepFourData (ApiUiConfig):
-  //   { backendConfig: { host, port }, frontendConfig: { port, branding },
-  //     apiEnabled, uiEnabled }
-  // ---------------------------------------------------------------
   const [stepOneData, setStepOneData] = useState(null);
   const [stepTwoData, setStepTwoData] = useState(null);
   const [stepThreeData, setStepThreeData] = useState(null);
@@ -403,19 +381,6 @@ export default function LangGraphAgent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // =================================================================
-  // Create Agent - calls all 6 APIs in sequence
-  //
-  // Data sources per field:
-  //   stepOneData   -> agent name, description, model, instructions, provider
-  //   stepTwoData   -> memory toggles (short/long term, semantic/episodic/procedural)
-  //   stepThreeData -> mcp_tools, orchestration_instructions
-  //   stepFourData  -> backend host/port, frontend port
-  //   defaultConfig -> llm_auth, llm_model_config, memory DB connection
-  //   localStorage  -> user_id, aplctn_cd
-  //   URL params    -> agentId (agent_uuid)
-  //   generated     -> sessionId (UUID)
-  // =================================================================
   const handleCreateAgent = async () => {
     try {
       // --- localStorage values ---
@@ -436,15 +401,7 @@ export default function LangGraphAgent() {
       const toolsData = stepThreeData || {};
       const apiUiData = stepFourData || {};
 
-      console.log("[LangGraph] Creating agent...");
-      console.log("[LangGraph] Step 1 - Profile:", profile);
-      console.log("[LangGraph] Step 2 - Memory:", memConfig);
-      console.log("[LangGraph] Step 3 - Tools:", toolsData);
-      console.log("[LangGraph] Step 4 - API/UI:", apiUiData);
 
-      // ============================================================
-      // API 1: POST /api/lsa/agent/create
-      // ============================================================
       const createPayload = {
         agent: {
           agent_uuid: agentUuid,
@@ -463,8 +420,8 @@ export default function LangGraphAgent() {
             model_name: profile.selectedModel || "",
             provider_name: profile.llmProviderName || profile.llmServiceProvider || "",
             llm_auth: {
-              base_url: llmAuth.base_url || "",
-              pat_token: llmAuth.pat_token || "",
+              base_url: "",
+              pat_token: "",
             },
             llm_model_config: {
               temperature: llmModelCfg.temperature || 0.1,
@@ -478,13 +435,10 @@ export default function LangGraphAgent() {
         },
       };
 
-      console.log("[LangGraph] API 1 - POST /api/lsa/agent/create", createPayload);
       const createResult = await langgraphApi.createAgent(createPayload);
-      console.log("[LangGraph] Agent created:", createResult);
 
-      // ============================================================
-      // API 2: POST /api/lsa/agent/{agent_uuid}/memory
-      // ============================================================
+
+
       const memoryPayload = {
         short_term_memory_needed: memConfig.short_term_memory_needed ?? true,
         long_term_memory_needed: memConfig.long_term_memory_needed ?? false,
@@ -503,14 +457,8 @@ export default function LangGraphAgent() {
         db_schema: memDbDefaults.db_schema || "",
       };
 
-      console.log("[LangGraph] API 2 - POST /api/lsa/agent/" + agentUuid + "/memory", memoryPayload);
-      const memoryResult = await langgraphApi.saveMemoryConfig(agentUuid, memoryPayload);
-      console.log("[LangGraph] Memory saved:", memoryResult);
+      const memoryResult = await langgraphApi.configureMemory(agentUuid, memoryPayload);
 
-      // ============================================================
-      // API 3: POST /api/lsa/agent/{agent_uuid}/tools
-      // Sends both normal (streamable_http) AND stdio tools combined
-      // ============================================================
       const stdioTools = toolsData.stdio_mcp_tools || [];
       const normalTools = toolsData.normal_mcp_tools || [];
 
@@ -539,21 +487,15 @@ export default function LangGraphAgent() {
         orchestration_instructions: toolsData.orchestration_instructions || "",
       };
 
-      console.log("[LangGraph] API 3 - POST /api/lsa/agent/" + agentUuid + "/tools", toolPayload);
       const toolResult = await langgraphApi.configureTools(agentUuid, toolPayload);
       console.log("[LangGraph] Tools saved:", toolResult);
 
-      // ============================================================
-      // API 4: POST /api/lsa/agent/{agent_uuid}/tools/upload
-      // Only runs when STDIO tools with .py files exist
-      // ============================================================
+
       if (stdioTools.length > 0) {
         for (const tool of stdioTools) {
           if (tool.file) {
             try {
-              console.log("[LangGraph] API 4 - Uploading file:", tool.fileName);
               await langgraphApi.uploadToolFile(agentUuid, tool.file);
-              console.log("[LangGraph] File uploaded:", tool.fileName);
             } catch (err) {
               console.error("Failed to upload file for tool " + tool.name + ":", err);
             }
@@ -561,28 +503,18 @@ export default function LangGraphAgent() {
         }
       }
 
-      // ============================================================
-      // API 5: POST /api/lsa/agent/{agent_uuid}/backend
-      // ============================================================
       const backendPayload = {
         host: apiUiData.backendConfig?.host || "",
         port: Number.parseInt(apiUiData.backendConfig?.port) || 0,
       };
 
-      console.log("[LangGraph] API 5 - POST /api/lsa/agent/" + agentUuid + "/backend", backendPayload);
       const backendResult = await langgraphApi.configureBackend(agentUuid, backendPayload);
-      console.log("[LangGraph] Backend configured:", backendResult);
 
-      // ============================================================
-      // API 6: POST /api/lsa/agent/{agent_uuid}/frontend
-      // ============================================================
       const frontendPayload = {
         port: Number.parseInt(apiUiData.frontendConfig?.port) || 0,
       };
 
-      console.log("[LangGraph] API 6 - POST /api/lsa/agent/" + agentUuid + "/frontend", frontendPayload);
       const frontendResult = await langgraphApi.configureFrontend(agentUuid, frontendPayload);
-      console.log("[LangGraph] Frontend configured:", frontendResult);
 
       // All 6 APIs complete - move to deployment
       setActiveStep(5);
