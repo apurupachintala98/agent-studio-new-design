@@ -294,6 +294,23 @@ export const langgraphApi = {
     return response.json()
   },
 
+   // Get MCP servers by scopes
+  async getMcpServersByScopes(scopes: string[]): Promise<any> {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/common/mcp-servers/by-scopes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ scopes }),
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch MCP servers by scopes")
+    }
+
+    return response.json()
+  },
+
    async getDefaultConfig(): Promise<DefaultConfig> {
     const response = await fetch(`${API_CONFIG.BASE_URL}/api/lsa/default_inputs`)
 
