@@ -805,9 +805,9 @@ export default function Tools({
       let formatted = [];
       const savedToolNames = (savedData?.tools || []).map((t) => t.name);
 
-      if (isLangGraph) {
-        // LangGraph: POST /api/common/mcp-servers/by-scopes
-        const response = await langgraphApi.getMcpServersByScopes(scopesArray);
+       if (isLangGraph) {
+        const scopesPayload = [scopesArray.join(",")];
+        const response = await langgraphApi.getMcpServersByScopes(scopesPayload);
         const mcpServers = response?.mcp_servers || response?.data?.mcp_servers || response || [];
 
         if (!mcpServers || mcpServers.length === 0) { setTools([]); return; }
