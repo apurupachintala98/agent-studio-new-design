@@ -69,7 +69,7 @@ function ToolCard({ name, description, selected, type = "monitor", onToggle }) {
       }}
       onClick={onToggle}
     >
-      <div className="flex items-start">
+      <div className="flex items-start justify-between">
         {type === "monitor" ? <MonitorIcon selected={selected} /> : <EnvelopeIcon />}
         {selected ? <CheckFilled /> : <CircleOutline />}
       </div>
