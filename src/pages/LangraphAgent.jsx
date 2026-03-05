@@ -116,8 +116,8 @@ export default function LangGraphAgent() {
             model_name: profile.selectedModel || "",
             provider_name: profile.llmProviderName || profile.llmServiceProvider || "",
             llm_auth: {
-              base_url: "",
-              pat_token: "",
+              base_url: llmAuth.base_url,
+              pat_token: llmAuth.pat_token,
             },
             llm_model_config: {
               temperature: llmModelCfg.temperature || 0.1,
