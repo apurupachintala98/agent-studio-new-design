@@ -307,21 +307,17 @@ export default function Deployment({ onFinish, agentDetails }) {
     navigate("/chat");
   };
 
-   const handleFinishDeployment = async () => {
+  const handleFinishDeployment = async () => {
     setIsFinishing(true);
     try {
-      if (isLangGraph) {
-        const result = await langgraphApi.deployAgent(agentUuid);
-      }
-      setIsDeployed(true);
+      setIsFinished(true);
       if (onFinish) onFinish();
     } catch (error) {
-      console.error("Deployment failed:", error);
+      console.error("Finish failed:", error);
     } finally {
       setIsFinishing(false);
     }
   };
-
 
   return (
     <>
@@ -339,21 +335,21 @@ export default function Deployment({ onFinish, agentDetails }) {
         </div>
       </div>
 
-      <FooterButtons
+     <FooterButtons
         loading={isFinishing}
         buttons={[
           { label: "Discard", variant: "outline", onClick: handleDiscard },
           {
             label: "Chat with Agent",
-            variant: isDeployed ? "outline" : "disabled-outline",
-            onClick: isDeployed ? handleChatWithAgent : undefined,
-            disabled: !isDeployed,
+            variant: isFinished ? "outline" : "disabled-outline",
+            onClick: isFinished ? handleChatWithAgent : undefined,
+            disabled: !isFinished,
           },
           {
-            label: isFinishing ? "Deploying..." : "Finish Deployment",
-            variant: isDeployed ? "disabled-primary" : "primary",
-            onClick: isDeployed ? undefined : handleFinishDeployment,
-            disabled: isDeployed,
+            label: "Finish Deployment",
+            variant: !deploymentComplete || isFinished ? "disabled-primary" : "primary",
+            onClick: deploymentComplete && !isFinished ? handleFinishDeployment : undefined,
+            disabled: !deploymentComplete || isFinished,
           },
         ]}
       />

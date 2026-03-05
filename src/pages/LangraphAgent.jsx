@@ -509,8 +509,9 @@ export default function LangGraphAgent() {
       };
 
       const frontendResult = await langgraphApi.configureFrontend(agentUuid, frontendPayload);
+      const deployResult = await langgraphApi.deployAgent(agentUuid);
 
-      // All 6 APIs complete - move to deployment
+      // All 7 APIs complete - move to deployment
       setActiveStep(5);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
