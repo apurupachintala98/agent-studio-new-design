@@ -403,7 +403,6 @@ export default function LangGraphAgent() {
 
 
       const createPayload = {
-        agent: {
           agent_uuid: agentUuid,
           sesn_id: sessionId,
           user_id: userId,
@@ -428,11 +427,6 @@ export default function LangGraphAgent() {
               max_tokens: llmModelCfg.max_tokens || 1024,
             },
           },
-        },
-        oauth_details: {
-          application_code: appCode,
-          prefix: "testmcp",
-        },
       };
 
       const createResult = await langgraphApi.createAgent(createPayload);
