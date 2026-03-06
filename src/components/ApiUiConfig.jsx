@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   FooterButtons,
 } from "../components/SharedComponents";
@@ -91,6 +91,8 @@ export default function ApiUiConfig({
   const [uiPort, setUiPort] = useState(savedData?.frontendConfig?.port ? String(savedData.frontendConfig.port) : "");
   const [branding, setBranding] = useState(savedData?.frontendConfig?.branding || "");
 
+  const [isHandlingAgent, setHandlingAgent] = useState(false);
+
   // Sync defaults when defaultConfig loads — only if no savedData
   useEffect(() => {
     if (savedData) return;
@@ -138,8 +140,25 @@ export default function ApiUiConfig({
   };
 
   const handleCreateAgent = async () => {
-    if (onCreateAgent) await onCreateAgent();
+    if (onCreateAgent) {
+      await onCreateAgent();
+      setHandlingAgent(true);
+    }
   };
+
+
+  const footerButtons = useMemo(() => {
+    const buttons = [
+      ...(onBack ? [{ label: "Back", variant: "outline", onClick: onBack }] : []),
+      { label: "Discard", variant: "outline", onClick: handleDiscard },
+    ];
+    if (!isSaved) {
+      buttons.push({ label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue });
+    } else {
+      buttons.push({ label: "Create Agent", variant: isHandlingAgent ? "disabled-outline" : "primary", onClick: handleCreateAgent, disabled: isHandlingAgent });
+    }
+    return buttons;
+  }, [onBack, isSaved, handleSaveAndContinue, handleCreateAgent, isHandlingAgent]);
 
   // Footer buttons: toggle between Save and Continue and Create Agent
   const getFooterButtons = () => {
@@ -275,7 +294,7 @@ export default function ApiUiConfig({
         </div>
       </div>
 
-      <FooterButtons loading={isSaving} buttons={getFooterButtons()} />
+      <FooterButtons loading={isSaving} buttons={footerButtons} />
     </>
   );
 }

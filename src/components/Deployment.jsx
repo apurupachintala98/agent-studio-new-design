@@ -39,11 +39,11 @@ function DeploymentStepper({ onClear }) {
         setMessageState({ message: "Deployment Completed", percentage: 100 });
         // break interval
         clearInterval(interval);
-        onClear(data)
+        onClear(data, true)
       } else if (data.status.toLowerCase() === "failed") {
         setMessageState({ message: "Agent Deployment Failed", percentage: 30 });
         clearInterval(interval);
-        onClear(data)
+        onClear(data, false)
       } else {
         setMessageState((s) => ({ message: `Deploying to  EKS`, percentage: s.percentage + 1 }))
       }
@@ -193,7 +193,7 @@ function DeploymentLogs({ logs = [] }) {
 
 function SourceArtifacts({ agentDetails }) {
   const [isDownloading, setIsDownloading] = useState(false);
-   const [fileSize, setFileSize] = useState(null);
+  const [fileSize, setFileSize] = useState(null);
   const agentId = agentDetails?.agnt_id;
   const isLangGraph = agentDetails?.agnt_type === "LangGraph";
 
@@ -230,7 +230,7 @@ function SourceArtifacts({ agentDetails }) {
     }
   };
 
-   return (
+  return (
     <div
       className="rounded-lg bg-white flex flex-col"
       style={{
@@ -282,16 +282,19 @@ export default function Deployment({ onFinish, agentDetails }) {
     navigate("/dashboard");
   };
 
-   const isLangGraph = agentDetails?.agnt_type === "LangGraph";
+  const isLangGraph = agentDetails?.agnt_type === "LangGraph";
   const agentUuid = agentDetails?.agnt_id;
 
   const callAPI = async (d1, d2, d3) => {
     return fetch(`https://aedl-devops.edl.dev.awsdns.internal.das/tekton/s3-logs/${d1}/${d2}/${d3}`)
       .then(res => res.json())
   }
-  const onClear = async (data) => {
-    const data1 = await callAPI("EDA-EKS-NP1-Cluster", "bmbpoc-srv-devops", data.name)
-    setLogs([data1.log_content])
+  const onClear = async (data, isDone) => {
+    if (isDone) {
+      const data1 = await callAPI("EDA-EKS-NP1-Cluster", "bmbpoc-srv-devops", data.name)
+      setLogs([data1.log_content])
+    }
+    setDeploymentComplete(true)
   }
 
   const handleChatWithAgent = () => {
@@ -301,7 +304,7 @@ export default function Deployment({ onFinish, agentDetails }) {
     }
 
     // Store required details
-    localStorage.setItem("agentName", agentDetails?.agnt_nm); 
+    localStorage.setItem("agentName", agentDetails?.agnt_nm);
     localStorage.setItem("agentId", agentDetails?.agnt_id);
     localStorage.getItem("session_Id")
     localStorage.getItem("user_id")
@@ -338,7 +341,7 @@ export default function Deployment({ onFinish, agentDetails }) {
         </div>
       </div>
 
-     <FooterButtons
+      <FooterButtons
         loading={isFinishing}
         buttons={[
           { label: "Discard", variant: "outline", onClick: handleDiscard },
