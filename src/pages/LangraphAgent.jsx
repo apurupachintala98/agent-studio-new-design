@@ -213,6 +213,7 @@ export default function LangGraphAgent() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       console.error("Failed to create agent:", error);
+      throw error;
     }
   };
 

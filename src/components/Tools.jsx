@@ -403,8 +403,8 @@ export default function Tools({
           name: tool.name,
           description: tool.description,
           config: {
-            url: tool.original?.tool_rsrc_config?.url || "",
-            config: tool.original?.tool_rsrc_config?.config || "",
+            url: tool.original?.config?.url,
+            config: tool.original?.config?.config || "",
           },
         })),
         // STDIO tools (manually added) -> stdio transport
