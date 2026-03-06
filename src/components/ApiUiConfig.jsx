@@ -311,6 +311,7 @@ function ToggleSwitch({ checked, onChange }) {
   return (
     <button
       type="button"
+       disabled
       onClick={() => onChange(!checked)}
       className="relative inline-flex items-center rounded-full transition-colors"
       style={{
