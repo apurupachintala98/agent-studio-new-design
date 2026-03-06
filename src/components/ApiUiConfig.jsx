@@ -311,8 +311,8 @@ function ToggleSwitch({ checked, onChange }) {
   return (
     <button
       type="button"
-       disabled
       onClick={() => onChange(!checked)}
+      disabled
       className="relative inline-flex items-center rounded-full transition-colors"
       style={{
         width: 44,
@@ -618,46 +618,99 @@ export default function ApiUiConfig({
       </div>
 
       {/* Top-right toast notification */}
-      {(createStatus === "success" || createStatus === "error") && (
+      {createStatus !== "idle" && (
         <div
           style={{
             position: "fixed",
             top: 24,
             right: 24,
             zIndex: 9999,
-            minWidth: 320,
-            padding: "14px 20px",
-            borderRadius: 10,
-            backgroundColor: createStatus === "success" ? "#F0FFF4" : "#FFF5F5",
-            border: `1px solid ${createStatus === "success" ? "#9AE6B4" : "#FEB2B2"}`,
-            boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+            minWidth: 340,
+            maxWidth: 420,
+            padding: "16px 20px",
+            borderRadius: 12,
+            backgroundColor: "#FFFFFF",
+            border: `1px solid ${
+              createStatus === "error" ? "#FEB2B2"
+              : createStatus === "success" ? "#9AE6B4"
+              : "#D0E4F5"
+            }`,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
             display: "flex",
             alignItems: "center",
-            gap: 10,
-            animation: "slideIn 0.3s ease-out",
+            gap: 12,
           }}
         >
-          {createStatus === "success" ? (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="10" r="9" fill="#2E8540" />
-              <path d="M6 10.5L8.5 13L14 7.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="10" r="9" fill="#E53E3E" />
-              <path d="M7 7L13 13M13 7L7 13" stroke="white" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+          {/* Icon */}
+          {createStatus === "creating" && (
+            <div
+              style={{
+                width: 32, height: 32, borderRadius: "50%",
+                backgroundColor: "#EBF5FB",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  width: 16, height: 16,
+                  border: "2.5px solid #0072C6",
+                  borderTopColor: "transparent",
+                  borderRadius: "50%",
+                  animation: "spin 0.8s linear infinite",
+                }}
+              />
+            </div>
           )}
+          {createStatus === "success" && (
+            <div
+              style={{
+                width: 32, height: 32, borderRadius: "50%",
+                backgroundColor: "#F0FFF4",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="9" fill="#2E8540" />
+                <path d="M6 10.5L8.5 13L14 7.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          )}
+          {createStatus === "error" && (
+            <div
+              style={{
+                width: 32, height: 32, borderRadius: "50%",
+                backgroundColor: "#FFF5F5",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="9" fill="#E53E3E" />
+                <path d="M7 7L13 13M13 7L7 13" stroke="white" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+          )}
+
+          {/* Text */}
           <span style={{
             fontSize: 14,
             fontWeight: 500,
-            color: createStatus === "success" ? "#2E8540" : "#E53E3E",
+            color: createStatus === "error" ? "#1A1A1A"
+              : createStatus === "success" ? "#1A1A1A"
+              : "#1A1A1A",
           }}>
-            {createStatus === "success"
-              ? "Agent created successfully!"
-              : "Agent creation failed. Please try again."}
+            {createStatus === "creating" && "Agent creation is in progress..."}
+            {createStatus === "success" && "Agent created successfully!"}
+            {createStatus === "error" && "Agent creation failed. Please try again."}
           </span>
         </div>
+      )}
+
+      {/* Spin animation for the loader */}
+      {createStatus === "creating" && (
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       )}
 
       <FooterButtons loading={createStatus === "creating"} buttons={getFooterButtons()} />
