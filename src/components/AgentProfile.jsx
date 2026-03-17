@@ -80,6 +80,7 @@ function AgentProfileCard({
   const cortexFetched = useRef(false);
   const providersFetched = useRef(false);
   const lastFetchedProvider = useRef("");
+  const defaultModelRef = useRef(selectedModel || "");
 
   // Cortex: fetch LLMs directly on mount (once)
   useEffect(() => {
@@ -136,7 +137,7 @@ function AgentProfileCard({
         const data = await langgraphApi.getLLMs(llmServiceProvider);
         setModels(data);
         // Only auto-select first model if no model is already selected
-        if (data.length > 0 && !selectedModel) {
+        if (data.length > 0 && !defaultModelRef.current) {
           setSelectedModel(data[0].model_id);
         }
       } catch (error) {
@@ -480,9 +481,10 @@ export default function AgentProfile({
       setResponseInstruction(instructions.response_instructions);
     }
 
- const llmConfig = profileDefaults.llm_config;
+    const llmConfig = profileDefaults.llm_config;
     if (llmConfig?.model_id && !selectedModel) {
       setSelectedModel(llmConfig.model_id);
+      defaultModelRef.current = llmConfig.model_id;
     }
     // Prefill provider from details API
     if (llmConfig?.provider_name && !llmServiceProvider) {
@@ -564,7 +566,7 @@ export default function AgentProfile({
         </div>
       )}
 
-     <FooterButtons
+      <FooterButtons
         loading={isSaving}
         buttons={[
           ...(onBack ? [{ label: "Back", variant: "outline", onClick: onBack }] : []),
