@@ -473,11 +473,20 @@ export default function AgentProfile({
   useEffect(() => {
     if (!profileDefaults) return;
     const instructions = profileDefaults.agent_instructions;
-    if (instructions?.system && !systemInstruction) {
-      setSystemInstruction(instructions.system);
+    if (instructions?.system_instructions && !systemInstruction) {
+      setSystemInstruction(instructions.system_instructions || "");
     }
-    if (instructions?.response_structure && !responseInstruction) {
-      setResponseInstruction(instructions.response_structure);
+    if (instructions?.response_instructions && !responseInstruction) {
+      setResponseInstruction(instructions.response_instructions);
+    }
+
+ const llmConfig = profileDefaults.llm_config;
+    if (llmConfig?.model_id && !selectedModel) {
+      setSelectedModel(llmConfig.model_id);
+    }
+    // Prefill provider from details API
+    if (llmConfig?.provider_name && !llmServiceProvider) {
+      setLlmServiceProvider(llmConfig.provider_name);
     }
   }, [profileDefaults]);
 
