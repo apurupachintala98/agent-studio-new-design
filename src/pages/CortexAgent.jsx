@@ -229,8 +229,43 @@ export default function AgentStudio() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleToolsSave = (data) => {
+  const handleToolsSave = async (data) => {
     setToolData(data);
+    try {
+      const sesnId = localStorage.getItem("session_Id") || "";
+      const profile = stepOneData || {};
+
+      const configPayload = {
+        sesn_id: sesnId,
+        agent_name: profile.agentName || agentDetails?.agnt_nm || "",
+        db: profile.db || agentDetails?.db_nm || "Default",
+        schema: profile.schema || agentDetails?.schma_nm || "Default",
+        description: profile.description || agentDetails?.agnt_desc || "",
+        model_config: {
+          orchestration: profile.selectedModel || "",
+        },
+        orchestration_config: {
+          budget: {
+            seconds: 60,
+            tokens: 1600,
+          },
+          features: {
+            thread_memory: true,
+          },
+          agent_instructions: {
+            response: profile.responseInstructions || "",
+            orchestration: data.orchestration_instructions || "",
+            system: profile.systemInstructions || "",
+          },
+        },
+        features: { thread_memory: true },
+      };
+
+      await agentApi.saveCortexConfig(agentId, configPayload);
+      console.log("[Cortex] Tools config saved");
+    } catch (error) {
+      console.error("[Cortex] Failed to save tools config:", error);
+    }
   };
 
   const goToPrevStep = () => {
