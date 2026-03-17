@@ -763,11 +763,13 @@ function AgentProfileCard({
         setModels(data);
         if (data.length > 0) {
           // If we have a desired model from details API/savedData, select it
-          // Otherwise fall back to first model
+          // Check by model_id or model_name since details API may return either
           const desiredModel = defaultModelRef.current || selectedModel;
-          const modelExists = desiredModel && data.some(m => m.model_id === desiredModel);
-          if (modelExists) {
-            setSelectedModel(desiredModel);
+          const matchedModel = desiredModel && data.find(
+            m => m.model_id === desiredModel || m.model_name === desiredModel
+          );
+          if (matchedModel) {
+            setSelectedModel(matchedModel.model_id);
           } else {
             setSelectedModel(data[0].model_id);
           }
@@ -1101,6 +1103,7 @@ export default function AgentProfile({
   // Compute initial values from savedData first, then defaultConfig/cortexInstructions
   const initialModel = savedData?.selectedModel
     || profileDefaults?.llm_config?.model_id
+    || profileDefaults?.llm_config?.model_name
     || "";
   const initialProvider = savedData?.llmServiceProvider
     || profileDefaults?.llm_config?.provider_name
