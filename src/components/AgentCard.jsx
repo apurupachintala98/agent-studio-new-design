@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { fetchSpecificAgent } from "../services/agents"
+import { langgraphApi } from "../services/langgraph-api";
 import { v4 as uuidv4 } from "uuid";
 import { agentApi } from "../services/api";
 
@@ -12,7 +12,7 @@ export default function AgentCard({ agent }) {
       localStorage.setItem("session_Id", sessionId);
       const userId = localStorage.getItem("user_id");
       const appCode = localStorage.getItem("aplctn_cd");
-      const response = await fetchSpecificAgent(agent.id)
+      const response = await langgraphApi.getAgentDetails(agent.id)
       const agentDetails = response?.data?.record
       if (!agentDetails) {
         console.error("Agent details not found")
