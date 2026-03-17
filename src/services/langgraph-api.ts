@@ -320,5 +320,60 @@ export const langgraphApi = {
 
     return response.json()
   },
+
+    // Get agent details (merged with default config)
+  async getAgentDetails(agentId: string): Promise<any> {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/lsa/agents/${agentId}/details`)
+ 
+    if (!response.ok) {
+      throw new Error("Failed to fetch agent details")
+    }
+ 
+    return response.json()
+  },
+
+   // Page save - Profile (Step 1)
+  async saveProfile(payload: any): Promise<any> {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/lsa/page/save-profile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+    if (!response.ok) throw new Error("Failed to save profile")
+    return response.json()
+  },
+ 
+  // Page save - Memory (Step 2)
+  async saveMemory(payload: any): Promise<any> {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/lsa/page/save-memory`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+    if (!response.ok) throw new Error("Failed to save memory")
+    return response.json()
+  },
+ 
+  // Page save - Tools (Step 3)
+  async saveTools(payload: any): Promise<any> {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/lsa/page/save-tools`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+    if (!response.ok) throw new Error("Failed to save tools")
+    return response.json()
+  },
+ 
+  // Page save - API & UI (Step 4)
+  async saveApiUi(payload: any): Promise<any> {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/lsa/page/save-api-ui`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+    if (!response.ok) throw new Error("Failed to save API & UI config")
+    return response.json()
+  },
 }
 
