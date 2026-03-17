@@ -186,7 +186,9 @@ export default function AgentCard({ agent }) {
           fontWeight: '300',
           lineHeight: '18px',
           margin: '0',
-          marginBottom: '8px'
+          marginBottom: '8px',
+          maxHeight: "72px",
+          overflowY: "auto",
         }}
       >
         {agent.description}
