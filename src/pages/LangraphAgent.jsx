@@ -335,15 +335,15 @@ export default function LangGraphAgent() {
     return { userId, appCode, agentUuid };
   };
 
-  const handleStepOneSave = async (data) => {
+ const handleStepOneSave = async (data) => {
     setStepOneData(data);
     try {
       const { userId, appCode, agentUuid } = getCommonIds();
       const llmAuth = defaultConfig?.profile_config?.llm_config?.llm_auth || {};
       const llmModelCfg = defaultConfig?.profile_config?.llm_config?.llm_model_config || {};
-
+ 
       const profilePayload = {
-        agent_uuid: agentUuid,
+        agnt_id: agentUuid,
         sesn_id: localStorage.getItem("session_id") || "",
         user_id: userId,
         aplctn_cd: appCode,
@@ -368,7 +368,7 @@ export default function LangGraphAgent() {
           },
         },
       };
-
+ 
       await langgraphApi.saveProfile(profilePayload);
     } catch (error) {
       console.error("[LangGraph] Failed to save profile page:", error);
@@ -376,31 +376,35 @@ export default function LangGraphAgent() {
     setActiveStep(2);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
+ 
   const handleStepTwoSave = async (data) => {
     setStepTwoData(data);
     try {
+      const { agentUuid } = getCommonIds();
       const memConfig = data?.memoryConfig || {};
       const memDbDefaults = defaultConfig?.memory_config || {};
-
+ 
       const memoryPayload = {
-        short_term_memory_needed: memConfig.short_term_memory_needed ?? true,
-        long_term_memory_needed: memConfig.long_term_memory_needed ?? false,
-        long_term_memory_config: {
-          semantic_user_profile: memConfig.long_term_memory_config?.semantic_user_profile ?? false,
-          episodic_user_experience: memConfig.long_term_memory_config?.episodic_user_experience ?? false,
-          procedural_user_instructions: memConfig.long_term_memory_config?.procedural_user_instructions ?? false,
-          custom: memConfig.long_term_memory_config?.custom ?? false,
+        agnt_id: agentUuid,
+        memory_config: {
+          short_term_memory_needed: memConfig.short_term_memory_needed ?? true,
+          long_term_memory_needed: memConfig.long_term_memory_needed ?? false,
+          long_term_memory_config: {
+            semantic_user_profile: memConfig.long_term_memory_config?.semantic_user_profile ?? false,
+            episodic_user_experience: memConfig.long_term_memory_config?.episodic_user_experience ?? false,
+            procedural_user_instructions: memConfig.long_term_memory_config?.procedural_user_instructions ?? false,
+            custom: memConfig.long_term_memory_config?.custom ?? false,
+          },
+          db_type: memDbDefaults.db_type || "postgres",
+          db_host: memDbDefaults.db_host || "",
+          db_port: memDbDefaults.db_port || 0,
+          db_username: memDbDefaults.db_username || memDbDefaults.db_user || "",
+          db_password: memDbDefaults.db_password || "",
+          db_name: memDbDefaults.db_name || "",
+          db_schema: memDbDefaults.db_schema || "",
         },
-        db_type: memDbDefaults.db_type || "postgres",
-        db_host: memDbDefaults.db_host || "",
-        db_port: memDbDefaults.db_port || 0,
-        db_username: memDbDefaults.db_username || memDbDefaults.db_user || "",
-        db_password: memDbDefaults.db_password || "",
-        db_name: memDbDefaults.db_name || "",
-        db_schema: memDbDefaults.db_schema || "",
       };
-
+ 
       await langgraphApi.saveMemory(memoryPayload);
     } catch (error) {
       console.error("[LangGraph] Failed to save memory page:", error);
@@ -408,13 +412,13 @@ export default function LangGraphAgent() {
     setActiveStep(3);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
+ 
   const handleStepThreeSave = async (data) => {
     setStepThreeData(data);
     try {
       const stdioTools = data.stdio_mcp_tools || [];
       const normalTools = data.normal_mcp_tools || [];
-
+ 
       const normalMcpPayload = normalTools.map((t) => ({
         transport: "streamable_http",
         name: t.name || "",
@@ -424,7 +428,7 @@ export default function LangGraphAgent() {
           config: t.config?.config || "",
         },
       }));
-
+ 
       const stdioMcpPayload = stdioTools.map((t) => ({
         transport: "stdio",
         name: t.name || "",
@@ -434,12 +438,12 @@ export default function LangGraphAgent() {
           args: t.config?.args || "",
         },
       }));
-
+ 
       const toolPayload = {
         mcp_tools: [...normalMcpPayload, ...stdioMcpPayload],
         orchestration_instructions: data.orchestration_instructions || "",
       };
-
+ 
       await langgraphApi.saveTools(toolPayload);
     } catch (error) {
       console.error("[LangGraph] Failed to save tools page:", error);
@@ -447,11 +451,13 @@ export default function LangGraphAgent() {
     setActiveStep(4);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
+ 
   const handleStepFourSave = async (data) => {
     setStepFourData(data);
     try {
+      const { agentUuid } = getCommonIds();
       const apiUiPayload = {
+        agnt_id: agentUuid,
         backend_config: {
           host: data.backendConfig?.host || "",
           port: Number.parseInt(data.backendConfig?.port) || 0,
@@ -460,7 +466,7 @@ export default function LangGraphAgent() {
           port: Number.parseInt(data.frontendConfig?.port) || 0,
         },
       };
-
+ 
       await langgraphApi.saveApiUi(apiUiPayload);
     } catch (error) {
       console.error("[LangGraph] Failed to save API & UI page:", error);
