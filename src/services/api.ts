@@ -288,6 +288,32 @@ export const agentApi = {
   return response.json()
 },
 
+async getCortexAgentDetails(agentId: string): Promise<any> {
+  const response = await fetch(`${API_CONFIG.BASE_URL}/api/cortex/agent/specific`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ agnt_id: agentId }),
+  })
+  if (!response.ok) throw new Error("Failed to fetch cortex agent details")
+  return response.json()
+},
+
+async saveCortexConfig(agentUuid: string, payload: any): Promise<any> {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/cortex/${agentUuid}/config`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+ 
+    if (!response.ok) {
+      throw new Error("Failed to save cortex config")
+    }
+ 
+    return response.json()
+  },
+
 }
 
  
