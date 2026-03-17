@@ -80,6 +80,7 @@
 //   const cortexFetched = useRef(false);
 //   const providersFetched = useRef(false);
 //   const lastFetchedProvider = useRef("");
+//   // Track the model from details API so fetch effects don't overwrite it
 //   const defaultModelRef = useRef(selectedModel || "");
 
 //   // Cortex: fetch LLMs directly on mount (once)
@@ -92,8 +93,8 @@
 //       try {
 //         const data = await agentApi.getLLMs();
 //         setModels(data);
-//         // Only auto-select first model if no model is already selected
-//         if (data.length > 0 && !selectedModel) {
+//         // Only auto-select first model if no model was set from details API or savedData
+//         if (data.length > 0 && !defaultModelRef.current) {
 //           setSelectedModel(data[0].model_id);
 //         }
 //       } catch (error) {
@@ -136,7 +137,7 @@
 //       try {
 //         const data = await langgraphApi.getLLMs(llmServiceProvider);
 //         setModels(data);
-//         // Only auto-select first model if no model is already selected
+//         // Only auto-select first model if no model was set from details API or savedData
 //         if (data.length > 0 && !defaultModelRef.current) {
 //           setSelectedModel(data[0].model_id);
 //         }
@@ -463,6 +464,10 @@
 //   // Use defaultConfig for LangGraph instruction defaults only
 //   const profileDefaults = isLangGraph ? defaultConfig?.profile_config : null;
 
+//   // Cortex: agent_instructions from /api/cortex/agent/specific response
+//   const cortexInstructions = !isLangGraph ? agentDetails?._agentInstructions : null;
+
+//   // Compute initial values from savedData first, then defaultConfig/cortexInstructions
 //   const initialModel = savedData?.selectedModel
 //     || profileDefaults?.llm_config?.model_id
 //     || "";
@@ -472,38 +477,56 @@
 //   const initialSystemInstruction = savedData?.systemInstructions
 //     || profileDefaults?.agent_instructions?.system_instructions
 //     || profileDefaults?.agent_instructions?.system
+//     || cortexInstructions?.system_instructions
+//     || cortexInstructions?.system
 //     || "";
 //   const initialResponseInstruction = savedData?.responseInstructions
 //     || profileDefaults?.agent_instructions?.response_instructions
 //     || profileDefaults?.agent_instructions?.response_structure
+//     || cortexInstructions?.response_instructions
+//     || cortexInstructions?.response
 //     || "";
 
+//   // User-entered values — restore from savedData or defaultConfig
 //   const [selectedModel, setSelectedModel] = useState(initialModel);
 //   const [systemInstruction, setSystemInstruction] = useState(initialSystemInstruction);
 //   const [responseInstruction, setResponseInstruction] = useState(initialResponseInstruction);
 //   const [toolChoice, setToolChoice] = useState(savedData?.toolChoice || "auto");
 //   const [llmServiceProvider, setLlmServiceProvider] = useState(initialProvider);
-//   // Sync defaults when defaultConfig loads (async)
+
+//   // Sync defaults when defaultConfig loads after mount (async case)
 //   useEffect(() => {
 //     if (!profileDefaults) return;
 //     const instructions = profileDefaults.agent_instructions;
-//     if (instructions?.system_instructions && !systemInstruction) {
-//       setSystemInstruction(instructions.system_instructions || "");
+//     if (instructions && !systemInstruction) {
+//       setSystemInstruction(instructions.system_instructions || instructions.system || "");
 //     }
-//     if (instructions?.response_instructions && !responseInstruction) {
-//       setResponseInstruction(instructions.response_instructions);
+//     if (instructions && !responseInstruction) {
+//       setResponseInstruction(instructions.response_instructions || instructions.response_structure || "");
 //     }
-
 //     const llmConfig = profileDefaults.llm_config;
 //     if (llmConfig?.model_id && !selectedModel) {
 //       setSelectedModel(llmConfig.model_id);
-//       defaultModelRef.current = llmConfig.model_id;
 //     }
-//     // Prefill provider from details API
 //     if (llmConfig?.provider_name && !llmServiceProvider) {
 //       setLlmServiceProvider(llmConfig.provider_name);
 //     }
 //   }, [profileDefaults]);
+
+//   // Cortex: sync instructions when agentDetails loads after mount
+//   useEffect(() => {
+//     if (isLangGraph) return;
+//     const instructions = agentDetails?._agentInstructions;
+//     if (!instructions) return;
+//     if (!systemInstruction) {
+//       const sysVal = instructions.system_instructions || instructions.system || "";
+//       if (sysVal) setSystemInstruction(sysVal);
+//     }
+//     if (!responseInstruction) {
+//       const resVal = instructions.response_instructions || instructions.response || "";
+//       if (resVal) setResponseInstruction(resVal);
+//     }
+//   }, [agentDetails]);
 
 //   const handleDiscard = () => {
 //     navigate("/dashboard");
@@ -584,6 +607,7 @@
 //         buttons={[
 //           ...(onBack ? [{ label: "Back", variant: "outline", onClick: onBack }] : []),
 //           { label: "Discard", variant: "outline", onClick: handleDiscard },
+//           { label: "Save as Draft", variant: "outline", onClick: handleSaveDraft },
 //           { label: "Save & Continue", variant: "primary", onClick: handleSaveAndContinue },
 //         ]}
 //       />
@@ -676,6 +700,13 @@ function AgentProfileCard({
   // Track the model from details API so fetch effects don't overwrite it
   const defaultModelRef = useRef(selectedModel || "");
 
+  // Keep ref in sync when parent sets selectedModel from details API
+  useEffect(() => {
+    if (selectedModel && !defaultModelRef.current) {
+      defaultModelRef.current = selectedModel;
+    }
+  }, [selectedModel]);
+
   // Cortex: fetch LLMs directly on mount (once)
   useEffect(() => {
     if (isLangGraph) return;
@@ -730,9 +761,16 @@ function AgentProfileCard({
       try {
         const data = await langgraphApi.getLLMs(llmServiceProvider);
         setModels(data);
-        // Only auto-select first model if no model was set from details API or savedData
-        if (data.length > 0 && !defaultModelRef.current) {
-          setSelectedModel(data[0].model_id);
+        if (data.length > 0) {
+          // If we have a desired model from details API/savedData, select it
+          // Otherwise fall back to first model
+          const desiredModel = defaultModelRef.current || selectedModel;
+          const modelExists = desiredModel && data.some(m => m.model_id === desiredModel);
+          if (modelExists) {
+            setSelectedModel(desiredModel);
+          } else {
+            setSelectedModel(data[0].model_id);
+          }
         }
       } catch (error) {
         console.error("Failed to load LLMs for provider:", error);
