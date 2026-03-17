@@ -273,6 +273,7 @@ function StdioToolsList({ stdioTools, onRemove }) {
 export default function Tools({
   agentType = "Cortex",
   agentDetails,
+  defaultConfig,
   savedData,
   onSaveAndContinue,
   onCreateAgent,
@@ -293,6 +294,14 @@ export default function Tools({
   const [stdioTools, setStdioTools] = useState(savedData?.stdio_mcp_tools || []);
 
   const toolsFetched = useRef(false);
+
+  useEffect(() => {
+  if (savedData?.orchestration_instructions) return;  
+  const defaultOrchestration = defaultConfig?.profile_config?.agent_instructions?.orchestration || "";
+  if (defaultOrchestration && !orchestrationInstruction) {
+    setOrchestrationInstruction(defaultOrchestration);
+  }
+}, [defaultConfig]);
 
   useEffect(() => {
     if (!agentDetails) return;
