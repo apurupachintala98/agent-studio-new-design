@@ -80,6 +80,7 @@ function AgentProfileCard({
   const cortexFetched = useRef(false);
   const providersFetched = useRef(false);
   const lastFetchedProvider = useRef("");
+  const defaultModelRef = useRef(selectedModel || "");
 
   // Cortex: fetch LLMs directly on mount (once)
   useEffect(() => {
