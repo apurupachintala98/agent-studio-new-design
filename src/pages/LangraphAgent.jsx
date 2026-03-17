@@ -554,7 +554,7 @@ export default function LangGraphAgent() {
       };
 
       console.log("[LangGraph] API 2 - POST /api/lsa/agent/" + agentUuid + "/memory", memoryPayload);
-      const memoryResult = await langgraphApi.saveMemoryConfig(agentUuid, memoryPayload);
+      const memoryResult = await langgraphApi.configureMemory(agentUuid, memoryPayload);
       console.log("[LangGraph] Memory saved:", memoryResult);
 
       const stdioTools = toolsData.stdio_mcp_tools || [];
