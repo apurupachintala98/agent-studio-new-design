@@ -440,6 +440,8 @@ export default function LangGraphAgent() {
       }));
  
       const toolPayload = {
+        agnt_id: getCommonIds().agentUuid,
+        sesn_id: localStorage.getItem("session_id") || "",
         mcp_tools: [...normalMcpPayload, ...stdioMcpPayload],
         orchestration_instructions: data.orchestration_instructions || "",
       };
