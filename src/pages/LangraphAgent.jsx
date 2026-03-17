@@ -351,7 +351,7 @@ export default function LangGraphAgent() {
         agent_description: data.description || agentDetails?.agnt_desc || "",
         agent_instructions: {
           system: data.systemInstructions || "",
-          orchestration: "",
+          orchestration: data.orchestration || "",
           response_structure: data.responseInstructions || "",
         },
         llm_config: {
