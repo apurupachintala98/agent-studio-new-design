@@ -190,41 +190,8 @@ export default function AgentStudio() {
     }
   }, [agentId]);
 
-  const handleStepOneSave = async (data) => {
+  const handleStepOneSave = (data) => {
     setStepOneData(data);
-    try {
-      const sesnId = localStorage.getItem("session_Id") || "";
-
-      const configPayload = {
-        sesn_id: sesnId,
-        agent_name: data.agentName || agentDetails?.agnt_nm || "",
-        db: data.db || agentDetails?.db_nm || "Default",
-        schema: data.schema || agentDetails?.schma_nm || "Default",
-        description: data.description || agentDetails?.agnt_desc || "",
-        model_config: {
-          orchestration: data.selectedModel || "",
-        },
-        orchestration_config: {
-          budget: {
-            seconds: 60,
-            tokens: 1600,
-          },
-          features: {
-            thread_memory: true,
-          },
-          agent_instructions: {
-            response: data.responseInstructions || "",
-            orchestration: data.orchestrationInstructions || "",
-            system: data.systemInstructions || "",
-          },
-        },
-      };
-
-      await agentApi.saveCortexConfig(agentId, configPayload);
-      console.log("[Cortex] Profile config saved");
-    } catch (error) {
-      console.error("[Cortex] Failed to save profile config:", error);
-    }
     setActiveStep(2);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
