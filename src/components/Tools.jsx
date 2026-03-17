@@ -303,6 +303,16 @@ export default function Tools({
   }
 }, [defaultConfig]);
 
+// NEW — Cortex only
+useEffect(() => {
+  if (isLangGraph) return;
+  if (savedData?.orchestration_instructions) return;
+  const cortexOrchestration = agentDetails?._agentInstructions?.orchestration || "";
+  if (cortexOrchestration && !orchestrationInstruction) {
+    setOrchestrationInstruction(cortexOrchestration);
+  }
+}, [agentDetails]);
+
   useEffect(() => {
     if (!agentDetails) return;
     if (!agentDetails.agnt_access_scope) return;
