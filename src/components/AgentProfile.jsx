@@ -80,7 +80,7 @@ function AgentProfileCard({
   const cortexFetched = useRef(false);
   const providersFetched = useRef(false);
   const lastFetchedProvider = useRef("");
-  const defaultModelRef = useRef(selectedModel || "");
+  const defaultModelRef = useRef(initialModel);
 
   // Cortex: fetch LLMs directly on mount (once)
   useEffect(() => {
@@ -463,13 +463,26 @@ export default function AgentProfile({
   // Use defaultConfig for LangGraph instruction defaults only
   const profileDefaults = isLangGraph ? defaultConfig?.profile_config : null;
 
-  // User-entered values — restore from savedData if available
-  const [selectedModel, setSelectedModel] = useState(savedData?.selectedModel || "");
-  const [systemInstruction, setSystemInstruction] = useState(savedData?.systemInstructions || "");
-  const [responseInstruction, setResponseInstruction] = useState(savedData?.responseInstructions || "");
-  const [toolChoice, setToolChoice] = useState(savedData?.toolChoice || "auto");
-  const [llmServiceProvider, setLlmServiceProvider] = useState(savedData?.llmServiceProvider || "");
+  const initialModel = savedData?.selectedModel
+    || profileDefaults?.llm_config?.model_id
+    || "";
+  const initialProvider = savedData?.llmServiceProvider
+    || profileDefaults?.llm_config?.provider_name
+    || "";
+  const initialSystemInstruction = savedData?.systemInstructions
+    || profileDefaults?.agent_instructions?.system_instructions
+    || profileDefaults?.agent_instructions?.system
+    || "";
+  const initialResponseInstruction = savedData?.responseInstructions
+    || profileDefaults?.agent_instructions?.response_instructions
+    || profileDefaults?.agent_instructions?.response_structure
+    || "";
 
+  const [selectedModel, setSelectedModel] = useState(initialModel);
+  const [systemInstruction, setSystemInstruction] = useState(initialSystemInstruction);
+  const [responseInstruction, setResponseInstruction] = useState(initialResponseInstruction);
+  const [toolChoice, setToolChoice] = useState(savedData?.toolChoice || "auto");
+  const [llmServiceProvider, setLlmServiceProvider] = useState(initialProvider);
   // Sync defaults when defaultConfig loads (async)
   useEffect(() => {
     if (!profileDefaults) return;
