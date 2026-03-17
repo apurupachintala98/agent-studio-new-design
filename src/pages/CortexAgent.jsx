@@ -1,3 +1,4 @@
+
 // import { useState, useEffect } from "react";
 // import { useParams } from "react-router-dom";
 // import {
@@ -8,7 +9,6 @@
 // import AgentProfile from "../components/AgentProfile";
 // import Tools from "../components/Tools";
 // import Deployment from "../components/Deployment";
-// import { fetchSpecificAgent } from "../services/agents";
 // import { agentApi } from "../services/api";
 
 // export default function AgentStudio() {
@@ -22,8 +22,14 @@
 //   useEffect(() => {
 //     const loadAgent = async () => {
 //       try {
-//         const response = await fetchSpecificAgent(agentId);
-//         const record = response?.data?.record;
+//         // POST /api/cortex/agent/specific
+//         const result = await agentApi.getCortexAgentDetails(agentId);
+//         const record = result?.data?.record || {};
+
+//         // Merge agent_instructions from root level into record for easy access
+//         const agentInstructions = result?.agent_instructions || {};
+//         record._agentInstructions = agentInstructions;
+
 //         setAgentDetails(record);
 //       } catch (error) {
 //         console.error("Failed to fetch agent details:", error);
@@ -41,8 +47,43 @@
 //     window.scrollTo({ top: 0, behavior: "smooth" });
 //   };
 
-//   const handleToolsSave = (data) => {
+//   const handleToolsSave = async (data) => {
 //     setToolData(data);
+//     try {
+//       const sesnId = localStorage.getItem("session_Id") || "";
+//       const profile = stepOneData || {};
+
+//       const configPayload = {
+//         sesn_id: sesnId,
+//         agent_name: profile.agentName || agentDetails?.agnt_nm || "",
+//         db: profile.db || agentDetails?.db_nm || "Default",
+//         schema: profile.schema || agentDetails?.schma_nm || "Default",
+//         description: profile.description || agentDetails?.agnt_desc || "",
+//         model_config: {
+//           orchestration: profile.selectedModel || "",
+//         },
+//         orchestration_config: {
+//           budget: {
+//             seconds: 60,
+//             tokens: 1600,
+//           },
+//           features: {
+//             thread_memory: true,
+//           },
+//           agent_instructions: {
+//             response: profile.responseInstructions || "",
+//             orchestration: data.orchestration_instructions || "",
+//             system: profile.systemInstructions || "",
+//           },
+//         },
+//         features: { thread_memory: true },
+//       };
+
+//       await agentApi.saveCortexConfig(agentId, configPayload);
+//       console.log("[Cortex] Tools config saved");
+//     } catch (error) {
+//       console.error("[Cortex] Failed to save tools config:", error);
+//     }
 //   };
 
 //   const goToPrevStep = () => {
@@ -302,8 +343,8 @@ export default function AgentStudio() {
       }
       setActiveStep(3);
     } catch (error) {
-      console.error(error);
-      alert("Agent creation failed");
+      console.error("Agent creation failed:", error);
+      throw error;
     } finally {
       setIsCreating(false);
     }
