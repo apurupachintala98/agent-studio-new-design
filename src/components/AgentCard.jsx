@@ -39,6 +39,7 @@ export default function AgentCard({ agent }) {
 
   return (
     <div
+      onClick={handleEditClick}
       style={{
         width: '411px',
         height: '243px',
@@ -49,6 +50,7 @@ export default function AgentCard({ agent }) {
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
+         cursor: "pointer"
       }}
     >
       {/* Icon and Status Container */}
