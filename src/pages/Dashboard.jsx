@@ -53,7 +53,6 @@ export default function Dashboard() {
             modelName: agent.llm_nm || null,
           }))
         );
-
       } catch (error) {
         console.error("Dashboard API Error:", error);
       } finally {
@@ -84,6 +83,7 @@ export default function Dashboard() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
+  
 
   const handleTypeChange = (type) => {
     setSelectedType(type);

@@ -2,16 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import ServiceEndpoint from "../components/ServiceEndpoint";
 import { SendHorizonal } from "lucide-react";
-import { API_CONFIG } from "../config/api-config";
 
 const SSE_LOGS = [
-    // { time: "10:43:01", type: "EVENT", content: 'node:start\n  name="policy_retriever"' },
-    // { time: "10:43:02", type: "SSE", content: 'chunk: "For the 2024"' },
-    // { time: "10:43:02", type: "SSE", content: 'chunk: " plan year,"' },
-    // { time: "10:43:04", type: "EVENT", content: 'node:end\n  name="policy_retriever"\n  duration=240ms' },
-    // { time: "10:43:04", type: "TOOL", content: 'call:\n  query_benefits_db(year="2024")' },
-    // { time: "10:43:05", type: "SSE", content: 'chunk: " there are a few"' },
-    // { time: "10:43:05", type: "SSE", content: 'chunk: " key updates..."' },
 ];
 
 const TOOL_RESULT = `{ "status": "success", "results": [
@@ -100,12 +92,14 @@ export default function ChatPage() {
     const [userId, setUserId] = useState("");
     const [appCode, setAppCode] = useState("");
     const [agentName, setAgentName] = useState("");
+     const [agentType, setAgentType] = useState("");
      useEffect(() => {
         setAgentId(localStorage.getItem("agentId") || "");
         setSesnId(localStorage.getItem("session_id") || "");
         setUserId(localStorage.getItem("user_id") || "");
         setAppCode(localStorage.getItem("aplctn_cd") || "");
         setAgentName(localStorage.getItem("agentName") || "");
+        setAgentType(localStorage.getItem("agentType") || "");
     }, []);
 
 
@@ -118,16 +112,20 @@ export default function ChatPage() {
         if (!agentName) return;
 
         try {
-            const base = (API_CONFIG?.BASE_URL || "").replace(/\/$/, "");
-            if (!base) return;
+            const base = "https://agentbuilder-demo.edl.dev.awsdns.internal.das";
 
             const formatted = agentName.toLowerCase().trim().replace(/\s+/g, "");
-            const generatedUrl = `${base}/${formatted}be-service/`;
+            let generatedUrl;
+            if (agentType === "LangGraph") {
+                generatedUrl = `${base}/${formatted}be-service/`;
+            } else {
+                generatedUrl = `${base}/${formatted}-service/`;
+            }
             setApiUrl(generatedUrl);
         } catch (error) {
             console.error("Failed to build service URL:", error);
         }
-    }, [agentName]);
+    }, [agentName, agentType]);
 
 
     const handleSubmit = async () => {

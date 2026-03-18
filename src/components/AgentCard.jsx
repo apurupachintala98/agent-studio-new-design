@@ -10,6 +10,7 @@ export default function AgentCard({ agent }) {
     try {
       const sessionId = uuidv4();
       localStorage.setItem("session_Id", sessionId);
+       localStorage.setItem("agentType", agent.agentType || "");
       const userId = localStorage.getItem("user_id");
       const appCode = localStorage.getItem("aplctn_cd");
       const response = await langgraphApi.getAgentDetails(agent.id)
@@ -296,7 +297,7 @@ export default function AgentCard({ agent }) {
           </div>
         )}
         {/* Edit Icon Container */}
-        <div
+        {/* <div
           onClick={handleEditClick}
           style={{
             display: "flex",
@@ -352,7 +353,46 @@ export default function AgentCard({ agent }) {
               strokeLinejoin="round"
             />
           </svg>
+        </div> */}
+
+          {agent.status?.toLowerCase() === "active" && (
+         <div
+          onClick={(e) => {
+            e.stopPropagation();
+            localStorage.setItem("agentName", agent.name || "");
+            localStorage.setItem("agentId", agent.id || "");
+            localStorage.setItem("agentType", agent.agentType || "");
+            navigate("/chat");
+          }}
+          title="Chat"
+          style={{
+            display: "flex",
+            width: "31px",
+            height: "32px",
+            padding: "6px",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "16px",
+            marginLeft: "auto",
+            cursor: "pointer",
+            transition: "transform 0.2s ease, background 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.2)";
+            e.currentTarget.style.background = "rgba(0, 121, 194, 0.08)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.background = "transparent";
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
         </div>
+          )}
       </div>
     </div>
   )
