@@ -85,6 +85,16 @@ export default function Dashboard() {
     currentPage * itemsPerPage
   )
 
+  const handleTypeChange = (type) => {
+    setSelectedType(type);
+    setSelectedAgentName("");  // clear agent name when type changes
+    setCurrentPage(1);
+  };
+
+  const agentNamesForDropdown = selectedType
+    ? agents.filter(a => a.agentType === selectedType).map(a => a.name)
+    : agents.map(a => a.name);
+
   return (
     <div className="min-h-screen bg-gray-50 font-open-sans">
       {/* Header */}
@@ -290,7 +300,7 @@ export default function Dashboard() {
               >
                 <select
                   value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
+                  onChange={(e) => handleTypeChange(e.target.value)}
                   style={{
                     width: "284px",
                     height: "100%",
@@ -397,10 +407,8 @@ export default function Dashboard() {
                   }}
                 >
                   <option value="">Select</option>
-                  {agents.map(agent => (
-                    <option key={agent.id} value={agent.name}>
-                      {agent.name}
-                    </option>
+                  {agentNamesForDropdown.map((name, idx) => (
+                    <option key={idx} value={name}>{name}</option>
                   ))}
                 </select>
 
