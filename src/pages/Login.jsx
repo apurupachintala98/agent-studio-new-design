@@ -9,9 +9,8 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [appCodes, setAppCodes] = useState([])   // array from API
-  const [appCode, setAppCode] = useState("")    // selected value
+  const [appCodes, setAppCodes] = useState([])
+  const [appCode, setAppCode] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [isValidated, setIsValidated] = useState(false)
@@ -79,9 +78,11 @@ export default function Login() {
     localStorage.setItem("user_id", userId)
     localStorage.setItem("aplctn_cd", appCode)
 
-    // store selected application
     navigate("/dashboard")
   }
+
+  // Show validate button only when password has content and not yet validated
+  const showValidateButton = password.length > 0 && !isValidated
 
   return (
     <div style={{
@@ -107,9 +108,8 @@ export default function Login() {
         boxSizing: 'border-box',
         flexShrink: 0
       }}>
-        {/* Logo Section - Stays at Top */}
+        {/* Logo Section */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-          {/* Letter E */}
           <div style={{
             width: '48px',
             height: '48px',
@@ -126,10 +126,7 @@ export default function Login() {
           }}>
             E
           </div>
-
-          {/* Elevance and Health Text */}
           <div>
-            {/* Elevance */}
             <div style={{
               color: '#FFF',
               fontFamily: '"Source Sans 3"',
@@ -141,7 +138,6 @@ export default function Login() {
             }}>
               Elevance
             </div>
-            {/* Health */}
             <div style={{
               color: '#FFF',
               fontFamily: '"Source Sans 3"',
@@ -156,7 +152,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Enterprise Portal and Agent Studio Container - Expands with flex:1 */}
+        {/* Agent Studio Section */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -166,30 +162,6 @@ export default function Login() {
           flex: 1,
           justifyContent: 'center'
         }}>
-          {/* Enterprise Portal Badge */}
-          {/* <div style={{
-            display: 'flex',
-            padding: '4px 12px',
-            alignItems: 'center',
-            borderRadius: '2px',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            background: 'rgba(255, 255, 255, 0.1)'
-          }}>
-            <span style={{
-              color: 'rgba(255, 255, 255, 0.9)',
-              fontFamily: '"Source Sans 3"',
-              fontSize: '12px',
-              fontWeight: '600',
-              lineHeight: '16px',
-              letterSpacing: '1.2px',
-              textTransform: 'uppercase',
-              margin: 0
-            }}>
-              ENTERPRISE PORTAL
-            </span>
-          </div> */}
-
-          {/* Agent Studio Title */}
           <h2 style={{
             color: '#FFF',
             fontFamily: '"Source Sans 3"',
@@ -200,8 +172,6 @@ export default function Login() {
           }}>
             Agent Studio
           </h2>
-
-          {/* Description */}
           <p style={{
             color: 'rgba(255, 255, 255, 0.8)',
             fontFamily: '"Source Sans 3"',
@@ -213,39 +183,19 @@ export default function Login() {
           }}>
             The enterprise-grade no-code and low-code agent builder for professional agent registration and secure management.
           </p>
-
-          {/* Decorative Lines */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
             marginTop: '40px'
           }}>
-            {/* 1st Line */}
-            <div style={{
-              width: '48px',
-              height: '6px',
-              borderRadius: '9999px',
-              background: '#00AEEF'
-            }} />
-            {/* 2nd Line */}
-            <div style={{
-              width: '16px',
-              height: '6px',
-              borderRadius: '9999px',
-              background: 'rgba(255, 255, 255, 0.2)'
-            }} />
-            {/* 3rd Line */}
-            <div style={{
-              width: '16px',
-              height: '6px',
-              borderRadius: '9999px',
-              background: 'rgba(255, 255, 255, 0.2)'
-            }} />
+            <div style={{ width: '48px', height: '6px', borderRadius: '9999px', background: '#00AEEF' }} />
+            <div style={{ width: '16px', height: '6px', borderRadius: '9999px', background: 'rgba(255, 255, 255, 0.2)' }} />
+            <div style={{ width: '16px', height: '6px', borderRadius: '9999px', background: 'rgba(255, 255, 255, 0.2)' }} />
           </div>
         </div>
 
-        {/* Bottom Section: Copyright */}
+        {/* Copyright */}
         <div style={{
           color: 'rgba(255, 255, 255, 0.5)',
           fontFamily: '"Source Sans 3"',
@@ -258,7 +208,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right Side - Form Section with Stripe Pattern */}
+      {/* Right Side - Form Section */}
       <div style={{
         flex: 1,
         display: 'flex',
@@ -272,25 +222,19 @@ export default function Login() {
         width: '768px',
         padding: '48px',
       }}>
-        {/* Form Card Container */}
+        {/* Form Card */}
         <div style={{
           background: 'white',
           borderRadius: '12px',
           width: '448px',
-          height: '673px',
           boxShadow: '0 10px 40px -10px rgba(0, 38, 119, 0.15)',
           zIndex: 2,
-          // position: 'absolute',
-          // top: '50px',
-          // bottom: '50px',
-          // left: '50%',
-          // transform: 'translateX(-50%)',
           margin: '50px auto',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-start'
         }}>
-          {/* Title and Description Container */}
+          {/* Title */}
           <div style={{
             display: 'flex',
             width: '100%',
@@ -299,7 +243,6 @@ export default function Login() {
             gap: '12px',
             padding: '57px 57px 0 57px'
           }}>
-            {/* Title */}
             <div style={{ textAlign: 'center', width: '100%' }}>
               <h1 style={{
                 color: '#0079C2',
@@ -326,7 +269,7 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Form Container */}
+          {/* Form Fields */}
           <div style={{
             display: 'flex',
             width: '100%',
@@ -369,7 +312,7 @@ export default function Login() {
                     flex: 1,
                     outline: 'none',
                     border: 'none',
-                    color: '#94A3B8',
+                    color: '#333',
                     fontFamily: '"Source Sans 3"',
                     fontSize: '16px',
                     fontWeight: '400',
@@ -380,79 +323,7 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Password */}
-            {/* <div style={{ width: '100%' }}>
-              <label style={{
-                color: '#333',
-                fontFamily: '"Source Sans 3"',
-                fontSize: '14px',
-                fontWeight: '700',
-                lineHeight: '20px',
-                display: 'block',
-                marginBottom: '8px'
-              }}>
-                Password
-              </label>
-              <div style={{
-                borderRadius: '6px',
-                border: '1px solid #CBD5E1',
-                background: '#FFF',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '10px 12px',
-                gap: '8px'
-              }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onBlur={() => {
-                    if (userId && password) {
-                      validateLDAP()
-                    }
-                  }}
-                  placeholder="••••••••"
-                  style={{
-                    flex: 1,
-                    outline: 'none',
-                    border: 'none',
-                    color: '#94A3B8',
-                    fontFamily: '"Source Sans 3"',
-                    fontSize: '16px',
-                    fontWeight: '400',
-                    lineHeight: 'normal',
-                    background: 'transparent'
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: '#94A3B8',
-                    padding: '0'
-                  }}
-                >
-                  {showPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div> */}
-
+            {/* Password — no checkmark button */}
             <div style={{ width: '100%' }}>
               <label style={{
                 color: '#333',
@@ -465,7 +336,6 @@ export default function Login() {
               }}>
                 Password
               </label>
-
               <div style={{
                 borderRadius: '6px',
                 border: isValidated ? '1px solid #16A34A' : '1px solid #CBD5E1',
@@ -475,20 +345,16 @@ export default function Login() {
                 padding: '10px 12px',
                 gap: '8px'
               }}>
-
-                {/* Lock Icon */}
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                   <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
-
-                {/* Password Input */}
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value)
-                    setIsValidated(false) // reset validation if user edits
+                    setIsValidated(false)
                   }}
                   placeholder="••••••••"
                   style={{
@@ -501,8 +367,6 @@ export default function Login() {
                     background: 'transparent'
                   }}
                 />
-
-                {/* Eye Toggle */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -516,133 +380,136 @@ export default function Login() {
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
-
-                {/* Validate Tick Button */}
-                <button
-                  type="button"
-                  onClick={validateLDAP}
-                  disabled={isValidating}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 0,
-                    marginLeft: '6px',
-                    color: isValidated ? '#16A34A' : '#94A3B8'
-                  }}
-                >
-                  {isValidating ? (
-                    <span style={{ fontSize: '12px' }}>...</span>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  )}
-                </button>
-
               </div>
             </div>
 
-            {/* Application Code */}
-            <div style={{ width: '100%' }}>
-              <label
+            {/* Validate Credentials Button — appears only when password entered & not yet validated */}
+            {showValidateButton && (
+              <button
+                onClick={validateLDAP}
+                disabled={isValidating}
                 style={{
-                  color: isValidated ? '#333' : '#94A3B8',
-                  fontFamily: '"Source Sans 3"',
-                  fontSize: '14px',
-                  fontWeight: '700',
-                  lineHeight: '20px',
-                  display: 'block',
-                  marginBottom: '8px',
-                  opacity: isValidated ? 1 : 0.6
-                }}
-              >
-                Application Code
-              </label>
-
-              <div
-                style={{
+                  width: '100%',
+                  padding: '12px 0',
                   borderRadius: '6px',
-                  border: '1px solid #CBD5E1',
-                  background: '#FFF',
+                  background: isValidating ? '#93C5FD' : '#0079C2',
+                  color: '#FFF',
+                  border: 'none',
+                  fontSize: '15px',
+                  fontFamily: '"Source Sans 3"',
+                  fontWeight: '600',
+                  cursor: isValidating ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  padding: '0 12px',
-                  height: '48px',
-                  width: '100%',
-                  position: 'relative'
+                  justifyContent: 'center',
+                  gap: '8px',
                 }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
-                  <circle cx="5" cy="5" r="1.5" />
-                  <circle cx="12" cy="5" r="1.5" />
-                  <circle cx="19" cy="5" r="1.5" />
-                  <circle cx="5" cy="12" r="1.5" />
-                  <circle cx="12" cy="12" r="1.5" />
-                  <circle cx="19" cy="12" r="1.5" />
-                  <circle cx="5" cy="19" r="1.5" />
-                  <circle cx="12" cy="19" r="1.5" />
-                  <circle cx="19" cy="19" r="1.5" />
-                </svg>
+                {isValidating && (
+                  <div style={{
+                    width: 16, height: 16,
+                    border: '2.5px solid #FFF',
+                    borderTopColor: 'transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite',
+                  }} />
+                )}
+                {isValidating ? 'Validating...' : 'Validate Credentials'}
+              </button>
+            )}
 
-                <select
-                  value={appCode}
-                  disabled={!isValidated}
-                  onChange={(e) => setAppCode(e.target.value)}
+            {/* Spin animation */}
+            {isValidating && (
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            )}
+
+            {/* Application Code — only shown after validation */}
+            {isValidated && (
+              <div style={{ width: '100%' }}>
+                <label
                   style={{
-                    width: '100%',
-                    minWidth: 0,
-                    height: '100%',
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: '16px',
+                    color: '#333',
                     fontFamily: '"Source Sans 3"',
-                    background: 'transparent',
-                    color: appCode ? '#333' : '#94A3B8',
-                    appearance: 'none',
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'none',
-                    cursor: isValidated ? 'pointer' : 'not-allowed',
-                    // padding: '0 32px 0 0',
-                    padding: '0 40px 0 16px',
-                    boxSizing: 'border-box'
+                    fontSize: '14px',
+                    fontWeight: '700',
+                    lineHeight: '20px',
+                    display: 'block',
+                    marginBottom: '8px',
                   }}
                 >
-                  <option value="" style={{ padding: '10px' }}>
-                    Select Application Code
-                  </option>
+                  Application Code
+                </label>
 
-                  {Array.isArray(appCodes) &&
-                    appCodes.map((code) => (
-                      <option key={code} value={code} style={{ padding: '10px' }} >
-                        {code}
-                      </option>
-                    ))}
-                </select>
                 <div
                   style={{
-                    position: 'absolute',
-                    right: '14px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none'
+                    borderRadius: '6px',
+                    border: '1px solid #CBD5E1',
+                    background: '#FFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0 12px',
+                    height: '48px',
+                    width: '100%',
+                    position: 'relative'
                   }}
                 >
-
-                  {/* Custom Arrow */}
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#94A3B8"
-                    strokeWidth="2"
-                  >
-                    <polyline points="6 9 12 15 18 9" />
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#94A3B8" style={{ marginRight: '8px' }}>
+                    <circle cx="5" cy="5" r="1.5" />
+                    <circle cx="12" cy="5" r="1.5" />
+                    <circle cx="19" cy="5" r="1.5" />
+                    <circle cx="5" cy="12" r="1.5" />
+                    <circle cx="12" cy="12" r="1.5" />
+                    <circle cx="19" cy="12" r="1.5" />
+                    <circle cx="5" cy="19" r="1.5" />
+                    <circle cx="12" cy="19" r="1.5" />
+                    <circle cx="19" cy="19" r="1.5" />
                   </svg>
+
+                  <select
+                    value={appCode}
+                    onChange={(e) => setAppCode(e.target.value)}
+                    style={{
+                      width: '100%',
+                      minWidth: 0,
+                      height: '100%',
+                      border: 'none',
+                      outline: 'none',
+                      fontSize: '16px',
+                      fontFamily: '"Source Sans 3"',
+                      background: 'transparent',
+                      color: appCode ? '#333' : '#94A3B8',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                      cursor: 'pointer',
+                      padding: '0 40px 0 16px',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <option value="">Select Application Code</option>
+                    {Array.isArray(appCodes) &&
+                      appCodes.map((code) => (
+                        <option key={code} value={code}>
+                          {code}
+                        </option>
+                      ))}
+                  </select>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: '14px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      pointerEvents: 'none'
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Remember me + Forgot password */}
             <div style={{
@@ -666,11 +533,7 @@ export default function Login() {
                   checked={rememberMe}
                   disabled
                   onChange={() => setRememberMe(!rememberMe)}
-                  style={{
-                    width: '16px',
-                    height: '16px',
-                    cursor: 'not-allowed'
-                  }}
+                  style={{ width: '16px', height: '16px', cursor: 'not-allowed' }}
                 />
                 Remember me
               </label>
@@ -701,34 +564,36 @@ export default function Login() {
               </div>
             )}
 
-            {/* Sign In Button */}
-            <button
-              onClick={handleLogin}
-              style={{
-                padding: '16px 0',
-                width: '100%',
-                borderRadius: '6px',
-                background: '#0079C2',
-                color: '#FFF',
-                height: '56px',
-                border: 'none',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-                fontSize: '16px',
-                fontFamily: '"Source Sans 3"',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              Sign in
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </button>
+            {/* Sign In Button — only shown after validation */}
+            {isValidated && (
+              <button
+                onClick={handleLogin}
+                style={{
+                  padding: '16px 0',
+                  width: '100%',
+                  borderRadius: '6px',
+                  background: '#0079C2',
+                  color: '#FFF',
+                  height: '56px',
+                  border: 'none',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+                  fontSize: '16px',
+                  fontFamily: '"Source Sans 3"',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                Sign in
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </button>
+            )}
           </div>
 
           {/* Request access */}
